@@ -479,6 +479,19 @@
       </div>
     </section>
 
+    <div class="grid-2">
+      <section class="panel">
+        <h2>Ranking por sucursal</h2>
+        <div class="panel-sub">Total vendido 2026 (facturado + pendiente de facturar), todas las marcas de maíz</div>
+        <div class="barlist" id="rk-sucursal"></div>
+      </section>
+      <section class="panel">
+        <h2>Ranking por vendedor</h2>
+        <div class="panel-sub">Bolsas facturadas en la campaña — el pendiente de facturar no trae vendedor asignado, así que no está incluido acá</div>
+        <div class="barlist" id="rk-vendedor"></div>
+      </section>
+    </div>
+
     <div class="filters">
       <span class="flabel">Sucursal</span>
       <select id="vt-f-sucursal"><option value="">Todas</option></select>
@@ -597,6 +610,7 @@ const FORECAST = [{"sucursal": "Azul", "hibrido": "NEXT 22.6", "forecast": 1078.
 const SALES = [{"sucursal": "Azul", "hibrido": "8181", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Azul", "hibrido": "8380", "facturado": 707.0, "pendiente": 304.0, "vendido": 1011.0}, {"sucursal": "Azul", "hibrido": "8421", "facturado": 273.0, "pendiente": 0.0, "vendido": 273.0}, {"sucursal": "Azul", "hibrido": "8472", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Azul", "hibrido": "NEXT 22.6", "facturado": 226.0, "pendiente": 145.0, "vendido": 371.0}, {"sucursal": "Azul", "hibrido": "RFG 22", "facturado": 263.0, "pendiente": 228.0, "vendido": 491.0}, {"sucursal": "Belgrano", "hibrido": "8181", "facturado": 221.0, "pendiente": 0.0, "vendido": 221.0}, {"sucursal": "Belgrano", "hibrido": "8380", "facturado": 539.0, "pendiente": 0.0, "vendido": 539.0}, {"sucursal": "Belgrano", "hibrido": "8421", "facturado": 153.0, "pendiente": 0.0, "vendido": 153.0}, {"sucursal": "Belgrano", "hibrido": "8472", "facturado": 538.0, "pendiente": 0.0, "vendido": 538.0}, {"sucursal": "Belgrano", "hibrido": "NEXT 22.6", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Belgrano", "hibrido": "RFG 22", "facturado": 108.0, "pendiente": 11.0, "vendido": 119.0}, {"sucursal": "Bolívar", "hibrido": "8181", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Bolívar", "hibrido": "8380", "facturado": 508.0, "pendiente": 54.0, "vendido": 562.0}, {"sucursal": "Bolívar", "hibrido": "8421", "facturado": 26.0, "pendiente": 116.0, "vendido": 142.0}, {"sucursal": "Bolívar", "hibrido": "8472", "facturado": 1124.0, "pendiente": 190.0, "vendido": 1314.0}, {"sucursal": "Bolívar", "hibrido": "NEXT 22.6", "facturado": 2.0, "pendiente": 0.0, "vendido": 2.0}, {"sucursal": "Bolívar", "hibrido": "RFG 22", "facturado": 88.0, "pendiente": 4.0, "vendido": 92.0}, {"sucursal": "Olavarría", "hibrido": "8181", "facturado": 254.0, "pendiente": 35.0, "vendido": 289.0}, {"sucursal": "Olavarría", "hibrido": "8380", "facturado": 355.0, "pendiente": 56.0, "vendido": 411.0}, {"sucursal": "Olavarría", "hibrido": "8421", "facturado": 10.0, "pendiente": 0.0, "vendido": 10.0}, {"sucursal": "Olavarría", "hibrido": "8472", "facturado": 275.0, "pendiente": 7.0, "vendido": 282.0}, {"sucursal": "Olavarría", "hibrido": "NEXT 22.6", "facturado": 101.0, "pendiente": 72.0, "vendido": 173.0}, {"sucursal": "Olavarría", "hibrido": "RFG 22", "facturado": 73.0, "pendiente": 17.0, "vendido": 90.0}, {"sucursal": "Tandil", "hibrido": "8181", "facturado": 80.0, "pendiente": 22.0, "vendido": 102.0}, {"sucursal": "Tandil", "hibrido": "8380", "facturado": 976.0, "pendiente": 201.0, "vendido": 1177.0}, {"sucursal": "Tandil", "hibrido": "8421", "facturado": 16.0, "pendiente": 0.0, "vendido": 16.0}, {"sucursal": "Tandil", "hibrido": "8472", "facturado": 192.0, "pendiente": 56.0, "vendido": 248.0}, {"sucursal": "Tandil", "hibrido": "NEXT 22.6", "facturado": 90.0, "pendiente": 0.0, "vendido": 90.0}, {"sucursal": "Tandil", "hibrido": "RFG 22", "facturado": 239.0, "pendiente": 13.0, "vendido": 252.0}];
 const OA = [{"hibrido": "8380", "oa_pendiente": 0}, {"hibrido": "8472", "oa_pendiente": 697}, {"hibrido": "RFG 22", "oa_pendiente": 100}];
 const OBJETIVO = [{"sucursal": "Tandil", "objetivo": 4802, "forecastActual": 3782, "ventas2025": 4678, "brecha": -1020, "vs2025": -896, "ventas2026": 1885.0}, {"sucursal": "Azul", "objetivo": 5082, "forecastActual": 4514, "ventas2025": 4235, "brecha": -568, "vs2025": 279, "ventas2026": 2146.0}, {"sucursal": "Bolívar", "objetivo": 2716, "forecastActual": 2614, "ventas2025": 2198, "brecha": -102, "vs2025": 416, "ventas2026": 2227.0}, {"sucursal": "Olavarría", "objetivo": 2952, "forecastActual": 2361, "ventas2025": 2460, "brecha": -591, "vs2025": -99, "ventas2026": 1255.0}, {"sucursal": "Belgrano", "objetivo": 2798, "forecastActual": 2130, "ventas2025": 2244, "brecha": -668, "vs2025": -114, "ventas2026": 1560.0}];
+const VENDEDORES = [{"vendedor": "Fabricio Perez", "cantidad": 1603, "sucursal": "Bolívar"}, {"vendedor": "Marcelo Bollani", "cantidad": 922, "sucursal": "Belgrano"}, {"vendedor": "Fabricio Lacoste", "cantidad": 815, "sucursal": "Olavarría"}, {"vendedor": "Sixto Fernandez", "cantidad": 652, "sucursal": "Tandil"}, {"vendedor": "Sergio Lopez", "cantidad": 627, "sucursal": "Belgrano"}, {"vendedor": "Agustin Oliverio", "cantidad": 599, "sucursal": "Azul"}, {"vendedor": "Veronica Flores", "cantidad": 553, "sucursal": "Tandil"}, {"vendedor": "Franco Martignoni", "cantidad": 550, "sucursal": "Azul"}, {"vendedor": "Barbara Saez", "cantidad": 278, "sucursal": "Azul"}, {"vendedor": "Mariano Esandi", "cantidad": 274, "sucursal": "Tandil"}, {"vendedor": "Ricardo Silvestro", "cantidad": 253, "sucursal": "Olavarría"}, {"vendedor": "Luciano Miramon", "cantidad": 175, "sucursal": "Bolívar"}, {"vendedor": "Bruno Segovia", "cantidad": 114, "sucursal": "Tandil"}, {"vendedor": "Claudino De Dominicis", "cantidad": 42, "sucursal": "Azul"}, {"vendedor": "Mariano Ruiz", "cantidad": 15, "sucursal": "Bolívar"}];
 
 // ============================================================
 // TAB SWITCHING
@@ -1321,11 +1335,45 @@ document.querySelectorAll('#hs-table thead th').forEach(th=>{
   });
 });
 
+function renderRankingSucursal(){
+  const el = document.getElementById('rk-sucursal');
+  el.innerHTML = '';
+  const entries = [...OBJETIVO].sort((a,b)=>b.ventas2026-a.ventas2026);
+  const max = Math.max(1, ...entries.map(r=>r.ventas2026));
+  entries.forEach((r,i)=>{
+    const pct = Math.max(2, Math.round(r.ventas2026/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name">${i+1}. ${r.sucursal}</div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="val">${r.ventas2026.toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderRankingVendedor(){
+  const el = document.getElementById('rk-vendedor');
+  el.innerHTML = '';
+  const entries = [...VENDEDORES].sort((a,b)=>b.cantidad-a.cantidad);
+  const max = Math.max(1, ...entries.map(r=>r.cantidad));
+  entries.forEach((r,i)=>{
+    const pct = Math.max(2, Math.round(r.cantidad/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name" title="${r.vendedor} · ${r.sucursal}">${i+1}. ${r.vendedor}</div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="val">${r.cantidad.toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
 function renderVentasTab(){
   const matrix = applyVtFilters(buildVentasMatrix());
   renderVtKPIs(matrix);
   renderVtCallout(matrix);
   renderHibridoSummary();
+  renderRankingSucursal();
+  renderRankingVendedor();
   renderVtCompareChart(matrix);
   renderVtStockChart(matrix);
   renderVtTable(matrix);
