@@ -806,7 +806,7 @@
     <div class="kpis" id="soja-kpis"></div>
 
     <div class="callout" style="border-color:var(--blue-accent);background:rgba(110,155,196,.08);color:#B9D3E8;">
-      <b>Datos limitados:</b> a diferencia de maíz y girasol, todavía casi no hay movimientos de recepción registrados para soja (un solo ingreso, 258 unidades en Azul), no hay forecast ni objetivo anual cargado, y las cantidades están en Kg (big bags de 800 kg), no en bolsas — por eso esta pestaña es más simple.
+      <b>Datos limitados:</b> a diferencia de maíz y girasol, todavía casi no hay movimientos de recepción registrados para soja (un solo ingreso, 258 Kg en Azul) ni forecast por cliente cargado. Las cantidades están en Kg — el objetivo se compara convirtiendo a bolsas de 40kg. Es esperable que el volumen sea bajo todavía: la siembra de soja arranca más tarde que la de maíz y girasol.
     </div>
 
     <section class="panel">
@@ -874,7 +874,7 @@
     <div class="grid-2">
       <section class="panel">
         <h2>% del objetivo 2026 vendido</h2>
-        <div class="panel-sub">Maíz vs. girasol — soja no tiene objetivo cargado todavía</div>
+        <div class="panel-sub">Maíz, girasol y soja — el % es comparable aunque las unidades de base sean distintas (bolsas vs. Kg)</div>
         <div id="glob-chart"></div>
       </section>
       <section class="panel">
@@ -907,6 +907,8 @@ const VENDEDORES_GIR = [{"vendedor": "Sixto Fernandez", "cantidad": 385, "sucurs
 const RAW_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "presentacion": "Bolsa", "fecha": "2026-01-02", "cantidad": 258, "lote": "305P8JYP2", "vto": "2028-12-30", "deposito": "AZUL CYO"}];
 const SALES_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "facturado": -800, "pendiente": 0.0, "vendido": -800.0}, {"sucursal": "Belgrano", "hibrido": "4124 SE", "facturado": -800, "pendiente": 0.0, "vendido": -800.0}, {"sucursal": "Bolívar", "hibrido": "4124 SE", "facturado": 3200, "pendiente": 0.0, "vendido": 3200.0}, {"sucursal": "Olavarría", "hibrido": "53722 SE", "facturado": 26, "pendiente": 0.0, "vendido": 26.0}, {"sucursal": "Tandil", "hibrido": "3325 SE", "facturado": -100, "pendiente": 0.0, "vendido": -100.0}, {"sucursal": "Tandil", "hibrido": "53722 SE", "facturado": -749, "pendiente": 0.0, "vendido": -749.0}];
 const SUCS_ALL = ['Azul','Belgrano','Bolívar','Olavarría','Tandil'];
+const OBJETIVO_SOJA_BOLSAS = 15000;
+const OBJETIVO_SOJA_KG = OBJETIVO_SOJA_BOLSAS * 40;
 
 // ============================================================
 // TAB SWITCHING
@@ -2329,13 +2331,17 @@ function renderSojaKPIs(){
   const totalVendido = SALES_SOJA.reduce((s,r)=>s+r.vendido,0);
   const totalFacturado = SALES_SOJA.reduce((s,r)=>s+r.facturado,0);
   const totalPendiente = SALES_SOJA.reduce((s,r)=>s+r.pendiente,0);
+  const vendidoBolsasEq = totalVendido / 40;
+  const pctObjetivo = (vendidoBolsasEq / OBJETIVO_SOJA_BOLSAS) * 100;
+  const brechaBolsas = OBJETIVO_SOJA_BOLSAS - vendidoBolsasEq;
 
   const kpis = document.getElementById('soja-kpis');
   kpis.innerHTML = '';
   const cards = [
     { label:'Recibido a la fecha', value: totalRecibido.toLocaleString('es-AR'), unit:'Kg', foot: RAW_SOJA.length+' movimiento(s) con depósito asignado', alert:false },
     { label:'Vendido (neto)', value: Math.round(totalVendido).toLocaleString('es-AR'), unit:'Kg', foot: Math.round(totalFacturado).toLocaleString('es-AR')+' facturado + '+Math.round(totalPendiente).toLocaleString('es-AR')+' pend. de facturar', alert:false },
-    { label:'Objetivo 2026', value: '—', unit:'', foot:'sin objetivo cargado todavía', alert:false },
+    { label:'Objetivo 2026', value: OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR'), unit:'bolsas (40kg)', foot: OBJETIVO_SOJA_KG.toLocaleString('es-AR')+' Kg equivalentes', alert:false },
+    { label:'% objetivo vendido', value: pctObjetivo.toFixed(1)+'%', unit:'', foot: vendidoBolsasEq.toFixed(1)+' de '+OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR')+' bolsas equivalentes', alert: pctObjetivo<10 },
   ];
   cards.forEach(c=>{
     const div = document.createElement('div');
@@ -2411,11 +2417,13 @@ function renderGlobal(){
 
   const sojaRecibido = RAW_SOJA.reduce((s,r)=>s+r.cantidad,0);
   const sojaVendido = SALES_SOJA.reduce((s,r)=>s+r.vendido,0);
+  const sojaVendidoBolsasEq = sojaVendido / 40;
+  const sojaPct = (sojaVendidoBolsasEq / OBJETIVO_SOJA_BOLSAS) * 100;
 
   const rows = [
     { cultivo:'Maíz', recibido:maizRecibido, vendido:maizVendido, objetivo:maizObjetivo, pct:maizPct, unidad:'Bolsas' },
     { cultivo:'Girasol', recibido:girRecibido, vendido:girVendido, objetivo:girObjetivo, pct:girPct, unidad:'Bolsas' },
-    { cultivo:'Soja', recibido:sojaRecibido, vendido:sojaVendido, objetivo:0, pct:null, unidad:'Kg' },
+    { cultivo:'Soja', recibido:sojaRecibido, vendido:sojaVendido, objetivo:OBJETIVO_SOJA_KG, pct:sojaPct, unidad:'Kg (objetivo en bolsas de 40kg)' },
   ];
 
   const tbody = document.getElementById('glob-tbody');
@@ -2433,11 +2441,10 @@ function renderGlobal(){
 
   const chartEl = document.getElementById('glob-chart');
   chartEl.innerHTML = '';
-  [{name:'Maíz', pct:maizPct, vendido:maizVendido, objetivo:maizObjetivo},
-   {name:'Girasol', pct:girPct, vendido:girVendido, objetivo:girObjetivo}].forEach(r=>{
-    const max = Math.max(1, r.objetivo, r.vendido);
-    const barPct = Math.min(100, Math.max(2, Math.round(r.vendido/max*100)));
-    const markPct = Math.min(100, Math.round(r.objetivo/max*100));
+  [{name:'Maíz', pct:maizPct, vendido:maizVendido, objetivo:maizObjetivo, unidad:'bolsas'},
+   {name:'Girasol', pct:girPct, vendido:girVendido, objetivo:girObjetivo, unidad:'bolsas'},
+   {name:'Soja', pct:sojaPct, vendido:sojaVendidoBolsasEq, objetivo:OBJETIVO_SOJA_BOLSAS, unidad:'bolsas eq.'}].forEach(r=>{
+    const barPct = Math.min(100, Math.max(2, Math.round(r.pct)));
     let cls = 'ontrack';
     if(r.pct<50) cls='under'; else if(r.pct>=85) cls='over';
     const row = document.createElement('div');
@@ -2445,9 +2452,9 @@ function renderGlobal(){
     row.innerHTML = `<div class="name">${r.name}</div>
       <div class="track">
         <div class="fill ${cls}" style="width:${barPct}%"></div>
-        <div class="fc-mark" style="left:${markPct}%"></div>
+        <div class="fc-mark" style="left:100%"></div>
       </div>
-      <div class="pct">${Math.round(r.pct)}%<small>${Math.round(r.vendido).toLocaleString('es-AR')} / ${Math.round(r.objetivo).toLocaleString('es-AR')}</small></div>`;
+      <div class="pct">${r.pct.toFixed(1)}%<small>${r.vendido.toLocaleString('es-AR', {maximumFractionDigits:1})} / ${r.objetivo.toLocaleString('es-AR')} ${r.unidad}</small></div>`;
     chartEl.appendChild(row);
   });
 
