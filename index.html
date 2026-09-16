@@ -1724,6 +1724,19 @@ function renderCyoTable(){
       <td class="num ${cls}">${r.stockCyoNeto.toLocaleString('es-AR')}</td>`;
     tbody.appendChild(tr);
   });
+  const totals = CYO.reduce((acc,r)=>({
+    stockCyo: acc.stockCyo + r.stockCyo,
+    pendLiq: acc.pendLiq + r.pendLiq,
+    stockCyoNeto: acc.stockCyoNeto + r.stockCyoNeto,
+  }), {stockCyo:0, pendLiq:0, stockCyoNeto:0});
+  const totalTr = document.createElement('tr');
+  totalTr.style.borderTop = '2px solid var(--line)';
+  totalTr.style.fontWeight = '600';
+  totalTr.innerHTML = `<td>Total</td>
+    <td class="num">${totals.stockCyo.toLocaleString('es-AR')}</td>
+    <td class="num">${totals.pendLiq.toLocaleString('es-AR')}</td>
+    <td class="num">${totals.stockCyoNeto.toLocaleString('es-AR')}</td>`;
+  tbody.appendChild(totalTr);
 }
 document.querySelectorAll('#cyo-table thead th').forEach(th=>{
   th.addEventListener('click', ()=>{
