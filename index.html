@@ -907,6 +907,24 @@
       </div>
     </section>
 
+    <section class="panel">
+      <h2>Stock CYO combinado</h2>
+      <div class="panel-sub">Maíz y girasol sumados (bolsas, misma unidad) — soja no está en este reporte todavía</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Cultivo</th>
+              <th style="text-align:right">Stock CYO</th>
+              <th style="text-align:right">Pend. de liquidar</th>
+              <th style="text-align:right">Stock CYO neto</th>
+            </tr>
+          </thead>
+          <tbody id="glob-cyo-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <div class="grid-2">
       <section class="panel">
         <h2>% del objetivo 2026 vendido</h2>
@@ -2608,6 +2626,35 @@ function renderGlobal(){
       <div class="val">${val.toLocaleString('es-AR')}</div>`;
     rkEl.appendChild(row);
   });
+
+  // Stock CYO combinado
+  const cyoTotals = {
+    maiz: CYO.reduce((acc,r)=>({stockCyo:acc.stockCyo+r.stockCyo, pendLiq:acc.pendLiq+r.pendLiq, stockCyoNeto:acc.stockCyoNeto+r.stockCyoNeto}), {stockCyo:0,pendLiq:0,stockCyoNeto:0}),
+    girasol: CYO_GIR.reduce((acc,r)=>({stockCyo:acc.stockCyo+r.stockCyo, pendLiq:acc.pendLiq+r.pendLiq, stockCyoNeto:acc.stockCyoNeto+r.stockCyoNeto}), {stockCyo:0,pendLiq:0,stockCyoNeto:0}),
+  };
+  const cyoTbody = document.getElementById('glob-cyo-tbody');
+  cyoTbody.innerHTML = '';
+  [['Maíz', cyoTotals.maiz], ['Girasol', cyoTotals.girasol]].forEach(([name, t])=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${name}</td>
+      <td class="num">${t.stockCyo.toLocaleString('es-AR')}</td>
+      <td class="num">${t.pendLiq.toLocaleString('es-AR')}</td>
+      <td class="num">${t.stockCyoNeto.toLocaleString('es-AR')}</td>`;
+    cyoTbody.appendChild(tr);
+  });
+  const totalTr = document.createElement('tr');
+  totalTr.style.borderTop = '2px solid var(--line)';
+  totalTr.style.fontWeight = '600';
+  const grand = {
+    stockCyo: cyoTotals.maiz.stockCyo + cyoTotals.girasol.stockCyo,
+    pendLiq: cyoTotals.maiz.pendLiq + cyoTotals.girasol.pendLiq,
+    stockCyoNeto: cyoTotals.maiz.stockCyoNeto + cyoTotals.girasol.stockCyoNeto,
+  };
+  totalTr.innerHTML = `<td>Total (maíz + girasol)</td>
+    <td class="num">${grand.stockCyo.toLocaleString('es-AR')}</td>
+    <td class="num">${grand.pendLiq.toLocaleString('es-AR')}</td>
+    <td class="num">${grand.stockCyoNeto.toLocaleString('es-AR')}</td>`;
+  cyoTbody.appendChild(totalTr);
 }
 renderGlobal();
 </script>
