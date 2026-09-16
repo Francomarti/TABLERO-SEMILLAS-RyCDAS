@@ -515,6 +515,24 @@
       </div>
     </section>
 
+    <section class="panel">
+      <h2>Stock CYO en tiempo real</h2>
+      <div class="panel-sub">Saldo actual de los depósitos CYO (ya incluido en "Recibido") menos lo pendiente de liquidar — mercadería ya vendida y facturada que todavía no se descontó del saldo. Es una foto más al día de lo que queda físicamente disponible.</div>
+      <div class="table-scroll">
+        <table id="cyo-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="stockCyo" style="text-align:right">Stock CYO<span class="arrow"></span></th>
+              <th data-key="pendLiq" style="text-align:right">Pend. de liquidar<span class="arrow"></span></th>
+              <th data-key="stockCyoNeto" style="text-align:right">Stock CYO neto<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="cyo-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <div class="grid-2">
       <section class="panel">
         <h2>Ranking por sucursal</h2>
@@ -906,6 +924,7 @@ const OBJETIVO_GIR = [{"sucursal": "Tandil", "objetivo": 1771, "forecastActual":
 const VENDEDORES_GIR = [{"vendedor": "Sixto Fernandez", "cantidad": 385, "sucursal": "Tandil"}, {"vendedor": "Fabricio Perez", "cantidad": 195, "sucursal": "Bolívar"}, {"vendedor": "Veronica Flores", "cantidad": 140, "sucursal": "Tandil"}, {"vendedor": "Barbara Saez", "cantidad": 111, "sucursal": "Azul"}, {"vendedor": "Fabricio Lacoste", "cantidad": 97, "sucursal": "Olavarría"}, {"vendedor": "Bruno Segovia", "cantidad": 86, "sucursal": "Tandil"}, {"vendedor": "Luciano Miramon", "cantidad": 60, "sucursal": "Bolívar"}, {"vendedor": "Sergio Lopez", "cantidad": 48, "sucursal": "Belgrano"}, {"vendedor": "Marcelo Bollani", "cantidad": 24, "sucursal": "Belgrano"}, {"vendedor": "Mariano Esandi", "cantidad": 20, "sucursal": "Tandil"}, {"vendedor": "Ricardo Silvestro", "cantidad": 18, "sucursal": "Olavarría"}, {"vendedor": "Claudino De Dominicis", "cantidad": -1, "sucursal": "Azul"}, {"vendedor": "Agustin Oliverio", "cantidad": -7, "sucursal": "Azul"}];
 const RAW_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "presentacion": "Bolsa (40kg)", "fecha": "2026-01-02", "cantidad": 10320, "lote": "305P8JYP2", "vto": "2028-12-30", "deposito": "AZUL CYO", "campania_nueva": false}];
 const SALES_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "facturado": -800, "pendiente": 0, "vendido": -800}, {"sucursal": "Belgrano", "hibrido": "4124 SE", "facturado": -800, "pendiente": 0, "vendido": -800}, {"sucursal": "Bolívar", "hibrido": "4124 SE", "facturado": 3200, "pendiente": 0, "vendido": 3200}, {"sucursal": "Olavarría", "hibrido": "53722 SE", "facturado": 1040, "pendiente": 0, "vendido": 1040}, {"sucursal": "Tandil", "hibrido": "3325 SE", "facturado": -4000, "pendiente": 0, "vendido": -4000}, {"sucursal": "Tandil", "hibrido": "53722 SE", "facturado": 1240, "pendiente": 0, "vendido": 1240}];
+const CYO = [{"hibrido": "8181", "stockCyo": 1730.0, "pendLiq": 89.0, "stockCyoNeto": 1641.0}, {"hibrido": "8380", "stockCyo": 5048.0, "pendLiq": 1160.0, "stockCyoNeto": 3888.0}, {"hibrido": "8421", "stockCyo": 235.0, "pendLiq": 148.0, "stockCyoNeto": 87.0}, {"hibrido": "8472", "stockCyo": 2911.0, "pendLiq": 1637.0, "stockCyoNeto": 1274.0}, {"hibrido": "NEXT 22.6", "stockCyo": 463.0, "pendLiq": 179.0, "stockCyoNeto": 284.0}, {"hibrido": "RFG 22", "stockCyo": 691.0, "pendLiq": 437.0, "stockCyoNeto": 254.0}];
 const SUCS_ALL = ['Azul','Belgrano','Bolívar','Olavarría','Tandil'];
 const OBJETIVO_SOJA_BOLSAS = 15000;
 const OBJETIVO_SOJA_KG = OBJETIVO_SOJA_BOLSAS * 40;
@@ -1683,11 +1702,45 @@ function renderRankingVendedor(){
   });
 }
 
+let cyoSort = { key:'stockCyoNeto', dir:1 };
+function renderCyoTable(){
+  const sorted = [...CYO].sort((a,b)=>{
+    let av=a[cyoSort.key], bv=b[cyoSort.key];
+    if(typeof av === 'string'){
+      if(av<bv) return -1*cyoSort.dir;
+      if(av>bv) return 1*cyoSort.dir;
+      return 0;
+    }
+    return (av-bv)*cyoSort.dir;
+  });
+  const tbody = document.getElementById('cyo-tbody');
+  tbody.innerHTML = '';
+  sorted.forEach(r=>{
+    const tr = document.createElement('tr');
+    const cls = r.stockCyoNeto<0?'neg':(r.stockCyoNeto>0?'pos':'');
+    tr.innerHTML = `<td>${r.hibrido}</td>
+      <td class="num">${r.stockCyo.toLocaleString('es-AR')}</td>
+      <td class="num">${r.pendLiq.toLocaleString('es-AR')}</td>
+      <td class="num ${cls}">${r.stockCyoNeto.toLocaleString('es-AR')}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+document.querySelectorAll('#cyo-table thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(cyoSort.key===key){ cyoSort.dir *= -1; } else { cyoSort.key=key; cyoSort.dir=1; }
+    document.querySelectorAll('#cyo-table thead th .arrow').forEach(a=>a.textContent='');
+    th.querySelector('.arrow').textContent = cyoSort.dir===1?'▲':'▼';
+    renderCyoTable();
+  });
+});
+
 function renderVentasTab(){
   const matrix = applyVtFilters(buildVentasMatrix());
   renderVtKPIs(matrix);
   renderVtCallout(matrix);
   renderHibridoSummary();
+  renderCyoTable();
   renderRankingSucursal();
   renderRankingVendedor();
   renderVtCompareChart(matrix);
