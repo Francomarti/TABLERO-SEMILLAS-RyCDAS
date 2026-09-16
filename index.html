@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Maíz — Campaña 2026/27 · RyCDAS</title>
+<title>Semillas — Campaña 2026/27 · RyCDAS</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap');
 
@@ -65,6 +65,28 @@
   header.top .meta b{color:var(--gold-soft);font-weight:600;}
 
   /* Tabs */
+  nav.crop-tabs{
+    display:flex;
+    gap:10px;
+    margin:26px 0 22px;
+    flex-wrap:wrap;
+  }
+  nav.crop-tabs button{
+    background:var(--bg-panel);
+    border:1px solid var(--line);
+    color:var(--text-muted);
+    font-family:'Fraunces',serif;
+    font-weight:600;
+    font-size:15px;
+    padding:11px 22px;
+    border-radius:4px;
+    cursor:pointer;
+  }
+  nav.crop-tabs button:hover:not(.active){border-color:var(--gold);color:var(--gold-soft);}
+  nav.crop-tabs button.active{background:var(--gold);color:var(--bg-base);border-color:var(--gold);}
+  .croppanel{display:none;}
+  .croppanel.active{display:block;}
+
   nav.tabs{
     display:flex;
     gap:4px;
@@ -90,6 +112,8 @@
 
   .tabpanel{display:none;}
   .tabpanel.active{display:block;}
+  .tabpanel-gir{display:none;}
+  .tabpanel-gir.active{display:block;}
 
   /* KPI row */
   .kpis{
@@ -286,12 +310,24 @@
     <div class="brand">
       <img src="data:image/png;base64,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" alt="Rindes y Cultivos DAS">
       <div>
-        <h1>Maíz — Campaña 2026/27</h1>
-        <div class="sub">Seguimiento de recepción de híbridos de maíz por sucursal, cruzado contra el forecast comercial armado por cliente.</div>
+        <h1>Semillas — Campaña 2026/27</h1>
+        <div class="sub">Seguimiento de recepción, ventas y objetivos por cultivo y por sucursal.</div>
       </div>
     </div>
-    <div class="meta">RyCDAS · Brevant / Corteva<br>Recepción al <b id="meta-date">—</b><br><span id="meta-rows">—</span> movimientos registrados</div>
+    <div class="meta">RyCDAS · Brevant / Corteva<br>Recepción maíz al <b id="meta-date">—</b><br><span id="meta-rows">—</span> movimientos registrados</div>
   </header>
+
+  <nav class="crop-tabs">
+    <button class="crop-btn active" data-crop="maiz">Maíz</button>
+    <button class="crop-btn" data-crop="girasol">Girasol</button>
+    <button class="crop-btn" data-crop="soja">Soja</button>
+    <button class="crop-btn" data-crop="global">Global</button>
+  </nav>
+
+  <!-- ############################################################ -->
+  <!-- CROP: MAÍZ                                                    -->
+  <!-- ############################################################ -->
+  <div class="croppanel active" id="crop-maiz">
 
   <nav class="tabs">
     <button class="tab-btn active" data-tab="recibido">Recibido</button>
@@ -597,6 +633,259 @@
 
   </div>
 
+  </div><!-- /crop-maiz -->
+
+  <!-- ############################################################ -->
+  <!-- CROP: GIRASOL                                                 -->
+  <!-- ############################################################ -->
+  <div class="croppanel" id="crop-girasol">
+
+  <nav class="tabs">
+    <button class="tab-btn-gir active" data-tab="gir-recibido">Recibido</button>
+    <button class="tab-btn-gir" data-tab="gir-ventas">Ventas</button>
+    <button class="tab-btn-gir" data-tab="gir-objetivo">Objetivo</button>
+  </nav>
+
+  <!-- ===== GIRASOL: RECIBIDO ===== -->
+  <div class="tabpanel-gir active" id="tab-gir-recibido">
+
+    <div class="kpis" id="gir-kpis"></div>
+
+    <div class="filters">
+      <span class="flabel">Sucursal</span>
+      <select id="gir-f-sucursal"><option value="">Todas</option></select>
+      <span class="flabel">Híbrido</span>
+      <select id="gir-f-hibrido"><option value="">Todos</option></select>
+      <button class="reset-btn" id="gir-reset">Limpiar filtros</button>
+    </div>
+
+    <div class="grid-2">
+      <section class="panel">
+        <h2>Bolsas netas por sucursal</h2>
+        <div class="panel-sub">Suma de cantidades recibidas menos transferencias, por sucursal</div>
+        <div class="barlist" id="gir-chart-sucursal"></div>
+      </section>
+      <section class="panel">
+        <h2>Bolsas netas por híbrido</h2>
+        <div class="panel-sub">Agrupado por híbrido base, sin abrir por generación de semilla</div>
+        <div class="barlist" id="gir-chart-hibrido"></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Recepción acumulada en el tiempo</h2>
+      <div class="panel-sub">Bolsas netas acumuladas desde el inicio de la campaña</div>
+      <div class="chart-wrap">
+        <svg id="gir-timeline" viewBox="0 0 1080 220" preserveAspectRatio="none"></svg>
+        <div class="tl-tooltip" id="gir-tl-tooltip"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Detalle de movimientos</h2>
+      <div class="panel-sub">Los valores negativos son salidas por transferencia entre depósitos</div>
+      <div class="table-scroll">
+        <table id="gir-table">
+          <thead>
+            <tr>
+              <th data-key="fecha">Fecha<span class="arrow"></span></th>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="generacion">Generación<span class="arrow"></span></th>
+              <th data-key="deposito">Depósito<span class="arrow"></span></th>
+              <th data-key="cantidad" style="text-align:right">Cantidad<span class="arrow"></span></th>
+              <th data-key="lote">Lote<span class="arrow"></span></th>
+              <th data-key="vto">Vto. partida<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="gir-tbody"></tbody>
+        </table>
+      </div>
+      <div class="rowcount" id="gir-rowcount"></div>
+    </section>
+
+  </div>
+
+  <!-- ===== GIRASOL: VENTAS ===== -->
+  <div class="tabpanel-gir" id="tab-gir-ventas">
+
+    <div class="kpis" id="girv-kpis"></div>
+
+    <section class="panel">
+      <h2>Resumen por híbrido — todas las sucursales</h2>
+      <div class="panel-sub">Recibido vs. vendido, para ver stock disponible por híbrido</div>
+      <div class="table-scroll">
+        <table id="girv-hs-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="recibido" style="text-align:right">Recibido<span class="arrow"></span></th>
+              <th data-key="vendido" style="text-align:right">Vendido<span class="arrow"></span></th>
+              <th data-key="stock" style="text-align:right">Stock disp.<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="girv-hs-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <section class="panel">
+        <h2>Ranking por sucursal</h2>
+        <div class="panel-sub">Total vendido 2026 (facturado + pendiente de facturar)</div>
+        <div class="barlist" id="girv-rk-sucursal"></div>
+      </section>
+      <section class="panel">
+        <h2>Ranking por vendedor</h2>
+        <div class="panel-sub">Bolsas facturadas — el pendiente de facturar no trae vendedor asignado</div>
+        <div class="barlist" id="girv-rk-vendedor"></div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- ===== GIRASOL: OBJETIVO ===== -->
+  <div class="tabpanel-gir" id="tab-gir-objetivo">
+
+    <div class="kpis" id="girob-kpis"></div>
+
+    <section class="panel">
+      <h2>Avance real de ventas 2026</h2>
+      <div class="panel-sub">Lo efectivamente vendido a la fecha, comparado contra el objetivo anual</div>
+      <div id="girav-chart"></div>
+      <div class="legend-line">
+        <span><span class="legend-swatch" style="background:var(--gold)"></span>Vendido 2026</span>
+        <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo 2026</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Forecast vs. Objetivo</h2>
+      <div class="panel-sub">Cuánto se forecasteó para cada sucursal comparado con el objetivo anual — planificación, no ventas reales</div>
+      <div id="girob-chart"></div>
+      <div class="legend-line">
+        <span><span class="legend-swatch" style="background:var(--rust)"></span>Brecha grande (&gt;20%)</span>
+        <span><span class="legend-swatch" style="background:var(--gold)"></span>Brecha moderada (5–20%)</span>
+        <span><span class="legend-swatch" style="background:var(--green-accent)"></span>Forecast alineado o por encima</span>
+        <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo 2026</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Detalle por sucursal</h2>
+      <div class="table-scroll">
+        <table id="girob-table">
+          <thead>
+            <tr>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="ventas2026" style="text-align:right">Vendido 2026<span class="arrow"></span></th>
+              <th data-key="pctObjVendido" style="text-align:right">% objetivo vendido<span class="arrow"></span></th>
+              <th data-key="vsForecast" style="text-align:right">Vs. forecast<span class="arrow"></span></th>
+              <th data-key="vsObjetivo" style="text-align:right">Vs. objetivo<span class="arrow"></span></th>
+              <th data-key="forecastActual" style="text-align:right">Forecast<span class="arrow"></span></th>
+              <th data-key="objetivo" style="text-align:right">Objetivo 2026<span class="arrow"></span></th>
+              <th data-key="ventas2025" style="text-align:right">Vendido 2025<span class="arrow"></span></th>
+              <th data-key="vsVentas2025" style="text-align:right">Vs. 2025<span class="arrow"></span></th>
+              <th data-key="estado">Estado<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="girob-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  </div><!-- /crop-girasol -->
+
+  <!-- ############################################################ -->
+  <!-- CROP: SOJA                                                    -->
+  <!-- ############################################################ -->
+  <div class="croppanel" id="crop-soja">
+
+    <div class="kpis" id="soja-kpis"></div>
+
+    <div class="callout" style="border-color:var(--blue-accent);background:rgba(110,155,196,.08);color:#B9D3E8;">
+      <b>Datos limitados:</b> a diferencia de maíz y girasol, todavía casi no hay movimientos de recepción registrados para soja (un solo ingreso, 258 unidades en Azul), no hay forecast ni objetivo anual cargado, y las cantidades están en Kg (big bags de 800 kg), no en bolsas — por eso esta pestaña es más simple.
+    </div>
+
+    <section class="panel">
+      <h2>Recepción registrada</h2>
+      <div class="panel-sub">Movimientos con depósito asignado — el resto son facturas de compra a Corteva sin movimiento físico todavía</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Sucursal</th><th>Híbrido</th><th>Presentación</th>
+              <th style="text-align:right">Cantidad (Kg)</th><th>Lote</th><th>Depósito</th>
+            </tr>
+          </thead>
+          <tbody id="soja-rec-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Ventas por híbrido y sucursal</h2>
+      <div class="panel-sub">Facturado + pendiente de facturar, en Kg. Valores negativos indican notas de crédito superando lo facturado en el período</div>
+      <div class="table-scroll">
+        <table id="soja-sales-table">
+          <thead>
+            <tr>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="facturado" style="text-align:right">Facturado<span class="arrow"></span></th>
+              <th data-key="pendiente" style="text-align:right">Pend. facturar<span class="arrow"></span></th>
+              <th data-key="vendido" style="text-align:right">Vendido<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="soja-sales-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div><!-- /crop-soja -->
+
+  <!-- ############################################################ -->
+  <!-- CROP: GLOBAL                                                  -->
+  <!-- ############################################################ -->
+  <div class="croppanel" id="crop-global">
+
+    <section class="panel">
+      <h2>Comparación entre cultivos</h2>
+      <div class="panel-sub">Maíz y girasol en bolsas; soja en Kg — no se suman entre sí por tratarse de unidades distintas</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Cultivo</th>
+              <th style="text-align:right">Recibido</th>
+              <th style="text-align:right">Vendido 2026</th>
+              <th style="text-align:right">Objetivo 2026</th>
+              <th style="text-align:right">% objetivo vendido</th>
+              <th>Unidad</th>
+            </tr>
+          </thead>
+          <tbody id="glob-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="grid-2">
+      <section class="panel">
+        <h2>% del objetivo 2026 vendido</h2>
+        <div class="panel-sub">Maíz vs. girasol — soja no tiene objetivo cargado todavía</div>
+        <div id="glob-chart"></div>
+      </section>
+      <section class="panel">
+        <h2>Ranking de vendedores — todos los cultivos</h2>
+        <div class="panel-sub">Suma de bolsas/Kg facturados en maíz y girasol (soja no tiene vendedor asignado en los pendientes)</div>
+        <div class="barlist" id="glob-rk-vendedor"></div>
+      </section>
+    </div>
+
+  </div><!-- /crop-global -->
+
   <footer>
     <span>RyCDAS — Rindes y Cultivos DAS</span>
     <span>Tandil · Azul · Olavarría · Belgrano · Bolívar</span>
@@ -610,7 +899,14 @@ const FORECAST = [{"sucursal": "Azul", "hibrido": "NEXT 22.6", "forecast": 1078.
 const SALES = [{"sucursal": "Azul", "hibrido": "8181", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Azul", "hibrido": "8380", "facturado": 707.0, "pendiente": 304.0, "vendido": 1011.0}, {"sucursal": "Azul", "hibrido": "8421", "facturado": 273.0, "pendiente": 0.0, "vendido": 273.0}, {"sucursal": "Azul", "hibrido": "8472", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Azul", "hibrido": "NEXT 22.6", "facturado": 226.0, "pendiente": 145.0, "vendido": 371.0}, {"sucursal": "Azul", "hibrido": "RFG 22", "facturado": 263.0, "pendiente": 228.0, "vendido": 491.0}, {"sucursal": "Belgrano", "hibrido": "8181", "facturado": 221.0, "pendiente": 0.0, "vendido": 221.0}, {"sucursal": "Belgrano", "hibrido": "8380", "facturado": 539.0, "pendiente": 0.0, "vendido": 539.0}, {"sucursal": "Belgrano", "hibrido": "8421", "facturado": 153.0, "pendiente": 0.0, "vendido": 153.0}, {"sucursal": "Belgrano", "hibrido": "8472", "facturado": 538.0, "pendiente": 0.0, "vendido": 538.0}, {"sucursal": "Belgrano", "hibrido": "NEXT 22.6", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Belgrano", "hibrido": "RFG 22", "facturado": 108.0, "pendiente": 11.0, "vendido": 119.0}, {"sucursal": "Bolívar", "hibrido": "8181", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Bolívar", "hibrido": "8380", "facturado": 508.0, "pendiente": 54.0, "vendido": 562.0}, {"sucursal": "Bolívar", "hibrido": "8421", "facturado": 26.0, "pendiente": 116.0, "vendido": 142.0}, {"sucursal": "Bolívar", "hibrido": "8472", "facturado": 1124.0, "pendiente": 190.0, "vendido": 1314.0}, {"sucursal": "Bolívar", "hibrido": "NEXT 22.6", "facturado": 2.0, "pendiente": 0.0, "vendido": 2.0}, {"sucursal": "Bolívar", "hibrido": "RFG 22", "facturado": 88.0, "pendiente": 4.0, "vendido": 92.0}, {"sucursal": "Olavarría", "hibrido": "8181", "facturado": 254.0, "pendiente": 35.0, "vendido": 289.0}, {"sucursal": "Olavarría", "hibrido": "8380", "facturado": 355.0, "pendiente": 56.0, "vendido": 411.0}, {"sucursal": "Olavarría", "hibrido": "8421", "facturado": 10.0, "pendiente": 0.0, "vendido": 10.0}, {"sucursal": "Olavarría", "hibrido": "8472", "facturado": 275.0, "pendiente": 7.0, "vendido": 282.0}, {"sucursal": "Olavarría", "hibrido": "NEXT 22.6", "facturado": 101.0, "pendiente": 72.0, "vendido": 173.0}, {"sucursal": "Olavarría", "hibrido": "RFG 22", "facturado": 73.0, "pendiente": 17.0, "vendido": 90.0}, {"sucursal": "Tandil", "hibrido": "8181", "facturado": 80.0, "pendiente": 22.0, "vendido": 102.0}, {"sucursal": "Tandil", "hibrido": "8380", "facturado": 976.0, "pendiente": 201.0, "vendido": 1177.0}, {"sucursal": "Tandil", "hibrido": "8421", "facturado": 16.0, "pendiente": 0.0, "vendido": 16.0}, {"sucursal": "Tandil", "hibrido": "8472", "facturado": 192.0, "pendiente": 56.0, "vendido": 248.0}, {"sucursal": "Tandil", "hibrido": "NEXT 22.6", "facturado": 90.0, "pendiente": 0.0, "vendido": 90.0}, {"sucursal": "Tandil", "hibrido": "RFG 22", "facturado": 239.0, "pendiente": 13.0, "vendido": 252.0}];
 const OA = [{"hibrido": "8380", "oa_pendiente": 0}, {"hibrido": "8472", "oa_pendiente": 697}, {"hibrido": "RFG 22", "oa_pendiente": 100}];
 const OBJETIVO = [{"sucursal": "Tandil", "objetivo": 4802, "forecastActual": 3782, "ventas2025": 4678, "brecha": -1020, "vs2025": -896, "ventas2026": 1885.0}, {"sucursal": "Azul", "objetivo": 5082, "forecastActual": 4514, "ventas2025": 4235, "brecha": -568, "vs2025": 279, "ventas2026": 2146.0}, {"sucursal": "Bolívar", "objetivo": 2716, "forecastActual": 2614, "ventas2025": 2198, "brecha": -102, "vs2025": 416, "ventas2026": 2227.0}, {"sucursal": "Olavarría", "objetivo": 2952, "forecastActual": 2361, "ventas2025": 2460, "brecha": -591, "vs2025": -99, "ventas2026": 1255.0}, {"sucursal": "Belgrano", "objetivo": 2798, "forecastActual": 2130, "ventas2025": 2244, "brecha": -668, "vs2025": -114, "ventas2026": 1560.0}];
-const VENDEDORES = [{"vendedor": "Fabricio Perez", "cantidad": 1603, "sucursal": "Bolívar"}, {"vendedor": "Marcelo Bollani", "cantidad": 922, "sucursal": "Belgrano"}, {"vendedor": "Fabricio Lacoste", "cantidad": 815, "sucursal": "Olavarría"}, {"vendedor": "Sixto Fernandez", "cantidad": 652, "sucursal": "Tandil"}, {"vendedor": "Sergio Lopez", "cantidad": 627, "sucursal": "Belgrano"}, {"vendedor": "Agustin Oliverio", "cantidad": 599, "sucursal": "Azul"}, {"vendedor": "Veronica Flores", "cantidad": 553, "sucursal": "Tandil"}, {"vendedor": "Franco Martignoni", "cantidad": 550, "sucursal": "Azul"}, {"vendedor": "Barbara Saez", "cantidad": 278, "sucursal": "Azul"}, {"vendedor": "Mariano Esandi", "cantidad": 274, "sucursal": "Tandil"}, {"vendedor": "Ricardo Silvestro", "cantidad": 253, "sucursal": "Olavarría"}, {"vendedor": "Luciano Miramon", "cantidad": 175, "sucursal": "Bolívar"}, {"vendedor": "Bruno Segovia", "cantidad": 114, "sucursal": "Tandil"}, {"vendedor": "Claudino De Dominicis", "cantidad": 42, "sucursal": "Azul"}, {"vendedor": "Mariano Ruiz", "cantidad": 15, "sucursal": "Bolívar"}];
+const VENDEDORES = [{"vendedor": "Fabricio Perez", "cantidad": 1603, "sucursal": "Bolivar"}, {"vendedor": "Marcelo Bollani", "cantidad": 922, "sucursal": "General Belgrano"}, {"vendedor": "Fabricio Lacoste", "cantidad": 815, "sucursal": "Olavarria"}, {"vendedor": "Sixto Fernandez", "cantidad": 652, "sucursal": "Tandil"}, {"vendedor": "Sergio Lopez", "cantidad": 627, "sucursal": "General Belgrano"}, {"vendedor": "Agustin Oliverio", "cantidad": 599, "sucursal": "Azul"}, {"vendedor": "Veronica Flores", "cantidad": 553, "sucursal": "Tandil"}, {"vendedor": "Franco Martignoni", "cantidad": 550, "sucursal": "Azul"}, {"vendedor": "Barbara Saez", "cantidad": 278, "sucursal": "Azul"}, {"vendedor": "Mariano Esandi", "cantidad": 274, "sucursal": "Tandil"}, {"vendedor": "Ricardo Silvestro", "cantidad": 253, "sucursal": "Olavarria"}, {"vendedor": "Luciano Miramon", "cantidad": 175, "sucursal": "Bolivar"}, {"vendedor": "Bruno Segovia", "cantidad": 114, "sucursal": "Tandil"}, {"vendedor": "Claudino De Dominicis", "cantidad": 42, "sucursal": "Azul"}, {"vendedor": "Mariano Ruiz", "cantidad": 15, "sucursal": "Bolivar"}];
+const RAW_GIR = [{"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-04-20", "cantidad": -16, "lote": "6959925", "vto": "2028-01-01", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-04-20", "cantidad": 16, "lote": "6959927", "vto": "2027-09-30", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Olavarría", "hibrido": "MG 360", "generacion": "G3", "fecha": "2026-05-04", "cantidad": -1, "lote": "C336M8ILP1", "vto": "2024-10-11", "deposito": "OLAVARRIA PROPIO"}, {"sucursal": "Olavarría", "hibrido": "MG 360", "generacion": "G3", "fecha": "2026-05-04", "cantidad": -1, "lote": "L240N52SP1", "vto": "2024-03-07", "deposito": "OLAVARRIA PROPIO"}, {"sucursal": "Olavarría", "hibrido": "MG 360", "generacion": "G3", "fecha": "2026-05-04", "cantidad": 1, "lote": "L240N46SP2", "vto": "2025-07-23", "deposito": "OLAVARRIA PROPIO"}, {"sucursal": "Olavarría", "hibrido": "MG 360", "generacion": "G3", "fecha": "2026-05-04", "cantidad": 1, "lote": "C336K63ZP1", "vto": "2020-12-09", "deposito": "OLAVARRIA PROPIO"}, {"sucursal": "Azul", "hibrido": "4225 CL", "generacion": "G2", "fecha": "2026-05-11", "cantidad": -28, "lote": "6969838", "vto": "2027-09-19", "deposito": "AZUL PROPIO"}, {"sucursal": "Azul", "hibrido": "4225 CL", "generacion": "G2", "fecha": "2026-05-11", "cantidad": 28, "lote": "6959838", "vto": "2027-09-19", "deposito": "AZUL PROPIO"}, {"sucursal": "Bolívar", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-05-27", "cantidad": -62, "lote": "6959906", "vto": "2027-09-19", "deposito": "BOLIVAR PROPIO"}, {"sucursal": "Bolívar", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-05-27", "cantidad": 62, "lote": "6959925", "vto": "2028-01-01", "deposito": "BOLIVAR PROPIO"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-06-29", "cantidad": 450, "lote": "7422890", "vto": "2028-01-01", "deposito": "TANDIL PROPIO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-06-29", "cantidad": 60, "lote": "7422893", "vto": "2028-01-01", "deposito": "TANDIL PROPIO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-06-29", "cantidad": 90, "lote": "7429710", "vto": "2028-01-01", "deposito": "TANDIL PROPIO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "L210 CP", "generacion": "G3E", "fecha": "2026-06-30", "cantidad": 142, "lote": "7396244", "vto": "2028-01-01", "deposito": "TANDIL PROPIO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "L210 CP", "generacion": "G3", "fecha": "2026-07-20", "cantidad": 408, "lote": "7393634", "vto": "2028-01-01", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Azul", "hibrido": "L210 CP", "generacion": "G1", "fecha": "2026-07-20", "cantidad": 37, "lote": "7396239", "vto": "2028-07-20", "deposito": "AZUL CYO"}, {"sucursal": "Tandil", "hibrido": "H280 CL AO", "generacion": "G3", "fecha": "2026-08-10", "cantidad": 123, "lote": "7439203", "vto": "2028-08-10", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Azul", "hibrido": "H280 CL AO", "generacion": "G2", "fecha": "2026-08-10", "cantidad": 216, "lote": "7436462", "vto": "2028-08-10", "deposito": "AZUL CYO"}, {"sucursal": "Azul", "hibrido": "H280 CL AO", "generacion": "G2", "fecha": "2026-08-10", "cantidad": 16, "lote": "7439202", "vto": "2028-08-10", "deposito": "AZUL CYO"}, {"sucursal": "Tandil", "hibrido": "H280 CL AO", "generacion": "G2", "fecha": "2026-08-27", "cantidad": 345, "lote": "7436462", "vto": "2028-01-01", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Olavarría", "hibrido": "4225 CL", "generacion": "G3E", "fecha": "2026-09-03", "cantidad": 500, "lote": "7475957", "vto": "2028-09-03", "deposito": "OLAVARRIA CYO"}, {"sucursal": "Olavarría", "hibrido": "4225 CL", "generacion": "G1", "fecha": "2026-09-04", "cantidad": 290, "lote": "7556117", "vto": "2028-09-04", "deposito": "OLAVARRIA CYO"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G2", "fecha": "2026-09-07", "cantidad": 650, "lote": "7422850", "vto": "2028-01-01", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Olavarría", "hibrido": "4225 CL", "generacion": "G1", "fecha": "2026-09-07", "cantidad": 360, "lote": "7556117", "vto": "2028-09-07", "deposito": "OLAVARRIA CYO"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-09-12", "cantidad": 1, "lote": "7422887", "vto": "2028-01-01", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-09-12", "cantidad": 1, "lote": "7475888", "vto": "2028-01-01", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-09-12", "cantidad": 540, "lote": "7550422", "vto": "2028-01-01", "deposito": "TANDIL CYO BASE AEREA"}, {"sucursal": "Tandil", "hibrido": "4225 CL", "generacion": "G3", "fecha": "2026-09-12", "cantidad": 458, "lote": "7550423", "vto": "2028-09-12", "deposito": "TANDIL CYO BASE AEREA"}];
+const SALES_GIR = [{"sucursal": "Azul", "hibrido": "4225 CL", "facturado": 17.0, "pendiente": 0.0, "vendido": 17.0}, {"sucursal": "Azul", "hibrido": "L210 CP", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Azul", "hibrido": "H280 CL AO", "facturado": 87.0, "pendiente": 0.0, "vendido": 87.0}, {"sucursal": "Azul", "hibrido": "MG 360", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Azul", "hibrido": "NTO 2.5 CP", "facturado": -1.0, "pendiente": 0.0, "vendido": -1.0}, {"sucursal": "Belgrano", "hibrido": "4225 CL", "facturado": 97.0, "pendiente": 0.0, "vendido": 97.0}, {"sucursal": "Belgrano", "hibrido": "L210 CP", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Belgrano", "hibrido": "H280 CL AO", "facturado": 0.0, "pendiente": 20.0, "vendido": 20.0}, {"sucursal": "Belgrano", "hibrido": "MG 360", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Belgrano", "hibrido": "NTO 2.5 CP", "facturado": -25.0, "pendiente": 0.0, "vendido": -25.0}, {"sucursal": "Bolívar", "hibrido": "4225 CL", "facturado": 255.0, "pendiente": 24.0, "vendido": 279.0}, {"sucursal": "Bolívar", "hibrido": "L210 CP", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Bolívar", "hibrido": "H280 CL AO", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Bolívar", "hibrido": "MG 360", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Bolívar", "hibrido": "NTO 2.5 CP", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Olavarría", "hibrido": "4225 CL", "facturado": 47.0, "pendiente": 66.0, "vendido": 113.0}, {"sucursal": "Olavarría", "hibrido": "L210 CP", "facturado": 38.0, "pendiente": 0.0, "vendido": 38.0}, {"sucursal": "Olavarría", "hibrido": "H280 CL AO", "facturado": 30.0, "pendiente": 0.0, "vendido": 30.0}, {"sucursal": "Olavarría", "hibrido": "MG 360", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Olavarría", "hibrido": "NTO 2.5 CP", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Tandil", "hibrido": "4225 CL", "facturado": 199.0, "pendiente": 77.0, "vendido": 276.0}, {"sucursal": "Tandil", "hibrido": "L210 CP", "facturado": 116.0, "pendiente": 0.0, "vendido": 116.0}, {"sucursal": "Tandil", "hibrido": "H280 CL AO", "facturado": 316.0, "pendiente": 48.0, "vendido": 364.0}, {"sucursal": "Tandil", "hibrido": "MG 360", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}, {"sucursal": "Tandil", "hibrido": "NTO 2.5 CP", "facturado": 0.0, "pendiente": 0.0, "vendido": 0.0}];
+const OBJETIVO_GIR = [{"sucursal": "Tandil", "objetivo": 1771, "forecastActual": 1121, "ventas2025": 1606, "ventas2026": 756.0}, {"sucursal": "Azul", "objetivo": 797, "forecastActual": 465, "ventas2025": 660, "ventas2026": 103.0}, {"sucursal": "Bolívar", "objetivo": 430, "forecastActual": 680, "ventas2025": 359, "ventas2026": 279.0}, {"sucursal": "Olavarría", "objetivo": 474, "forecastActual": 80, "ventas2025": 395, "ventas2026": 181.0}, {"sucursal": "Belgrano", "objetivo": 466, "forecastActual": 270, "ventas2025": 387, "ventas2026": 92.0}];
+const VENDEDORES_GIR = [{"vendedor": "Sixto Fernandez", "cantidad": 385, "sucursal": "Tandil"}, {"vendedor": "Fabricio Perez", "cantidad": 195, "sucursal": "Bolívar"}, {"vendedor": "Veronica Flores", "cantidad": 140, "sucursal": "Tandil"}, {"vendedor": "Barbara Saez", "cantidad": 111, "sucursal": "Azul"}, {"vendedor": "Fabricio Lacoste", "cantidad": 97, "sucursal": "Olavarría"}, {"vendedor": "Bruno Segovia", "cantidad": 86, "sucursal": "Tandil"}, {"vendedor": "Luciano Miramon", "cantidad": 60, "sucursal": "Bolívar"}, {"vendedor": "Sergio Lopez", "cantidad": 48, "sucursal": "Belgrano"}, {"vendedor": "Marcelo Bollani", "cantidad": 24, "sucursal": "Belgrano"}, {"vendedor": "Mariano Esandi", "cantidad": 20, "sucursal": "Tandil"}, {"vendedor": "Ricardo Silvestro", "cantidad": 18, "sucursal": "Olavarría"}, {"vendedor": "Claudino De Dominicis", "cantidad": -1, "sucursal": "Azul"}, {"vendedor": "Agustin Oliverio", "cantidad": -7, "sucursal": "Azul"}];
+const RAW_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "presentacion": "Bolsa", "fecha": "2026-01-02", "cantidad": 258, "lote": "305P8JYP2", "vto": "2028-12-30", "deposito": "AZUL CYO"}];
+const SALES_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "facturado": -800, "pendiente": 0.0, "vendido": -800.0}, {"sucursal": "Belgrano", "hibrido": "4124 SE", "facturado": -800, "pendiente": 0.0, "vendido": -800.0}, {"sucursal": "Bolívar", "hibrido": "4124 SE", "facturado": 3200, "pendiente": 0.0, "vendido": 3200.0}, {"sucursal": "Olavarría", "hibrido": "53722 SE", "facturado": 26, "pendiente": 0.0, "vendido": 26.0}, {"sucursal": "Tandil", "hibrido": "3325 SE", "facturado": -100, "pendiente": 0.0, "vendido": -100.0}, {"sucursal": "Tandil", "hibrido": "53722 SE", "facturado": -749, "pendiente": 0.0, "vendido": -749.0}];
+const SUCS_ALL = ['Azul','Belgrano','Bolívar','Olavarría','Tandil'];
 
 // ============================================================
 // TAB SWITCHING
@@ -620,6 +916,24 @@ document.querySelectorAll('.tab-btn').forEach(btn=>{
     if(btn.disabled) return;
     document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.tabpanel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('.crop-btn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.crop-btn').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.croppanel').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('crop-'+btn.dataset.crop).classList.add('active');
+  });
+});
+
+document.querySelectorAll('.tab-btn-gir').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn-gir').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tabpanel-gir').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
   });
@@ -1532,6 +1846,630 @@ function renderObjetivoTab(){
   renderObTable(matrix);
 }
 renderObjetivoTab();
+
+// ============================================================
+// GIRASOL: RECIBIDO
+// ============================================================
+let girFilters = { sucursal:'', hibrido:'' };
+let girSort = { key:'fecha', dir:-1 };
+
+fillSelect('gir-f-sucursal', unique(RAW_GIR,'sucursal'));
+fillSelect('gir-f-hibrido', unique(RAW_GIR,'hibrido'));
+
+['sucursal','hibrido'].forEach(k=>{
+  document.getElementById('gir-f-'+k).addEventListener('change', e=>{
+    girFilters[k] = e.target.value;
+    renderGirRecibidoTab();
+  });
+});
+document.getElementById('gir-reset').addEventListener('click', ()=>{
+  girFilters = { sucursal:'', hibrido:'' };
+  document.getElementById('gir-f-sucursal').value='';
+  document.getElementById('gir-f-hibrido').value='';
+  renderGirRecibidoTab();
+});
+
+function applyGirFilters(){
+  return RAW_GIR.filter(r=>
+    (!girFilters.sucursal || r.sucursal===girFilters.sucursal) &&
+    (!girFilters.hibrido || r.hibrido===girFilters.hibrido)
+  );
+}
+
+function renderGirKPIs(data){
+  const total = data.reduce((s,r)=>s+r.cantidad,0);
+  const positivos = data.filter(r=>r.cantidad>0).reduce((s,r)=>s+r.cantidad,0);
+  const transferencias = data.filter(r=>r.cantidad<0).reduce((s,r)=>s+Math.abs(r.cantidad),0);
+  const sucursalTotals = {};
+  data.forEach(r=>{ sucursalTotals[r.sucursal] = (sucursalTotals[r.sucursal]||0) + r.cantidad; });
+  const faltantes = SUCS_ALL.filter(s=>!(s in sucursalTotals) || sucursalTotals[s]<=0);
+  const hibridosActivos = unique(data,'hibrido').length;
+
+  const kpis = document.getElementById('gir-kpis');
+  kpis.innerHTML = '';
+  const cards = [
+    { label:'Total neto recibido', value: total.toLocaleString('es-AR'), unit:'bolsas', foot: positivos.toLocaleString('es-AR')+' bolsas ingresadas brutas', alert:false },
+    { label:'Movido en transferencias', value: transferencias.toLocaleString('es-AR'), unit:'bolsas', foot:'entre depósitos CYO / propio', alert:false },
+    { label:'Híbridos con movimiento', value: hibridosActivos, unit:'de '+unique(RAW_GIR,'hibrido').length, foot:'en el filtro actual', alert:false },
+    { label:'Sucursales sin recepción neta', value: faltantes.length, unit:'de '+SUCS_ALL.length, foot: faltantes.length ? faltantes.join(', ') : 'todas recibieron stock', alert: faltantes.length>0 },
+  ];
+  cards.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'kpi' + (c.alert?' alert':'');
+    div.innerHTML = `<div class="label">${c.label}</div><div class="value">${c.value}<small>${c.unit}</small></div><div class="foot">${c.foot}</div>`;
+    kpis.appendChild(div);
+  });
+}
+
+function renderGirSucursalChart(data){
+  const totals = {};
+  SUCS_ALL.forEach(s=>totals[s]=0);
+  data.forEach(r=>{ totals[r.sucursal] = (totals[r.sucursal]||0) + r.cantidad; });
+  const entries = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  const max = Math.max(1, ...entries.map(e=>Math.abs(e[1])));
+  const el = document.getElementById('gir-chart-sucursal');
+  el.innerHTML = '';
+  entries.forEach(([name,val])=>{
+    const pct = Math.max(2, Math.round(Math.abs(val)/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name">${name}</div>
+      <div class="track"><div class="fill ${val<=0?'zero':''}" style="width:${val<=0?3:pct}%"></div></div>
+      <div class="val">${val.toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderGirHibridoChart(data){
+  const totals = {};
+  data.forEach(r=>{ totals[r.hibrido] = (totals[r.hibrido]||0) + r.cantidad; });
+  const entries = Object.entries(totals).filter(e=>e[1]!==0).sort((a,b)=>b[1]-a[1]);
+  const el = document.getElementById('gir-chart-hibrido');
+  el.innerHTML = '';
+  if(!entries.length){ el.innerHTML = '<div class="empty-state">Sin movimientos netos en este filtro</div>'; return; }
+  const max = Math.max(1, ...entries.map(e=>Math.abs(e[1])));
+  entries.forEach(([name,val])=>{
+    const pct = Math.max(2, Math.round(Math.abs(val)/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name" title="${name}">${name}</div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="val">${val.toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderGirTimeline(data){
+  const svg = document.getElementById('gir-timeline');
+  const tooltip = document.getElementById('gir-tl-tooltip');
+  svg.innerHTML = '';
+  if(!data.length){ return; }
+  const byDate = {};
+  data.forEach(r=>{ byDate[r.fecha] = (byDate[r.fecha]||0) + r.cantidad; });
+  const dates = Object.keys(byDate).sort();
+  let cum = 0;
+  const points = dates.map(d=>{ cum += byDate[d]; return { date:d, value:cum }; });
+
+  const W = 1080, H = 220, padL = 44, padR = 16, padT = 16, padB = 28;
+  const minV = Math.min(0, ...points.map(p=>p.value));
+  const maxV = Math.max(1, ...points.map(p=>p.value));
+  const xScale = i => padL + (i/(Math.max(1,points.length-1))) * (W-padL-padR);
+  const yScale = v => padT + (1 - (v-minV)/(maxV-minV || 1)) * (H-padT-padB);
+  const ns = 'http://www.w3.org/2000/svg';
+
+  const gridLines = 4;
+  for(let g=0; g<=gridLines; g++){
+    const v = minV + (maxV-minV)*g/gridLines;
+    const y = yScale(v);
+    const line = document.createElementNS(ns,'line');
+    line.setAttribute('x1', padL); line.setAttribute('x2', W-padR);
+    line.setAttribute('y1', y); line.setAttribute('y2', y);
+    line.setAttribute('stroke', '#2B3D31'); line.setAttribute('stroke-width','1');
+    svg.appendChild(line);
+    const label = document.createElementNS(ns,'text');
+    label.setAttribute('x', 6); label.setAttribute('y', y+4);
+    label.setAttribute('fill', '#6E8577'); label.setAttribute('font-size','10');
+    label.setAttribute('font-family','Inter, sans-serif');
+    label.textContent = Math.round(v).toLocaleString('es-AR');
+    svg.appendChild(label);
+  }
+
+  let d = `M ${xScale(0)} ${yScale(points[0].value)}`;
+  points.forEach((p,i)=>{ if(i>0) d += ` L ${xScale(i)} ${yScale(p.value)}`; });
+  const areaD = d + ` L ${xScale(points.length-1)} ${yScale(0)} L ${xScale(0)} ${yScale(0)} Z`;
+
+  const defs = document.createElementNS(ns,'defs');
+  defs.innerHTML = `<linearGradient id="girAreaGrad" x1="0" y1="0" x2="0" y2="1">
+    <stop offset="0%" stop-color="#D9A441" stop-opacity="0.35"/>
+    <stop offset="100%" stop-color="#D9A441" stop-opacity="0"/>
+  </linearGradient>`;
+  svg.appendChild(defs);
+
+  const area = document.createElementNS(ns,'path');
+  area.setAttribute('d', areaD);
+  area.setAttribute('fill', 'url(#girAreaGrad)');
+  svg.appendChild(area);
+
+  const line = document.createElementNS(ns,'path');
+  line.setAttribute('d', d);
+  line.setAttribute('fill','none');
+  line.setAttribute('stroke','#D9A441');
+  line.setAttribute('stroke-width','2');
+  svg.appendChild(line);
+
+  points.forEach((p,i)=>{
+    const cx = xScale(i), cy = yScale(p.value);
+    const dot = document.createElementNS(ns,'circle');
+    dot.setAttribute('cx',cx); dot.setAttribute('cy',cy); dot.setAttribute('r','3');
+    dot.setAttribute('fill','#132018'); dot.setAttribute('stroke','#D9A441'); dot.setAttribute('stroke-width','1.5');
+    svg.appendChild(dot);
+
+    const hit = document.createElementNS(ns,'circle');
+    hit.setAttribute('cx',cx); hit.setAttribute('cy',cy); hit.setAttribute('r','10');
+    hit.setAttribute('fill','transparent');
+    hit.style.cursor = 'pointer';
+    hit.addEventListener('mousemove', ()=>{
+      const rect = svg.getBoundingClientRect();
+      const scaleX = rect.width / W;
+      tooltip.style.display = 'block';
+      tooltip.style.left = (cx*scaleX + 8) + 'px';
+      tooltip.style.top = (cy - 8) + 'px';
+      tooltip.textContent = p.date + ' · ' + p.value.toLocaleString('es-AR') + ' bolsas acum.';
+    });
+    hit.addEventListener('mouseleave', ()=>{ tooltip.style.display='none'; });
+    svg.appendChild(hit);
+  });
+
+  [0, Math.floor(points.length/2), points.length-1].forEach(i=>{
+    const label = document.createElementNS(ns,'text');
+    label.setAttribute('x', xScale(i));
+    label.setAttribute('y', H-8);
+    label.setAttribute('fill','#6E8577');
+    label.setAttribute('font-size','10');
+    label.setAttribute('font-family','Inter, sans-serif');
+    label.setAttribute('text-anchor', i===0?'start':(i===points.length-1?'end':'middle'));
+    label.textContent = points[i].date;
+    svg.appendChild(label);
+  });
+}
+
+function renderGirTable(data){
+  const sorted = [...data].sort((a,b)=>{
+    let av=a[girSort.key], bv=b[girSort.key];
+    if(girSort.key==='cantidad'){ av=Number(av); bv=Number(bv); }
+    if(av<bv) return -1*girSort.dir;
+    if(av>bv) return 1*girSort.dir;
+    return 0;
+  });
+  const tbody = document.getElementById('gir-tbody');
+  tbody.innerHTML = '';
+  sorted.forEach(r=>{
+    const tr = document.createElement('tr');
+    const cls = r.cantidad>0?'pos':(r.cantidad<0?'neg':'');
+    tr.innerHTML = `<td>${r.fecha}</td><td>${r.sucursal}</td><td>${r.hibrido}</td><td>${r.generacion}</td><td>${r.deposito}</td>
+      <td class="num ${cls}">${r.cantidad>0?'+':''}${r.cantidad.toLocaleString('es-AR')}</td>
+      <td>${r.lote}</td><td>${r.vto}</td>`;
+    tbody.appendChild(tr);
+  });
+  document.getElementById('gir-rowcount').textContent = sorted.length + ' movimientos';
+}
+
+document.querySelectorAll('#gir-table thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(girSort.key===key){ girSort.dir *= -1; } else { girSort.key=key; girSort.dir=1; }
+    document.querySelectorAll('#gir-table thead th .arrow').forEach(a=>a.textContent='');
+    th.querySelector('.arrow').textContent = girSort.dir===1?'▲':'▼';
+    renderGirRecibidoTab();
+  });
+});
+
+function renderGirRecibidoTab(){
+  const data = applyGirFilters();
+  renderGirKPIs(data);
+  renderGirSucursalChart(data);
+  renderGirHibridoChart(data);
+  renderGirTimeline(data);
+  renderGirTable(data);
+}
+renderGirRecibidoTab();
+
+// ============================================================
+// GIRASOL: VENTAS
+// ============================================================
+function girRecibidoByHibrido(){
+  const map = {};
+  RAW_GIR.forEach(r=>{ map[r.hibrido] = (map[r.hibrido]||0) + r.cantidad; });
+  return map;
+}
+
+function renderGirVentasKPIs(){
+  const totalVendido = SALES_GIR.reduce((s,r)=>s+r.vendido,0);
+  const totalFacturado = SALES_GIR.reduce((s,r)=>s+r.facturado,0);
+  const totalPendiente = SALES_GIR.reduce((s,r)=>s+r.pendiente,0);
+  const totalRecibido = RAW_GIR.reduce((s,r)=>s+r.cantidad,0);
+  const stock = totalRecibido - totalVendido;
+
+  const kpis = document.getElementById('girv-kpis');
+  kpis.innerHTML = '';
+  const cards = [
+    { label:'Vendido a la fecha', value: totalVendido.toLocaleString('es-AR'), unit:'bolsas', foot: Math.round(totalFacturado).toLocaleString('es-AR')+' facturadas + '+Math.round(totalPendiente).toLocaleString('es-AR')+' pend. de facturar', alert:false },
+    { label:'Recibido a la fecha', value: totalRecibido.toLocaleString('es-AR'), unit:'bolsas', foot:'neto, todas las sucursales', alert:false },
+    { label:'Stock disponible', value: stock.toLocaleString('es-AR'), unit:'bolsas', foot:'recibido menos vendido', alert: stock<0 },
+  ];
+  cards.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'kpi' + (c.alert?' alert':'');
+    div.innerHTML = `<div class="label">${c.label}</div><div class="value">${c.value}<small>${c.unit}</small></div><div class="foot">${c.foot}</div>`;
+    kpis.appendChild(div);
+  });
+}
+
+function renderGirHibridoSummary(){
+  const recMap = girRecibidoByHibrido();
+  const ventaMap = {};
+  SALES_GIR.forEach(s=>{ ventaMap[s.hibrido] = (ventaMap[s.hibrido]||0) + s.vendido; });
+  const hibridos = [...new Set([...Object.keys(recMap), ...Object.keys(ventaMap)])];
+  const rows = hibridos.map(h=>{
+    const recibido = recMap[h] || 0;
+    const vendido = ventaMap[h] || 0;
+    return { hibrido:h, recibido, vendido, stock: recibido-vendido };
+  }).sort((a,b)=>a.stock-b.stock);
+
+  const tbody = document.getElementById('girv-hs-tbody');
+  tbody.innerHTML = '';
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    const stockCls = r.stock<0?'neg':(r.stock>0?'pos':'');
+    tr.innerHTML = `<td>${r.hibrido}</td>
+      <td class="num">${r.recibido.toLocaleString('es-AR')}</td>
+      <td class="num">${Math.round(r.vendido).toLocaleString('es-AR')}</td>
+      <td class="num ${stockCls}">${r.stock.toLocaleString('es-AR')}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderGirRankingSucursal(){
+  const el = document.getElementById('girv-rk-sucursal');
+  el.innerHTML = '';
+  const totals = {};
+  SUCS_ALL.forEach(s=>totals[s]=0);
+  SALES_GIR.forEach(r=>{ totals[r.sucursal] = (totals[r.sucursal]||0) + r.vendido; });
+  const entries = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  const max = Math.max(1, ...entries.map(e=>e[1]));
+  entries.forEach(([name,val],i)=>{
+    const pct = Math.max(2, Math.round(val/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name">${i+1}. ${name}</div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="val">${Math.round(val).toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderGirRankingVendedor(){
+  const el = document.getElementById('girv-rk-vendedor');
+  el.innerHTML = '';
+  const entries = [...VENDEDORES_GIR].sort((a,b)=>b.cantidad-a.cantidad);
+  const max = Math.max(1, ...entries.map(r=>Math.abs(r.cantidad)));
+  entries.forEach((r,i)=>{
+    const pct = Math.max(2, Math.round(Math.abs(r.cantidad)/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name" title="${r.vendedor} · ${r.sucursal}">${i+1}. ${r.vendedor}</div>
+      <div class="track"><div class="fill ${r.cantidad<0?'zero':''}" style="width:${pct}%"></div></div>
+      <div class="val">${r.cantidad.toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+renderGirVentasKPIs();
+renderGirHibridoSummary();
+renderGirRankingSucursal();
+renderGirRankingVendedor();
+
+// ============================================================
+// GIRASOL: OBJETIVO
+// ============================================================
+let girobSort = { key:'vsObjetivo', dir:1 };
+
+function buildGirObjetivoMatrix(){
+  return OBJETIVO_GIR.map(o=>{
+    const pctForecastObj = o.objetivo>0 ? (o.forecastActual/o.objetivo*100) : 0;
+    const faltaPct = 100 - pctForecastObj;
+    let estadoForecast='ok';
+    if(faltaPct > 20) estadoForecast='rojo';
+    else if(faltaPct > 5) estadoForecast='amarillo';
+
+    const pctObjVendido = o.objetivo>0 ? (o.ventas2026/o.objetivo*100) : 0;
+    const vsVentas2025 = o.ventas2026 - o.ventas2025;
+    const vsForecast = o.ventas2026 - o.forecastActual;
+    const vsObjetivo = o.ventas2026 - o.objetivo;
+
+    let estado='ok', label='En línea con el objetivo';
+    if(pctObjVendido < 50 && vsForecast < 0){ estado='rojo'; label='Atrasado vs. objetivo y forecast'; }
+    else if(pctObjVendido < 70){ estado='amarillo'; label='Por debajo del ritmo esperado'; }
+    else { estado='ok'; label='En línea o por encima'; }
+
+    return { ...o, pctForecastObj, faltaPct, estadoForecast, pctObjVendido, vsVentas2025, vsForecast, vsObjetivo, estado, label };
+  });
+}
+
+function renderGirObKPIs(matrix){
+  const totalObjetivo = matrix.reduce((s,r)=>s+r.objetivo,0);
+  const totalForecast = matrix.reduce((s,r)=>s+r.forecastActual,0);
+  const totalVentas2025 = matrix.reduce((s,r)=>s+r.ventas2025,0);
+  const totalVentas2026 = matrix.reduce((s,r)=>s+r.ventas2026,0);
+  const pctObjVendido = totalObjetivo>0 ? (totalVentas2026/totalObjetivo*100) : 0;
+  const vsVentas2025 = totalVentas2026 - totalVentas2025;
+  const vsForecast = totalVentas2026 - totalForecast;
+  const vsObjetivo = totalVentas2026 - totalObjetivo;
+
+  const kpis = document.getElementById('girob-kpis');
+  kpis.innerHTML = '';
+  const cards = [
+    { label:'Vendido 2026 a la fecha', value: totalVentas2026.toLocaleString('es-AR'), unit:'bolsas', foot: Math.round(pctObjVendido)+'% del objetivo anual ya vendido', alert:false, good:true },
+    { label:'Vs. forecast planificado', value: (vsForecast>=0?'+':'')+vsForecast.toLocaleString('es-AR'), unit:'bolsas', foot: vsForecast>=0 ? 'vendiendo por encima de lo forecasteado' : 'todavía no se vendió lo que se forecasteó', alert: vsForecast<0 },
+    { label:'Vs. objetivo 2026', value: (vsObjetivo>=0?'+':'')+vsObjetivo.toLocaleString('es-AR'), unit:'bolsas', foot: vsObjetivo<0 ? 'faltan para llegar al objetivo anual completo' : 'objetivo anual ya cubierto', alert: vsObjetivo<0 },
+    { label:'Vs. ventas 2025', value: (vsVentas2025>=0?'+':'')+vsVentas2025.toLocaleString('es-AR'), unit:'bolsas', foot: vsVentas2025>=0 ? 'vendiendo más rápido que el año pasado' : 'por debajo del ritmo de 2025 a esta altura', alert: vsVentas2025<0 },
+    { label:'Objetivo 2026 (referencia)', value: totalObjetivo.toLocaleString('es-AR'), unit:'bolsas', foot:'suma de las 5 sucursales', alert:false },
+    { label:'Forecast planificado (referencia)', value: totalForecast.toLocaleString('es-AR'), unit:'bolsas', foot:'es lo planificado, no lo vendido', alert:false },
+  ];
+  cards.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'kpi' + (c.alert?' alert':(c.good?' good':''));
+    div.innerHTML = `<div class="label">${c.label}</div><div class="value">${c.value}<small>${c.unit}</small></div><div class="foot">${c.foot}</div>`;
+    kpis.appendChild(div);
+  });
+}
+
+function renderGirAvanceChart(matrix){
+  const el = document.getElementById('girav-chart');
+  el.innerHTML = '';
+  const entries = [...matrix].sort((a,b)=>b.objetivo-a.objetivo);
+  const max = Math.max(1, ...entries.map(r=>Math.max(r.objetivo, r.ventas2026)));
+  entries.forEach(r=>{
+    const barPct = Math.min(100, Math.max(2, Math.round(r.ventas2026/max*100)));
+    const markPct = Math.min(100, Math.round(r.objetivo/max*100));
+    let cls = 'ontrack';
+    if(r.estado==='rojo') cls='under';
+    else if(r.estado==='ok') cls='over';
+    const row = document.createElement('div');
+    row.className = 'cmprow';
+    row.innerHTML = `<div class="name">${r.sucursal}</div>
+      <div class="track">
+        <div class="fill ${cls}" style="width:${barPct}%"></div>
+        <div class="fc-mark" style="left:${markPct}%"></div>
+      </div>
+      <div class="pct">${Math.round(r.pctObjVendido)}%<small>${r.ventas2026.toLocaleString('es-AR')} / ${r.objetivo.toLocaleString('es-AR')}</small></div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderGirObChart(matrix){
+  const el = document.getElementById('girob-chart');
+  el.innerHTML = '';
+  const entries = [...matrix].sort((a,b)=>b.objetivo-a.objetivo);
+  const max = Math.max(1, ...entries.map(r=>Math.max(r.objetivo, r.forecastActual)));
+  entries.forEach(r=>{
+    const barPct = Math.min(100, Math.max(2, Math.round(r.forecastActual/max*100)));
+    const markPct = Math.min(100, Math.round(r.objetivo/max*100));
+    let cls = 'ontrack';
+    if(r.estadoForecast==='rojo') cls='under';
+    else if(r.estadoForecast==='ok') cls='over';
+    const row = document.createElement('div');
+    row.className = 'cmprow';
+    row.innerHTML = `<div class="name">${r.sucursal}</div>
+      <div class="track">
+        <div class="fill ${cls}" style="width:${barPct}%"></div>
+        <div class="fc-mark" style="left:${markPct}%"></div>
+      </div>
+      <div class="pct">${Math.round(r.pctForecastObj)}%<small>${r.forecastActual.toLocaleString('es-AR')} / ${r.objetivo.toLocaleString('es-AR')}</small></div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderGirObTable(matrix){
+  const sorted = [...matrix].sort((a,b)=>{
+    let av=a[girobSort.key], bv=b[girobSort.key];
+    if(typeof av === 'string'){
+      if(av<bv) return -1*girobSort.dir;
+      if(av>bv) return 1*girobSort.dir;
+      return 0;
+    }
+    return (av-bv)*girobSort.dir;
+  });
+  const tbody = document.getElementById('girob-tbody');
+  tbody.innerHTML = '';
+  const badgeCls = { rojo:'under', amarillo:'ontrack', ok:'over' };
+  sorted.forEach(r=>{
+    const tr = document.createElement('tr');
+    const vs25Cls = r.vsVentas2025<0?'neg':(r.vsVentas2025>0?'pos':'');
+    const vsFcCls = r.vsForecast<0?'neg':(r.vsForecast>0?'pos':'');
+    const vsObjCls = r.vsObjetivo<0?'neg':(r.vsObjetivo>0?'pos':'');
+    tr.innerHTML = `<td>${r.sucursal}</td>
+      <td class="num">${r.ventas2026.toLocaleString('es-AR')}</td>
+      <td class="num">${Math.round(r.pctObjVendido)}%</td>
+      <td class="num ${vsFcCls}">${r.vsForecast>0?'+':''}${r.vsForecast.toLocaleString('es-AR')}</td>
+      <td class="num ${vsObjCls}">${r.vsObjetivo>0?'+':''}${r.vsObjetivo.toLocaleString('es-AR')}</td>
+      <td class="num">${r.forecastActual.toLocaleString('es-AR')}</td>
+      <td class="num">${r.objetivo.toLocaleString('es-AR')}</td>
+      <td class="num">${r.ventas2025.toLocaleString('es-AR')}</td>
+      <td class="num ${vs25Cls}">${r.vsVentas2025>0?'+':''}${r.vsVentas2025.toLocaleString('es-AR')}</td>
+      <td><span class="badge ${badgeCls[r.estado]}">${r.label}</span></td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+document.querySelectorAll('#girob-table thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(girobSort.key===key){ girobSort.dir *= -1; } else { girobSort.key=key; girobSort.dir=1; }
+    document.querySelectorAll('#girob-table thead th .arrow').forEach(a=>a.textContent='');
+    th.querySelector('.arrow').textContent = girobSort.dir===1?'▲':'▼';
+    renderGirObjetivoTab();
+  });
+});
+
+function renderGirObjetivoTab(){
+  const matrix = buildGirObjetivoMatrix();
+  renderGirObKPIs(matrix);
+  renderGirAvanceChart(matrix);
+  renderGirObChart(matrix);
+  renderGirObTable(matrix);
+}
+renderGirObjetivoTab();
+
+// ============================================================
+// SOJA
+// ============================================================
+function renderSojaKPIs(){
+  const totalRecibido = RAW_SOJA.reduce((s,r)=>s+r.cantidad,0);
+  const totalVendido = SALES_SOJA.reduce((s,r)=>s+r.vendido,0);
+  const totalFacturado = SALES_SOJA.reduce((s,r)=>s+r.facturado,0);
+  const totalPendiente = SALES_SOJA.reduce((s,r)=>s+r.pendiente,0);
+
+  const kpis = document.getElementById('soja-kpis');
+  kpis.innerHTML = '';
+  const cards = [
+    { label:'Recibido a la fecha', value: totalRecibido.toLocaleString('es-AR'), unit:'Kg', foot: RAW_SOJA.length+' movimiento(s) con depósito asignado', alert:false },
+    { label:'Vendido (neto)', value: Math.round(totalVendido).toLocaleString('es-AR'), unit:'Kg', foot: Math.round(totalFacturado).toLocaleString('es-AR')+' facturado + '+Math.round(totalPendiente).toLocaleString('es-AR')+' pend. de facturar', alert:false },
+    { label:'Objetivo 2026', value: '—', unit:'', foot:'sin objetivo cargado todavía', alert:false },
+  ];
+  cards.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'kpi' + (c.alert?' alert':'');
+    div.innerHTML = `<div class="label">${c.label}</div><div class="value">${c.value}<small>${c.unit}</small></div><div class="foot">${c.foot}</div>`;
+    kpis.appendChild(div);
+  });
+}
+
+function renderSojaRecibido(){
+  const tbody = document.getElementById('soja-rec-tbody');
+  tbody.innerHTML = '';
+  RAW_SOJA.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.fecha}</td><td>${r.sucursal}</td><td>${r.hibrido}</td><td>${r.presentacion}</td>
+      <td class="num">${r.cantidad.toLocaleString('es-AR')}</td><td>${r.lote}</td><td>${r.deposito}</td>`;
+    tbody.appendChild(tr);
+  });
+  if(!RAW_SOJA.length){ tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Sin movimientos con depósito asignado</td></tr>'; }
+}
+
+let sojaSort = { key:'vendido', dir:1 };
+function renderSojaSales(){
+  const sorted = [...SALES_SOJA].sort((a,b)=>{
+    let av=a[sojaSort.key], bv=b[sojaSort.key];
+    if(typeof av === 'string'){
+      if(av<bv) return -1*sojaSort.dir;
+      if(av>bv) return 1*sojaSort.dir;
+      return 0;
+    }
+    return (av-bv)*sojaSort.dir;
+  });
+  const tbody = document.getElementById('soja-sales-tbody');
+  tbody.innerHTML = '';
+  sorted.forEach(r=>{
+    const tr = document.createElement('tr');
+    const cls = r.vendido<0?'neg':(r.vendido>0?'pos':'');
+    tr.innerHTML = `<td>${r.sucursal}</td><td>${r.hibrido}</td>
+      <td class="num">${Math.round(r.facturado).toLocaleString('es-AR')}</td>
+      <td class="num">${Math.round(r.pendiente).toLocaleString('es-AR')}</td>
+      <td class="num ${cls}">${Math.round(r.vendido).toLocaleString('es-AR')}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+document.querySelectorAll('#soja-sales-table thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(sojaSort.key===key){ sojaSort.dir *= -1; } else { sojaSort.key=key; sojaSort.dir=1; }
+    document.querySelectorAll('#soja-sales-table thead th .arrow').forEach(a=>a.textContent='');
+    th.querySelector('.arrow').textContent = sojaSort.dir===1?'▲':'▼';
+    renderSojaSales();
+  });
+});
+
+renderSojaKPIs();
+renderSojaRecibido();
+renderSojaSales();
+
+// ============================================================
+// GLOBAL
+// ============================================================
+function renderGlobal(){
+  const maizRecibido = RAW.reduce((s,r)=>s+r.cantidad,0);
+  const maizVendido = SALES.reduce((s,r)=>s+r.vendido,0);
+  const maizObjetivo = OBJETIVO.reduce((s,r)=>s+r.objetivo,0);
+  const maizPct = maizObjetivo>0 ? (maizVendido/maizObjetivo*100) : 0;
+
+  const girRecibido = RAW_GIR.reduce((s,r)=>s+r.cantidad,0);
+  const girVendido = SALES_GIR.reduce((s,r)=>s+r.vendido,0);
+  const girObjetivo = OBJETIVO_GIR.reduce((s,r)=>s+r.objetivo,0);
+  const girPct = girObjetivo>0 ? (girVendido/girObjetivo*100) : 0;
+
+  const sojaRecibido = RAW_SOJA.reduce((s,r)=>s+r.cantidad,0);
+  const sojaVendido = SALES_SOJA.reduce((s,r)=>s+r.vendido,0);
+
+  const rows = [
+    { cultivo:'Maíz', recibido:maizRecibido, vendido:maizVendido, objetivo:maizObjetivo, pct:maizPct, unidad:'Bolsas' },
+    { cultivo:'Girasol', recibido:girRecibido, vendido:girVendido, objetivo:girObjetivo, pct:girPct, unidad:'Bolsas' },
+    { cultivo:'Soja', recibido:sojaRecibido, vendido:sojaVendido, objetivo:0, pct:null, unidad:'Kg' },
+  ];
+
+  const tbody = document.getElementById('glob-tbody');
+  tbody.innerHTML = '';
+  rows.forEach(r=>{
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.cultivo}</td>
+      <td class="num">${Math.round(r.recibido).toLocaleString('es-AR')}</td>
+      <td class="num">${Math.round(r.vendido).toLocaleString('es-AR')}</td>
+      <td class="num">${r.objetivo>0 ? r.objetivo.toLocaleString('es-AR') : '—'}</td>
+      <td class="num">${r.pct!==null ? Math.round(r.pct)+'%' : '—'}</td>
+      <td>${r.unidad}</td>`;
+    tbody.appendChild(tr);
+  });
+
+  const chartEl = document.getElementById('glob-chart');
+  chartEl.innerHTML = '';
+  [{name:'Maíz', pct:maizPct, vendido:maizVendido, objetivo:maizObjetivo},
+   {name:'Girasol', pct:girPct, vendido:girVendido, objetivo:girObjetivo}].forEach(r=>{
+    const max = Math.max(1, r.objetivo, r.vendido);
+    const barPct = Math.min(100, Math.max(2, Math.round(r.vendido/max*100)));
+    const markPct = Math.min(100, Math.round(r.objetivo/max*100));
+    let cls = 'ontrack';
+    if(r.pct<50) cls='under'; else if(r.pct>=85) cls='over';
+    const row = document.createElement('div');
+    row.className = 'cmprow';
+    row.innerHTML = `<div class="name">${r.name}</div>
+      <div class="track">
+        <div class="fill ${cls}" style="width:${barPct}%"></div>
+        <div class="fc-mark" style="left:${markPct}%"></div>
+      </div>
+      <div class="pct">${Math.round(r.pct)}%<small>${Math.round(r.vendido).toLocaleString('es-AR')} / ${Math.round(r.objetivo).toLocaleString('es-AR')}</small></div>`;
+    chartEl.appendChild(row);
+  });
+
+  // combined vendedor ranking (maiz + girasol)
+  const combined = {};
+  VENDEDORES.forEach(v=>{ combined[v.vendedor] = (combined[v.vendedor]||0) + v.cantidad; });
+  VENDEDORES_GIR.forEach(v=>{ combined[v.vendedor] = (combined[v.vendedor]||0) + v.cantidad; });
+  const entries = Object.entries(combined).sort((a,b)=>b[1]-a[1]);
+  const rkEl = document.getElementById('glob-rk-vendedor');
+  rkEl.innerHTML = '';
+  const maxV = Math.max(1, ...entries.map(e=>Math.abs(e[1])));
+  entries.forEach(([name,val],i)=>{
+    const pct = Math.max(2, Math.round(Math.abs(val)/maxV*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name">${i+1}. ${name}</div>
+      <div class="track"><div class="fill ${val<0?'zero':''}" style="width:${pct}%"></div></div>
+      <div class="val">${val.toLocaleString('es-AR')}</div>`;
+    rkEl.appendChild(row);
+  });
+}
+renderGlobal();
 </script>
 </body>
 </html>
