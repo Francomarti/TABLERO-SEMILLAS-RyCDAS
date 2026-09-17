@@ -525,6 +525,12 @@
     </section>
 
     <section class="panel">
+      <h2>Ventas por híbrido</h2>
+      <div class="panel-sub">Bolsas vendidas 2026 (facturado + pendiente de facturar), todas las sucursales</div>
+      <div class="barlist" id="vh-chart"></div>
+    </section>
+
+    <section class="panel">
       <h2>Stock CYO en tiempo real</h2>
       <div class="panel-sub">Saldo actual de los depósitos CYO de maíz (ya incluido en "Recibido") menos lo pendiente de liquidar — mercadería ya vendida y facturada que todavía no se descontó del saldo. Es una foto más al día de lo que queda físicamente disponible.</div>
       <div class="table-scroll">
@@ -760,6 +766,12 @@
           <tbody id="girv-hs-tbody"></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="panel">
+      <h2>Ventas por híbrido</h2>
+      <div class="panel-sub">Bolsas vendidas 2026 (facturado + pendiente de facturar), todas las sucursales</div>
+      <div class="barlist" id="vhgir-chart"></div>
     </section>
 
     <section class="panel">
@@ -1796,6 +1808,25 @@ function renderMonthlyChart(data, elId){
   el.appendChild(wrap);
 }
 
+function renderVentasHibridoChart(salesArr, elId){
+  const totals = {};
+  salesArr.forEach(r=>{ totals[r.hibrido] = (totals[r.hibrido]||0) + r.vendido; });
+  const entries = Object.entries(totals).filter(e=>e[1]!==0).sort((a,b)=>b[1]-a[1]);
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  if(!entries.length){ el.innerHTML = '<div class="empty-state">Sin ventas netas en este filtro</div>'; return; }
+  const max = Math.max(1, ...entries.map(e=>Math.abs(e[1])));
+  entries.forEach(([name,val])=>{
+    const pct = Math.max(2, Math.round(Math.abs(val)/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name" title="${name}">${name}</div>
+      <div class="track"><div class="fill ${val<0?'zero':''}" style="width:${val<0?3:pct}%"></div></div>
+      <div class="val">${Math.round(val).toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
 let cyoSort = { key:'stockCyoNeto', dir:1 };
 function renderCyoTable(){
   const sorted = [...CYO].sort((a,b)=>{
@@ -1847,6 +1878,7 @@ function renderVentasTab(){
   renderVtKPIs(matrix);
   renderVtCallout(matrix);
   renderHibridoSummary();
+  renderVentasHibridoChart(SALES, 'vh-chart');
   renderCyoTable();
   renderMonthlyChart(VENTAS_MENSUAL_MAIZ, 'vm-chart');
   renderRankingSucursal();
@@ -2375,6 +2407,7 @@ document.querySelectorAll('#cyogir-table thead th').forEach(th=>{
 
 renderGirVentasKPIs();
 renderGirHibridoSummary();
+renderVentasHibridoChart(SALES_GIR, 'vhgir-chart');
 renderCyoGirTable();
 renderMonthlyChart(VENTAS_MENSUAL_GIRASOL, 'vmgir-chart');
 renderGirRankingSucursal();
