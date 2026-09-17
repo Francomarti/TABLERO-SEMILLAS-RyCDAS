@@ -273,6 +273,15 @@
 
   .rowcount{font-size:11.5px;color:var(--text-dim);margin-top:10px;}
 
+  /* monthly bar chart */
+  .monthchart{display:flex;gap:8px;}
+  .monthchart .mbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;}
+  .monthchart .mval{font-size:10.5px;color:var(--text-muted);margin:2px 0;min-height:14px;white-space:nowrap;}
+  .monthchart .mbar{width:70%;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--gold-soft),var(--green-accent));min-height:2px;}
+  .monthchart .mbar.neg{border-radius:0 0 2px 2px;background:var(--rust);}
+  .monthchart .mlabel{font-size:10.5px;color:var(--text-dim);margin-top:6px;}
+  .monthchart .zeroline{width:100%;height:1px;background:var(--line);}
+
   .empty-state{padding:40px 0;text-align:center;color:var(--text-dim);font-size:13px;}
 
   .badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:11px;font-weight:600;}
@@ -533,6 +542,12 @@
       </div>
     </section>
 
+    <section class="panel">
+      <h2>Avance de ventas mensual</h2>
+      <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
+      <div id="vm-chart"></div>
+    </section>
+
     <div class="grid-2">
       <section class="panel">
         <h2>Ranking por sucursal</h2>
@@ -765,6 +780,12 @@
       </div>
     </section>
 
+    <section class="panel">
+      <h2>Avance de ventas mensual</h2>
+      <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
+      <div id="vmgir-chart"></div>
+    </section>
+
     <div class="grid-2">
       <section class="panel">
         <h2>Ranking por sucursal</h2>
@@ -962,6 +983,8 @@ const RAW_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "presentacion": "Bo
 const SALES_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "facturado": -800, "pendiente": 0, "vendido": -800}, {"sucursal": "Belgrano", "hibrido": "4124 SE", "facturado": -800, "pendiente": 0, "vendido": -800}, {"sucursal": "Bolívar", "hibrido": "4124 SE", "facturado": 3200, "pendiente": 0, "vendido": 3200}, {"sucursal": "Olavarría", "hibrido": "53722 SE", "facturado": 1040, "pendiente": 0, "vendido": 1040}, {"sucursal": "Tandil", "hibrido": "3325 SE", "facturado": -4000, "pendiente": 0, "vendido": -4000}, {"sucursal": "Tandil", "hibrido": "53722 SE", "facturado": 1240, "pendiente": 0, "vendido": 1240}];
 const CYO = [{"hibrido": "8181", "stockCyo": 1730.0, "pendLiq": 89.0, "stockCyoNeto": 1641.0}, {"hibrido": "8380", "stockCyo": 5048.0, "pendLiq": 1160.0, "stockCyoNeto": 3888.0}, {"hibrido": "8421", "stockCyo": 235.0, "pendLiq": 148.0, "stockCyoNeto": 87.0}, {"hibrido": "8472", "stockCyo": 2911.0, "pendLiq": 1637.0, "stockCyoNeto": 1274.0}, {"hibrido": "NEXT 22.6", "stockCyo": 463.0, "pendLiq": 179.0, "stockCyoNeto": 284.0}, {"hibrido": "RFG 22", "stockCyo": 691.0, "pendLiq": 437.0, "stockCyoNeto": 254.0}];
 const CYO_GIR = [{"hibrido": "4225 CL", "stockCyo": 650.0, "pendLiq": 186.0, "stockCyoNeto": 464.0}, {"hibrido": "H280 CL AO", "stockCyo": 701.0, "pendLiq": 434.0, "stockCyoNeto": 267.0}, {"hibrido": "L210 CP", "stockCyo": 292.0, "pendLiq": 38.0, "stockCyoNeto": 254.0}, {"hibrido": "NTO 2.5 CP", "stockCyo": 1.0, "pendLiq": 1.0, "stockCyoNeto": 0.0}];
+const VENTAS_MENSUAL_MAIZ = [{"mes": "2026-01", "cantidad": -104}, {"mes": "2026-02", "cantidad": -10}, {"mes": "2026-03", "cantidad": 0}, {"mes": "2026-04", "cantidad": 147}, {"mes": "2026-05", "cantidad": 148}, {"mes": "2026-06", "cantidad": 1293}, {"mes": "2026-07", "cantidad": 2056}, {"mes": "2026-08", "cantidad": 1922}, {"mes": "2026-09", "cantidad": 2020}];
+const VENTAS_MENSUAL_GIRASOL = [{"mes": "2026-01", "cantidad": -1}, {"mes": "2026-02", "cantidad": 0}, {"mes": "2026-03", "cantidad": -55}, {"mes": "2026-04", "cantidad": 30}, {"mes": "2026-05", "cantidad": 160}, {"mes": "2026-06", "cantidad": 429}, {"mes": "2026-07", "cantidad": 136}, {"mes": "2026-08", "cantidad": 253}, {"mes": "2026-09", "cantidad": 224}];
 const SUCS_ALL = ['Azul','Belgrano','Bolívar','Olavarría','Tandil'];
 const OBJETIVO_SOJA_BOLSAS = 15000;
 const OBJETIVO_SOJA_KG = OBJETIVO_SOJA_BOLSAS * 40;
@@ -1739,6 +1762,40 @@ function renderRankingVendedor(){
   });
 }
 
+const MESES_ES = {'01':'Ene','02':'Feb','03':'Mar','04':'Abr','05':'May','06':'Jun','07':'Jul','08':'Ago','09':'Sep','10':'Oct','11':'Nov','12':'Dic'};
+
+function renderMonthlyChart(data, elId){
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  if(!data.length){ el.innerHTML = '<div class="empty-state">Sin datos</div>'; return; }
+  const H = 90; // px, half-height (pos zone / neg zone)
+  const maxAbs = Math.max(1, ...data.map(d=>Math.abs(d.cantidad)));
+  const wrap = document.createElement('div');
+  wrap.className = 'monthchart';
+  data.forEach(d=>{
+    const isNeg = d.cantidad < 0;
+    const barH = Math.max(2, Math.round(Math.abs(d.cantidad)/maxAbs * H));
+    const mm = d.mes.split('-')[1];
+    const label = MESES_ES[mm] || mm;
+    const col = document.createElement('div');
+    col.className = 'mbar-wrap';
+    col.innerHTML = `
+      <div class="mval">${!isNeg ? d.cantidad.toLocaleString('es-AR') : ''}</div>
+      <div style="height:${H}px; display:flex; align-items:flex-end; justify-content:center; width:100%;">
+        ${!isNeg ? `<div class="mbar" style="height:${barH}px;" title="${label}: ${d.cantidad.toLocaleString('es-AR')} bolsas"></div>` : ''}
+      </div>
+      <div class="zeroline"></div>
+      <div style="height:${H}px; display:flex; align-items:flex-start; justify-content:center; width:100%;">
+        ${isNeg ? `<div class="mbar neg" style="height:${barH}px;" title="${label}: ${d.cantidad.toLocaleString('es-AR')} bolsas"></div>` : ''}
+      </div>
+      <div class="mval">${isNeg ? d.cantidad.toLocaleString('es-AR') : ''}</div>
+      <div class="mlabel">${label}</div>
+    `;
+    wrap.appendChild(col);
+  });
+  el.appendChild(wrap);
+}
+
 let cyoSort = { key:'stockCyoNeto', dir:1 };
 function renderCyoTable(){
   const sorted = [...CYO].sort((a,b)=>{
@@ -1791,6 +1848,7 @@ function renderVentasTab(){
   renderVtCallout(matrix);
   renderHibridoSummary();
   renderCyoTable();
+  renderMonthlyChart(VENTAS_MENSUAL_MAIZ, 'vm-chart');
   renderRankingSucursal();
   renderRankingVendedor();
   renderVtCompareChart(matrix);
@@ -2318,6 +2376,7 @@ document.querySelectorAll('#cyogir-table thead th').forEach(th=>{
 renderGirVentasKPIs();
 renderGirHibridoSummary();
 renderCyoGirTable();
+renderMonthlyChart(VENTAS_MENSUAL_GIRASOL, 'vmgir-chart');
 renderGirRankingSucursal();
 renderGirRankingVendedor();
 
