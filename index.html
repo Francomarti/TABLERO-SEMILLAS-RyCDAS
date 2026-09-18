@@ -275,6 +275,18 @@
   tbody tr.rycdas-row td{background:rgba(217,164,65,.07);color:var(--text);font-weight:600;}
   tbody tr.rycdas-row:hover td{background:rgba(217,164,65,.14);}
 
+  /* agrintel stacked bar + legend */
+  .stackrow{display:grid;grid-template-columns:140px 1fr 90px;align-items:center;gap:10px;margin-bottom:10px;}
+  .stackrow .name{font-size:12.5px;color:var(--text-muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .stackrow .stacktrack{height:16px;border-radius:2px;overflow:hidden;display:flex;background:var(--bg-panel-alt);}
+  .stackrow .stackseg{height:100%;}
+  .stackrow .val{font-size:12px;text-align:right;color:var(--text);font-variant-numeric:tabular-nums;}
+  .crop-maiz{background:var(--gold);}
+  .crop-girasol{background:var(--green-accent);}
+  .crop-soja{background:var(--blue-accent);}
+  .crop-trigoSoja2{background:var(--rust);}
+  .crop-cebadaSoja2{background:#A78BFA;}
+
   /* monthly bar chart */
   .monthchart{display:flex;gap:8px;}
   .monthchart .mbar-wrap{flex:1;display:flex;flex-direction:column;align-items:center;}
@@ -925,6 +937,44 @@
     <section class="panel">
       <h2>Hectáreas de la zona — potencial de mercado</h2>
       <div class="panel-sub">Área sembrada por partido y cultivo, campaña 2025/26 (fuente: Agrintel). Los partidos donde RyCDAS tiene sucursal están resaltados.</div>
+
+      <div class="filters">
+        <span class="flabel">Cultivo</span>
+        <select id="agr-f-cultivo">
+          <option value="total">Total</option>
+          <option value="maiz">Maíz</option>
+          <option value="girasol">Girasol</option>
+          <option value="soja">Soja</option>
+          <option value="trigoSoja2">Trigo/Soja2</option>
+          <option value="cebadaSoja2">Cebada/Soja2</option>
+        </select>
+        <span class="flabel">Vista</span>
+        <select id="agr-f-vista">
+          <option value="todos">Todos los partidos</option>
+          <option value="rycdas">Solo sucursales RyCDAS</option>
+        </select>
+        <button class="reset-btn" id="agr-reset">Limpiar filtros</button>
+      </div>
+
+      <div class="grid-2">
+        <div>
+          <h2 style="font-size:14px;margin-bottom:2px;">Hectáreas por partido</h2>
+          <div class="panel-sub" style="margin-bottom:14px;">Según el cultivo elegido arriba, de mayor a menor</div>
+          <div class="barlist" id="agr-chart-partido"></div>
+        </div>
+        <div>
+          <h2 style="font-size:14px;margin-bottom:2px;">Composición de cultivos por partido</h2>
+          <div class="panel-sub" style="margin-bottom:14px;">Mezcla de los 5 cultivos dentro del total de cada partido</div>
+          <div id="agr-chart-stack"></div>
+          <div class="legend-line" style="margin-top:10px;">
+            <span><span class="legend-swatch crop-maiz"></span>Maíz</span>
+            <span><span class="legend-swatch crop-girasol"></span>Girasol</span>
+            <span><span class="legend-swatch crop-soja"></span>Soja</span>
+            <span><span class="legend-swatch crop-trigoSoja2"></span>Trigo/Soja2</span>
+            <span><span class="legend-swatch crop-cebadaSoja2"></span>Cebada/Soja2</span>
+          </div>
+        </div>
+      </div>
       <div class="table-scroll">
         <table id="agrintel-table">
           <thead>
@@ -2674,8 +2724,76 @@ renderSojaSales();
 // GLOBAL
 // ============================================================
 let agrintelSort = { key:'total', dir:-1 };
+let agrFilters = { cultivo:'total', vista:'todos' };
+const CROP_LABELS = { maiz:'Maíz', girasol:'Girasol', soja:'Soja', trigoSoja2:'Trigo/Soja2', cebadaSoja2:'Cebada/Soja2', total:'Total' };
+
+document.getElementById('agr-f-cultivo').addEventListener('change', e=>{
+  agrFilters.cultivo = e.target.value;
+  renderAgrCharts();
+});
+document.getElementById('agr-f-vista').addEventListener('change', e=>{
+  agrFilters.vista = e.target.value;
+  renderAgrintelTable();
+  renderAgrCharts();
+});
+document.getElementById('agr-reset').addEventListener('click', ()=>{
+  agrFilters = { cultivo:'total', vista:'todos' };
+  document.getElementById('agr-f-cultivo').value = 'total';
+  document.getElementById('agr-f-vista').value = 'todos';
+  renderAgrintelTable();
+  renderAgrCharts();
+});
+
+function agrintelFilteredRows(){
+  const rows = AGRINTEL.filter(r=>r.partido!=='Total');
+  return agrFilters.vista==='rycdas' ? rows.filter(r=>RYCDAS_PARTIDOS.has(r.partido)) : rows;
+}
+
+function renderAgrChartPartido(){
+  const el = document.getElementById('agr-chart-partido');
+  el.innerHTML = '';
+  const key = agrFilters.cultivo;
+  const rows = [...agrintelFilteredRows()].sort((a,b)=>b[key]-a[key]);
+  if(!rows.length){ el.innerHTML = '<div class="empty-state">Sin datos</div>'; return; }
+  const max = Math.max(1, ...rows.map(r=>r[key]));
+  rows.forEach(r=>{
+    const pct = Math.max(2, Math.round(r[key]/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name" title="${r.partido}">${r.partido}</div>
+      <div class="track"><div class="fill" style="width:${pct}%"></div></div>
+      <div class="val">${r[key].toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderAgrChartStack(){
+  const el = document.getElementById('agr-chart-stack');
+  el.innerHTML = '';
+  const rows = [...agrintelFilteredRows()].sort((a,b)=>b.total-a.total);
+  if(!rows.length){ el.innerHTML = '<div class="empty-state">Sin datos</div>'; return; }
+  const crops = ['maiz','girasol','soja','trigoSoja2','cebadaSoja2'];
+  rows.forEach(r=>{
+    const row = document.createElement('div');
+    row.className = 'stackrow';
+    const segs = crops.map(c=>{
+      const pct = r.total>0 ? (r[c]/r.total*100) : 0;
+      return `<div class="stackseg crop-${c}" style="width:${pct}%" title="${CROP_LABELS[c]}: ${r[c].toLocaleString('es-AR')} ha"></div>`;
+    }).join('');
+    row.innerHTML = `<div class="name" title="${r.partido}">${r.partido}</div>
+      <div class="stacktrack">${segs}</div>
+      <div class="val">${r.total.toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+function renderAgrCharts(){
+  renderAgrChartPartido();
+  renderAgrChartStack();
+}
+
 function renderAgrintelTable(){
-  const sorted = [...AGRINTEL].filter(r=>r.partido!=='Total').sort((a,b)=>{
+  const sorted = [...agrintelFilteredRows()].sort((a,b)=>{
     let av=a[agrintelSort.key], bv=b[agrintelSort.key];
     if(typeof av === 'string'){
       if(av<bv) return -1*agrintelSort.dir;
@@ -2698,18 +2816,36 @@ function renderAgrintelTable(){
       <td class="num">${r.total.toLocaleString('es-AR')}</td>`;
     tbody.appendChild(tr);
   });
-  const totalRow = AGRINTEL.find(r=>r.partido==='Total');
-  if(totalRow){
+  if(agrFilters.vista==='todos'){
+    const totalRow = AGRINTEL.find(r=>r.partido==='Total');
+    if(totalRow){
+      const tr = document.createElement('tr');
+      tr.style.borderTop = '2px solid var(--line)';
+      tr.style.fontWeight = '600';
+      tr.innerHTML = `<td>Total (10 partidos)</td>
+        <td class="num">${totalRow.maiz.toLocaleString('es-AR')}</td>
+        <td class="num">${totalRow.girasol.toLocaleString('es-AR')}</td>
+        <td class="num">${totalRow.soja.toLocaleString('es-AR')}</td>
+        <td class="num">${totalRow.trigoSoja2.toLocaleString('es-AR')}</td>
+        <td class="num">${totalRow.cebadaSoja2.toLocaleString('es-AR')}</td>
+        <td class="num">${totalRow.total.toLocaleString('es-AR')}</td>`;
+      tbody.appendChild(tr);
+    }
+  } else {
+    const t = agrintelFilteredRows().reduce((acc,r)=>{
+      ['maiz','girasol','soja','trigoSoja2','cebadaSoja2','total'].forEach(k=>acc[k]=(acc[k]||0)+r[k]);
+      return acc;
+    }, {});
     const tr = document.createElement('tr');
     tr.style.borderTop = '2px solid var(--line)';
     tr.style.fontWeight = '600';
-    tr.innerHTML = `<td>Total (10 partidos)</td>
-      <td class="num">${totalRow.maiz.toLocaleString('es-AR')}</td>
-      <td class="num">${totalRow.girasol.toLocaleString('es-AR')}</td>
-      <td class="num">${totalRow.soja.toLocaleString('es-AR')}</td>
-      <td class="num">${totalRow.trigoSoja2.toLocaleString('es-AR')}</td>
-      <td class="num">${totalRow.cebadaSoja2.toLocaleString('es-AR')}</td>
-      <td class="num">${totalRow.total.toLocaleString('es-AR')}</td>`;
+    tr.innerHTML = `<td>Total (sucursales RyCDAS)</td>
+      <td class="num">${t.maiz.toLocaleString('es-AR')}</td>
+      <td class="num">${t.girasol.toLocaleString('es-AR')}</td>
+      <td class="num">${t.soja.toLocaleString('es-AR')}</td>
+      <td class="num">${t.trigoSoja2.toLocaleString('es-AR')}</td>
+      <td class="num">${t.cebadaSoja2.toLocaleString('es-AR')}</td>
+      <td class="num">${t.total.toLocaleString('es-AR')}</td>`;
     tbody.appendChild(tr);
   }
 }
@@ -2723,6 +2859,7 @@ document.querySelectorAll('#agrintel-table thead th').forEach(th=>{
   });
 });
 renderAgrintelTable();
+renderAgrCharts();
 
 function renderGlobal(){
   const maizRecibido = RAW.reduce((s,r)=>s+r.cantidad,0);
