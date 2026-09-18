@@ -272,6 +272,8 @@
   .table-scroll thead th{position:sticky;top:0;background:var(--bg-panel);z-index:2;}
 
   .rowcount{font-size:11.5px;color:var(--text-dim);margin-top:10px;}
+  tbody tr.rycdas-row td{background:rgba(217,164,65,.07);color:var(--text);font-weight:600;}
+  tbody tr.rycdas-row:hover td{background:rgba(217,164,65,.14);}
 
   /* monthly bar chart */
   .monthchart{display:flex;gap:8px;}
@@ -921,6 +923,28 @@
   <div class="croppanel" id="crop-global">
 
     <section class="panel">
+      <h2>Hectáreas de la zona — potencial de mercado</h2>
+      <div class="panel-sub">Área sembrada por partido y cultivo, campaña 2025/26 (fuente: Agrintel). Los partidos donde RyCDAS tiene sucursal están resaltados.</div>
+      <div class="table-scroll">
+        <table id="agrintel-table">
+          <thead>
+            <tr>
+              <th data-key="partido">Partido<span class="arrow"></span></th>
+              <th data-key="maiz" style="text-align:right">Maíz (ha)<span class="arrow"></span></th>
+              <th data-key="girasol" style="text-align:right">Girasol (ha)<span class="arrow"></span></th>
+              <th data-key="soja" style="text-align:right">Soja (ha)<span class="arrow"></span></th>
+              <th data-key="trigoSoja2" style="text-align:right">Trigo/Soja2 (ha)<span class="arrow"></span></th>
+              <th data-key="cebadaSoja2" style="text-align:right">Cebada/Soja2 (ha)<span class="arrow"></span></th>
+              <th data-key="total" style="text-align:right">Total (ha)<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="agrintel-tbody"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">Resaltado: Tandil, Azul, Olavarría, Bolívar, General Belgrano (sucursales RyCDAS)</div>
+    </section>
+
+    <section class="panel">
       <h2>Comparación entre cultivos</h2>
       <div class="panel-sub">Maíz y girasol en bolsas; soja en Kg — no se suman entre sí por tratarse de unidades distintas</div>
       <div class="table-scroll">
@@ -997,6 +1021,8 @@ const CYO = [{"hibrido": "8181", "stockCyo": 1730.0, "pendLiq": 89.0, "stockCyoN
 const CYO_GIR = [{"hibrido": "4225 CL", "stockCyo": 650.0, "pendLiq": 186.0, "stockCyoNeto": 464.0}, {"hibrido": "H280 CL AO", "stockCyo": 701.0, "pendLiq": 434.0, "stockCyoNeto": 267.0}, {"hibrido": "L210 CP", "stockCyo": 292.0, "pendLiq": 38.0, "stockCyoNeto": 254.0}, {"hibrido": "NTO 2.5 CP", "stockCyo": 1.0, "pendLiq": 1.0, "stockCyoNeto": 0.0}];
 const VENTAS_MENSUAL_MAIZ = [{"mes": "2026-01", "cantidad": -104}, {"mes": "2026-02", "cantidad": -10}, {"mes": "2026-03", "cantidad": 0}, {"mes": "2026-04", "cantidad": 147}, {"mes": "2026-05", "cantidad": 148}, {"mes": "2026-06", "cantidad": 1293}, {"mes": "2026-07", "cantidad": 2056}, {"mes": "2026-08", "cantidad": 1922}, {"mes": "2026-09", "cantidad": 2020}];
 const VENTAS_MENSUAL_GIRASOL = [{"mes": "2026-01", "cantidad": -1}, {"mes": "2026-02", "cantidad": 0}, {"mes": "2026-03", "cantidad": -55}, {"mes": "2026-04", "cantidad": 30}, {"mes": "2026-05", "cantidad": 160}, {"mes": "2026-06", "cantidad": 429}, {"mes": "2026-07", "cantidad": 136}, {"mes": "2026-08", "cantidad": 253}, {"mes": "2026-09", "cantidad": 224}];
+const AGRINTEL = [{"partido": "Tandil", "maiz": 81000, "girasol": 49000, "soja": 44000, "trigoSoja2": 29000, "cebadaSoja2": 56000, "total": 259000}, {"partido": "Azul", "maiz": 53000, "girasol": 18000, "soja": 36000, "trigoSoja2": 22000, "cebadaSoja2": 29000, "total": 158000}, {"partido": "Olavarría", "maiz": 30000, "girasol": 10000, "soja": 17000, "trigoSoja2": 9000, "cebadaSoja2": 25000, "total": 91000}, {"partido": "Bolívar", "maiz": 51000, "girasol": 16000, "soja": 46000, "trigoSoja2": 6000, "cebadaSoja2": 17000, "total": 136000}, {"partido": "General La Madrid", "maiz": 32000, "girasol": 17000, "soja": 21000, "trigoSoja2": 18000, "cebadaSoja2": 49000, "total": 137000}, {"partido": "Laprida", "maiz": 11000, "girasol": 3000, "soja": 5000, "trigoSoja2": 5000, "cebadaSoja2": 17000, "total": 41000}, {"partido": "Rauch", "maiz": 7000, "girasol": 3000, "soja": 3000, "trigoSoja2": 1000, "cebadaSoja2": 2000, "total": 16000}, {"partido": "Ayacucho", "maiz": 32000, "girasol": 18000, "soja": 9000, "trigoSoja2": 3000, "cebadaSoja2": 6000, "total": 68000}, {"partido": "General Belgrano", "maiz": 14000, "girasol": 5000, "soja": 11000, "trigoSoja2": 4000, "cebadaSoja2": 5000, "total": 39000}, {"partido": "Benito Juárez", "maiz": 42000, "girasol": 14000, "soja": 23000, "trigoSoja2": 17000, "cebadaSoja2": 40000, "total": 136000}, {"partido": "Total", "maiz": 353000, "girasol": 153000, "soja": 215000, "trigoSoja2": 114000, "cebadaSoja2": 246000, "total": 1081000}];
+const RYCDAS_PARTIDOS = new Set(['Tandil','Azul','Olavarría','Bolívar','General Belgrano']);
 const SUCS_ALL = ['Azul','Belgrano','Bolívar','Olavarría','Tandil'];
 const OBJETIVO_SOJA_BOLSAS = 15000;
 const OBJETIVO_SOJA_KG = OBJETIVO_SOJA_BOLSAS * 40;
@@ -2647,6 +2673,57 @@ renderSojaSales();
 // ============================================================
 // GLOBAL
 // ============================================================
+let agrintelSort = { key:'total', dir:-1 };
+function renderAgrintelTable(){
+  const sorted = [...AGRINTEL].filter(r=>r.partido!=='Total').sort((a,b)=>{
+    let av=a[agrintelSort.key], bv=b[agrintelSort.key];
+    if(typeof av === 'string'){
+      if(av<bv) return -1*agrintelSort.dir;
+      if(av>bv) return 1*agrintelSort.dir;
+      return 0;
+    }
+    return (av-bv)*agrintelSort.dir;
+  });
+  const tbody = document.getElementById('agrintel-tbody');
+  tbody.innerHTML = '';
+  sorted.forEach(r=>{
+    const tr = document.createElement('tr');
+    if(RYCDAS_PARTIDOS.has(r.partido)) tr.className = 'rycdas-row';
+    tr.innerHTML = `<td>${r.partido}</td>
+      <td class="num">${r.maiz.toLocaleString('es-AR')}</td>
+      <td class="num">${r.girasol.toLocaleString('es-AR')}</td>
+      <td class="num">${r.soja.toLocaleString('es-AR')}</td>
+      <td class="num">${r.trigoSoja2.toLocaleString('es-AR')}</td>
+      <td class="num">${r.cebadaSoja2.toLocaleString('es-AR')}</td>
+      <td class="num">${r.total.toLocaleString('es-AR')}</td>`;
+    tbody.appendChild(tr);
+  });
+  const totalRow = AGRINTEL.find(r=>r.partido==='Total');
+  if(totalRow){
+    const tr = document.createElement('tr');
+    tr.style.borderTop = '2px solid var(--line)';
+    tr.style.fontWeight = '600';
+    tr.innerHTML = `<td>Total (10 partidos)</td>
+      <td class="num">${totalRow.maiz.toLocaleString('es-AR')}</td>
+      <td class="num">${totalRow.girasol.toLocaleString('es-AR')}</td>
+      <td class="num">${totalRow.soja.toLocaleString('es-AR')}</td>
+      <td class="num">${totalRow.trigoSoja2.toLocaleString('es-AR')}</td>
+      <td class="num">${totalRow.cebadaSoja2.toLocaleString('es-AR')}</td>
+      <td class="num">${totalRow.total.toLocaleString('es-AR')}</td>`;
+    tbody.appendChild(tr);
+  }
+}
+document.querySelectorAll('#agrintel-table thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(agrintelSort.key===key){ agrintelSort.dir *= -1; } else { agrintelSort.key=key; agrintelSort.dir=1; }
+    document.querySelectorAll('#agrintel-table thead th .arrow').forEach(a=>a.textContent='');
+    th.querySelector('.arrow').textContent = agrintelSort.dir===1?'▲':'▼';
+    renderAgrintelTable();
+  });
+});
+renderAgrintelTable();
+
 function renderGlobal(){
   const maizRecibido = RAW.reduce((s,r)=>s+r.cantidad,0);
   const maizVendido = SALES.reduce((s,r)=>s+r.vendido,0);
