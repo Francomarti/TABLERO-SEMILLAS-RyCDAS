@@ -1064,6 +1064,24 @@
       </section>
     </div>
 
+    <section class="panel">
+      <h2>Ranking de sucursales por cultivo</h2>
+      <div class="panel-sub">Vendido 2026 (facturado + pendiente de facturar) de cada sucursal, abierto por cultivo. Maíz y girasol en bolsas, soja en Kg — el ranking (#) de cada columna es independiente</div>
+      <div class="table-scroll">
+        <table id="glob-suc-cultivo-table">
+          <thead>
+            <tr>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="maiz" style="text-align:right">Maíz<span class="arrow"></span></th>
+              <th data-key="girasol" style="text-align:right">Girasol<span class="arrow"></span></th>
+              <th data-key="soja" style="text-align:right">Soja (Kg)<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="glob-suc-cultivo-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
   </div><!-- /crop-global -->
 
   <footer>
@@ -2953,6 +2971,59 @@ document.querySelectorAll('#agrintel-table thead th').forEach(th=>{
 renderAgrintelTable();
 renderAgrCharts();
 
+let globSucCultivoSort = { key:'maiz', dir:-1 };
+function renderGlobSucCultivoTable(){
+  const maizTotals = {}; SALES.forEach(r=>{ maizTotals[r.sucursal]=(maizTotals[r.sucursal]||0)+r.vendido; });
+  const girTotals = {}; SALES_GIR.forEach(r=>{ girTotals[r.sucursal]=(girTotals[r.sucursal]||0)+r.vendido; });
+  const sojaTotals = {}; SALES_SOJA.forEach(r=>{ sojaTotals[r.sucursal]=(sojaTotals[r.sucursal]||0)+r.vendido; });
+
+  const rows = SUCS_ALL.map(s=>({
+    sucursal: s,
+    maiz: maizTotals[s]||0,
+    girasol: girTotals[s]||0,
+    soja: sojaTotals[s]||0,
+  }));
+
+  function ranksFor(key){
+    const sorted = [...rows].sort((a,b)=>b[key]-a[key]);
+    const map = {};
+    sorted.forEach((r,i)=>{ map[r.sucursal] = i+1; });
+    return map;
+  }
+  const ranks = { maiz: ranksFor('maiz'), girasol: ranksFor('girasol'), soja: ranksFor('soja') };
+
+  const sorted = [...rows].sort((a,b)=>{
+    const av=a[globSucCultivoSort.key], bv=b[globSucCultivoSort.key];
+    if(typeof av === 'string'){
+      if(av<bv) return -1*globSucCultivoSort.dir;
+      if(av>bv) return 1*globSucCultivoSort.dir;
+      return 0;
+    }
+    return (av-bv)*globSucCultivoSort.dir;
+  });
+
+  const tbody = document.getElementById('glob-suc-cultivo-tbody');
+  tbody.innerHTML = '';
+  sorted.forEach(r=>{
+    const tr = document.createElement('tr');
+    if(RYCDAS_PARTIDOS.has(r.sucursal)) tr.className = '';
+    tr.innerHTML = `<td>${r.sucursal}</td>
+      <td class="num">${Math.round(r.maiz).toLocaleString('es-AR')} <small style="color:var(--text-dim)">(#${ranks.maiz[r.sucursal]})</small></td>
+      <td class="num">${Math.round(r.girasol).toLocaleString('es-AR')} <small style="color:var(--text-dim)">(#${ranks.girasol[r.sucursal]})</small></td>
+      <td class="num">${Math.round(r.soja).toLocaleString('es-AR')} <small style="color:var(--text-dim)">(#${ranks.soja[r.sucursal]})</small></td>`;
+    tbody.appendChild(tr);
+  });
+}
+document.querySelectorAll('#glob-suc-cultivo-table thead th').forEach(th=>{
+  th.addEventListener('click', ()=>{
+    const key = th.dataset.key;
+    if(globSucCultivoSort.key===key){ globSucCultivoSort.dir *= -1; } else { globSucCultivoSort.key=key; globSucCultivoSort.dir=-1; }
+    document.querySelectorAll('#glob-suc-cultivo-table thead th .arrow').forEach(a=>a.textContent='');
+    th.querySelector('.arrow').textContent = globSucCultivoSort.dir===1?'▲':'▼';
+    renderGlobSucCultivoTable();
+  });
+});
+
 function renderGlobal(){
   const maizRecibido = RAW.reduce((s,r)=>s+r.cantidad,0);
   const maizVendido = SALES.reduce((s,r)=>s+r.vendido,0);
@@ -3055,6 +3126,7 @@ function renderGlobal(){
   cyoTbody.appendChild(totalTr);
 }
 renderGlobal();
+renderGlobSucCultivoTable();
 </script>
 </body>
 </html>
