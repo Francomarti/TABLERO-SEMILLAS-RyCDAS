@@ -1064,6 +1064,27 @@
       </section>
     </div>
 
+    <section class="panel">
+      <h2>Ranking preliminar por sucursal (con NV pendientes)</h2>
+      <div class="panel-sub">Compara el ranking solo con lo facturado (confirmado) contra el ranking sumando también las NV pendientes de facturar (preliminar, todavía no cerrado) — maíz + girasol combinados</div>
+      <div class="table-scroll">
+        <table id="prelim-table">
+          <thead>
+            <tr>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="facturado" style="text-align:right">Facturado (confirmado)<span class="arrow"></span></th>
+              <th>Rank facturado</th>
+              <th data-key="pendiente" style="text-align:right">NV pendiente<span class="arrow"></span></th>
+              <th data-key="preliminar" style="text-align:right">Total preliminar<span class="arrow"></span></th>
+              <th>Rank preliminar</th>
+              <th>Movimiento</th>
+            </tr>
+          </thead>
+          <tbody id="prelim-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
     <div class="grid-2">
       <section class="panel">
         <h2>Ranking de vendedores — todos los cultivos</h2>
@@ -3120,6 +3141,42 @@ function renderGlobal(){
       <div class="track"><div class="fill ${val<0?'zero':''}" style="width:${pct}%"></div></div>
       <div class="val">${Math.round(val).toLocaleString('es-AR')}</div>`;
     rkSucEl.appendChild(row);
+  });
+
+  // Ranking preliminar (facturado vs facturado+pendiente), maiz+girasol
+  const factBySuc = {}, pendBySuc = {};
+  SUCS_ALL.forEach(s=>{ factBySuc[s]=0; pendBySuc[s]=0; });
+  [...SALES, ...SALES_GIR].forEach(r=>{
+    factBySuc[r.sucursal] = (factBySuc[r.sucursal]||0) + r.facturado;
+    pendBySuc[r.sucursal] = (pendBySuc[r.sucursal]||0) + r.pendiente;
+  });
+  const prelimRows = SUCS_ALL.map(s=>({
+    sucursal: s,
+    facturado: factBySuc[s]||0,
+    pendiente: pendBySuc[s]||0,
+    preliminar: (factBySuc[s]||0) + (pendBySuc[s]||0),
+  }));
+  const rankFact = {}, rankPrelim = {};
+  [...prelimRows].sort((a,b)=>b.facturado-a.facturado).forEach((r,i)=>{ rankFact[r.sucursal]=i+1; });
+  [...prelimRows].sort((a,b)=>b.preliminar-a.preliminar).forEach((r,i)=>{ rankPrelim[r.sucursal]=i+1; });
+
+  const prelimTbody = document.getElementById('prelim-tbody');
+  prelimTbody.innerHTML = '';
+  [...prelimRows].sort((a,b)=>b.preliminar-a.preliminar).forEach(r=>{
+    const rf = rankFact[r.sucursal], rp = rankPrelim[r.sucursal];
+    let mov;
+    if(rp < rf) mov = `<span class="badge over">▲ sube a #${rp}</span>`;
+    else if(rp > rf) mov = `<span class="badge under">▼ baja a #${rp}</span>`;
+    else mov = `<span class="badge ontrack">= se mantiene</span>`;
+    const tr = document.createElement('tr');
+    tr.innerHTML = `<td>${r.sucursal}</td>
+      <td class="num">${Math.round(r.facturado).toLocaleString('es-AR')}</td>
+      <td>#${rf}</td>
+      <td class="num">${Math.round(r.pendiente).toLocaleString('es-AR')}</td>
+      <td class="num">${Math.round(r.preliminar).toLocaleString('es-AR')}</td>
+      <td>#${rp}</td>
+      <td>${mov}</td>`;
+    prelimTbody.appendChild(tr);
   });
 
   // Stock CYO combinado
