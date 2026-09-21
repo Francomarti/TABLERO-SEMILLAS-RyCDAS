@@ -1058,29 +1058,36 @@
         <div id="glob-chart"></div>
       </section>
       <section class="panel">
+        <h2>Ranking por sucursal — todos los cultivos</h2>
+        <div class="panel-sub">Suma de bolsas vendidas (facturado + pendiente de facturar) de maíz y girasol por sucursal. Soja queda afuera por estar en Kg, no en bolsas</div>
+        <div class="barlist" id="glob-rk-sucursal"></div>
+      </section>
+    </div>
+
+    <div class="grid-2">
+      <section class="panel">
         <h2>Ranking de vendedores — todos los cultivos</h2>
         <div class="panel-sub">Suma de bolsas facturadas de maíz y girasol por vendedor. Soja no está incluida: no tiene vendedor asignado en los pendientes de facturar</div>
         <div class="barlist" id="glob-rk-vendedor"></div>
       </section>
+      <section class="panel">
+        <h2>Ranking de sucursales por cultivo</h2>
+        <div class="panel-sub">Detalle abierto por cultivo (no combinado) — para ver quién lidera en cada uno por separado</div>
+        <div class="table-scroll">
+          <table id="glob-suc-cultivo-table">
+            <thead>
+              <tr>
+                <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+                <th data-key="maiz" style="text-align:right">Maíz<span class="arrow"></span></th>
+                <th data-key="girasol" style="text-align:right">Girasol<span class="arrow"></span></th>
+                <th data-key="soja" style="text-align:right">Soja (Kg)<span class="arrow"></span></th>
+              </tr>
+            </thead>
+            <tbody id="glob-suc-cultivo-tbody"></tbody>
+          </table>
+        </div>
+      </section>
     </div>
-
-    <section class="panel">
-      <h2>Ranking de sucursales por cultivo</h2>
-      <div class="panel-sub">Vendido 2026 (facturado + pendiente de facturar) de cada sucursal, abierto por cultivo. Maíz y girasol en bolsas, soja en Kg — el ranking (#) de cada columna es independiente</div>
-      <div class="table-scroll">
-        <table id="glob-suc-cultivo-table">
-          <thead>
-            <tr>
-              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
-              <th data-key="maiz" style="text-align:right">Maíz<span class="arrow"></span></th>
-              <th data-key="girasol" style="text-align:right">Girasol<span class="arrow"></span></th>
-              <th data-key="soja" style="text-align:right">Soja (Kg)<span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="glob-suc-cultivo-tbody"></tbody>
-        </table>
-      </div>
-    </section>
 
   </div><!-- /crop-global -->
 
@@ -3094,6 +3101,25 @@ function renderGlobal(){
       <div class="track"><div class="fill ${val<0?'zero':''}" style="width:${pct}%"></div></div>
       <div class="val">${val.toLocaleString('es-AR')}</div>`;
     rkEl.appendChild(row);
+  });
+
+  // combined sucursal ranking (maiz + girasol, mismo analisis que vendedores)
+  const combinedSuc = {};
+  SUCS_ALL.forEach(s=>combinedSuc[s]=0);
+  SALES.forEach(r=>{ combinedSuc[r.sucursal] = (combinedSuc[r.sucursal]||0) + r.vendido; });
+  SALES_GIR.forEach(r=>{ combinedSuc[r.sucursal] = (combinedSuc[r.sucursal]||0) + r.vendido; });
+  const sucEntries = Object.entries(combinedSuc).sort((a,b)=>b[1]-a[1]);
+  const rkSucEl = document.getElementById('glob-rk-sucursal');
+  rkSucEl.innerHTML = '';
+  const maxSuc = Math.max(1, ...sucEntries.map(e=>Math.abs(e[1])));
+  sucEntries.forEach(([name,val],i)=>{
+    const pct = Math.max(2, Math.round(Math.abs(val)/maxSuc*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name">${i+1}. ${name}</div>
+      <div class="track"><div class="fill ${val<0?'zero':''}" style="width:${pct}%"></div></div>
+      <div class="val">${Math.round(val).toLocaleString('es-AR')}</div>`;
+    rkSucEl.appendChild(row);
   });
 
   // Stock CYO combinado
