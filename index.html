@@ -564,16 +564,18 @@
     </section>
 
     <section class="panel">
-      <h2>Stock CYO en tiempo real</h2>
-      <div class="panel-sub">Saldo actual de los depósitos CYO de maíz (ya incluido en "Recibido") menos lo pendiente de liquidar — mercadería ya vendida y facturada que todavía no se descontó del saldo. Es una foto más al día de lo que queda físicamente disponible.</div>
+      <h2>Inventario disponible (propio + CYO)</h2>
+      <div class="panel-sub">Inventario total de la compañía — stock propio y en consignación (CYO) juntos — menos las notas de venta que ya están para entregar. "Disponible" es la foto más al día de lo que queda para vender.</div>
       <div class="table-scroll">
         <table id="cyo-table">
           <thead>
             <tr>
               <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
-              <th data-key="stockCyo" style="text-align:right">Stock CYO<span class="arrow"></span></th>
-              <th data-key="pendLiq" style="text-align:right">Pend. de liquidar<span class="arrow"></span></th>
-              <th data-key="stockCyoNeto" style="text-align:right">Stock CYO neto<span class="arrow"></span></th>
+              <th data-key="fisico" style="text-align:right">Físico<span class="arrow"></span></th>
+              <th data-key="nvEntregar" style="text-align:right">NV a entregar<span class="arrow"></span></th>
+              <th data-key="ordenCompra" style="text-align:right">O. Compra<span class="arrow"></span></th>
+              <th data-key="enTransito" style="text-align:right">En tránsito<span class="arrow"></span></th>
+              <th data-key="disponible" style="text-align:right">Disponible<span class="arrow"></span></th>
             </tr>
           </thead>
           <tbody id="cyo-tbody"></tbody>
@@ -808,16 +810,18 @@
     </section>
 
     <section class="panel">
-      <h2>Stock CYO en tiempo real</h2>
-      <div class="panel-sub">Saldo actual de los depósitos CYO de girasol (ya incluido en "Recibido") menos lo pendiente de liquidar</div>
+      <h2>Inventario disponible (propio + CYO)</h2>
+      <div class="panel-sub">Inventario total de girasol — stock propio y en consignación (CYO) juntos — menos las notas de venta que ya están para entregar</div>
       <div class="table-scroll">
         <table id="cyogir-table">
           <thead>
             <tr>
               <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
-              <th data-key="stockCyo" style="text-align:right">Stock CYO<span class="arrow"></span></th>
-              <th data-key="pendLiq" style="text-align:right">Pend. de liquidar<span class="arrow"></span></th>
-              <th data-key="stockCyoNeto" style="text-align:right">Stock CYO neto<span class="arrow"></span></th>
+              <th data-key="fisico" style="text-align:right">Físico<span class="arrow"></span></th>
+              <th data-key="nvEntregar" style="text-align:right">NV a entregar<span class="arrow"></span></th>
+              <th data-key="ordenCompra" style="text-align:right">O. Compra<span class="arrow"></span></th>
+              <th data-key="enTransito" style="text-align:right">En tránsito<span class="arrow"></span></th>
+              <th data-key="disponible" style="text-align:right">Disponible<span class="arrow"></span></th>
             </tr>
           </thead>
           <tbody id="cyogir-tbody"></tbody>
@@ -946,6 +950,26 @@
       </div>
     </section>
 
+    <section class="panel">
+      <h2>Inventario disponible (propio + CYO)</h2>
+      <div class="panel-sub">Inventario total de soja en Kg — stock propio y en consignación juntos — menos las notas de venta a entregar. Incluye marcas no BRV que también se comercializan</div>
+      <div class="table-scroll">
+        <table id="invsoja-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="fisico" style="text-align:right">Físico (Kg)<span class="arrow"></span></th>
+              <th data-key="nvEntregar" style="text-align:right">NV a entregar<span class="arrow"></span></th>
+              <th data-key="ordenCompra" style="text-align:right">O. Compra<span class="arrow"></span></th>
+              <th data-key="enTransito" style="text-align:right">En tránsito<span class="arrow"></span></th>
+              <th data-key="disponible" style="text-align:right">Disponible<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="invsoja-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
   </div><!-- /crop-soja -->
 
   <!-- ############################################################ -->
@@ -1034,16 +1058,17 @@
     </section>
 
     <section class="panel">
-      <h2>Stock CYO combinado</h2>
-      <div class="panel-sub">Maíz y girasol sumados (bolsas, misma unidad) — soja no está en este reporte todavía</div>
+      <h2>Inventario disponible combinado</h2>
+      <div class="panel-sub">Físico y Disponible (propio + CYO) por cultivo. Maíz y girasol en bolsas, soja en Kg — no se suman entre sí por ser unidades distintas</div>
       <div class="table-scroll">
         <table>
           <thead>
             <tr>
               <th>Cultivo</th>
-              <th style="text-align:right">Stock CYO</th>
-              <th style="text-align:right">Pend. de liquidar</th>
-              <th style="text-align:right">Stock CYO neto</th>
+              <th style="text-align:right">Físico</th>
+              <th style="text-align:right">NV a entregar</th>
+              <th style="text-align:right">Disponible</th>
+              <th>Unidad</th>
             </tr>
           </thead>
           <tbody id="glob-cyo-tbody"></tbody>
@@ -1134,6 +1159,9 @@ const RAW_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "presentacion": "Bo
 const SALES_SOJA = [{"sucursal": "Azul", "hibrido": "3325 SE", "facturado": -800.0, "pendiente": 0.0, "vendido": -800.0}, {"sucursal": "Belgrano", "hibrido": "4124 SE", "facturado": -800.0, "pendiente": 0.0, "vendido": -800.0}, {"sucursal": "Belgrano", "hibrido": "SEM. SOJA DM 40E23 STS QMAX (BIG BA", "facturado": 6400.0, "pendiente": 0.0, "vendido": 6400.0}, {"sucursal": "Belgrano", "hibrido": "SEM. SOJA DM 46E25 BBX800", "facturado": -220.0, "pendiente": 0.0, "vendido": -220.0}, {"sucursal": "Bolívar", "hibrido": "4124 SE", "facturado": 3200.0, "pendiente": 0.0, "vendido": 3200.0}, {"sucursal": "Bolívar", "hibrido": "SEM. SOJA DM 47E23 STS BB X 800 KG", "facturado": -800.0, "pendiente": 0.0, "vendido": -800.0}, {"sucursal": "Bolívar", "hibrido": "SEM. SOJA LDC 8.5 PASTOREO X 40 KG", "facturado": -3360.0, "pendiente": 0.0, "vendido": -3360.0}, {"sucursal": "Olavarría", "hibrido": "4524 SE", "facturado": 2400.0, "pendiente": 0.0, "vendido": 2400.0}, {"sucursal": "Olavarría", "hibrido": "53722 SE", "facturado": 1040.0, "pendiente": 0.0, "vendido": 1040.0}, {"sucursal": "Olavarría", "hibrido": "SEM. SOJA DM 2200 POR KG", "facturado": 6400.0, "pendiente": 0.0, "vendido": 6400.0}, {"sucursal": "Tandil", "hibrido": "3325 SE", "facturado": -4000.0, "pendiente": 0.0, "vendido": -4000.0}, {"sucursal": "Tandil", "hibrido": "4524 SE", "facturado": 20000.0, "pendiente": 0.0, "vendido": 20000.0}, {"sucursal": "Tandil", "hibrido": "53722 SE", "facturado": 1240.0, "pendiente": 0.0, "vendido": 1240.0}, {"sucursal": "Tandil", "hibrido": "SEM. SOJA DM 2200 POR KG", "facturado": 800.0, "pendiente": 0.0, "vendido": 800.0}, {"sucursal": "Tandil", "hibrido": "SEM. SOJA DM 25E23 SE BBX800", "facturado": 800.0, "pendiente": 0.0, "vendido": 800.0}, {"sucursal": "Tandil", "hibrido": "SEM. SOJA LDC 8.5 PASTOREO X 40 KG", "facturado": 0.0, "pendiente": 675.0, "vendido": 675.0}];
 const CYO = [{"hibrido": "8181", "stockCyo": 1730.0, "pendLiq": 89.0, "stockCyoNeto": 1641.0}, {"hibrido": "8380", "stockCyo": 5048.0, "pendLiq": 1160.0, "stockCyoNeto": 3888.0}, {"hibrido": "8421", "stockCyo": 235.0, "pendLiq": 148.0, "stockCyoNeto": 87.0}, {"hibrido": "8472", "stockCyo": 2911.0, "pendLiq": 1637.0, "stockCyoNeto": 1274.0}, {"hibrido": "NEXT 22.6", "stockCyo": 463.0, "pendLiq": 179.0, "stockCyoNeto": 284.0}, {"hibrido": "RFG 22", "stockCyo": 691.0, "pendLiq": 437.0, "stockCyoNeto": 254.0}];
 const CYO_GIR = [{"hibrido": "4225 CL", "stockCyo": 650.0, "pendLiq": 186.0, "stockCyoNeto": 464.0}, {"hibrido": "H280 CL AO", "stockCyo": 701.0, "pendLiq": 434.0, "stockCyoNeto": 267.0}, {"hibrido": "L210 CP", "stockCyo": 292.0, "pendLiq": 38.0, "stockCyoNeto": 254.0}, {"hibrido": "NTO 2.5 CP", "stockCyo": 1.0, "pendLiq": 1.0, "stockCyoNeto": 0.0}];
+const INV_MAIZ = [{"hibrido": "8181", "fisico": 2014, "nvEntregar": 564, "ordenCompra": 0, "enTransito": 0, "disponible": 1450}, {"hibrido": "8380", "fisico": 5457, "nvEntregar": 2225, "ordenCompra": 0, "enTransito": 0, "disponible": 3232}, {"hibrido": "8421", "fisico": 1023, "nvEntregar": 955, "ordenCompra": 0, "enTransito": 0, "disponible": 68}, {"hibrido": "8472", "fisico": 3287, "nvEntregar": 1350, "ordenCompra": 0, "enTransito": 0, "disponible": 1937}, {"hibrido": "NEXT 22.6", "fisico": 797, "nvEntregar": 806, "ordenCompra": 0, "enTransito": 0, "disponible": -9}, {"hibrido": "RFG 22", "fisico": 1684, "nvEntregar": 994, "ordenCompra": 0, "enTransito": 0, "disponible": 690}];
+const INV_GIRASOL = [{"hibrido": "4225 CL", "fisico": 4496, "nvEntregar": 904, "ordenCompra": 0, "enTransito": 0, "disponible": 3592}, {"hibrido": "H280 CL AO", "fisico": 619, "nvEntregar": 530, "ordenCompra": 0, "enTransito": 0, "disponible": 89}, {"hibrido": "L210 CP", "fisico": 800, "nvEntregar": 154, "ordenCompra": 0, "enTransito": 0, "disponible": 646}, {"hibrido": "MG 360", "fisico": 256, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 256}, {"hibrido": "NTO 2.5 CP", "fisico": 116, "nvEntregar": 55, "ordenCompra": 0, "enTransito": 0, "disponible": 61}];
+const INV_SOJA = [{"hibrido": "53722 SE", "fisico": 9674, "nvEntregar": 6, "ordenCompra": 0, "enTransito": 0, "disponible": 9668}, {"hibrido": "SEM. SOJA DM 47E23 STS", "fisico": 4920, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 4920}, {"hibrido": "53325 SE", "fisico": 800, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 800}, {"hibrido": "4124 SE", "fisico": 7200, "nvEntregar": 6600, "ordenCompra": 0, "enTransito": 0, "disponible": 600}, {"hibrido": "54321 SE", "fisico": 223, "nvEntregar": 5, "ordenCompra": 0, "enTransito": 0, "disponible": 218}, {"hibrido": "SEM. SOJA DM 46R18", "fisico": 2, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 2}, {"hibrido": "SEM. SOJA LDC 8.5 PASTOREO", "fisico": 111, "nvEntregar": 702, "ordenCompra": 0, "enTransito": 0, "disponible": -591}, {"hibrido": "4524 SE", "fisico": 0, "nvEntregar": 22400, "ordenCompra": 0, "enTransito": 0, "disponible": -22400}];
 const VENTAS_MENSUAL_MAIZ = [{"mes": "2026-01", "cantidad": -104}, {"mes": "2026-02", "cantidad": -10}, {"mes": "2026-03", "cantidad": 0}, {"mes": "2026-04", "cantidad": 147}, {"mes": "2026-05", "cantidad": 148}, {"mes": "2026-06", "cantidad": 1293}, {"mes": "2026-07", "cantidad": 2056}, {"mes": "2026-08", "cantidad": 1922}, {"mes": "2026-09", "cantidad": 3433}];
 const VENTAS_MENSUAL_GIRASOL = [{"mes": "2026-01", "cantidad": -1}, {"mes": "2026-02", "cantidad": 0}, {"mes": "2026-03", "cantidad": -55}, {"mes": "2026-04", "cantidad": 30}, {"mes": "2026-05", "cantidad": 160}, {"mes": "2026-06", "cantidad": 429}, {"mes": "2026-07", "cantidad": 136}, {"mes": "2026-08", "cantidad": 253}, {"mes": "2026-09", "cantidad": 596}];
 const AGRINTEL = [{"partido": "Tandil", "maiz": 81000, "girasol": 49000, "soja": 44000, "trigoSoja2": 29000, "cebadaSoja2": 56000, "total": 259000}, {"partido": "Azul", "maiz": 53000, "girasol": 18000, "soja": 36000, "trigoSoja2": 22000, "cebadaSoja2": 29000, "total": 158000}, {"partido": "Olavarría", "maiz": 30000, "girasol": 10000, "soja": 17000, "trigoSoja2": 9000, "cebadaSoja2": 25000, "total": 91000}, {"partido": "Bolívar", "maiz": 51000, "girasol": 16000, "soja": 46000, "trigoSoja2": 6000, "cebadaSoja2": 17000, "total": 136000}, {"partido": "General La Madrid", "maiz": 32000, "girasol": 17000, "soja": 21000, "trigoSoja2": 18000, "cebadaSoja2": 49000, "total": 137000}, {"partido": "Laprida", "maiz": 11000, "girasol": 3000, "soja": 5000, "trigoSoja2": 5000, "cebadaSoja2": 17000, "total": 41000}, {"partido": "Rauch", "maiz": 7000, "girasol": 3000, "soja": 3000, "trigoSoja2": 1000, "cebadaSoja2": 2000, "total": 16000}, {"partido": "Ayacucho", "maiz": 32000, "girasol": 18000, "soja": 9000, "trigoSoja2": 3000, "cebadaSoja2": 6000, "total": 68000}, {"partido": "General Belgrano", "maiz": 14000, "girasol": 5000, "soja": 11000, "trigoSoja2": 4000, "cebadaSoja2": 5000, "total": 39000}, {"partido": "Benito Juárez", "maiz": 42000, "girasol": 14000, "soja": 23000, "trigoSoja2": 17000, "cebadaSoja2": 40000, "total": 136000}, {"partido": "Total", "maiz": 353000, "girasol": 153000, "soja": 215000, "trigoSoja2": 114000, "cebadaSoja2": 246000, "total": 1081000}];
@@ -1972,51 +2000,60 @@ function renderVentasHibridoChart(salesArr, elId){
   });
 }
 
-let cyoSort = { key:'stockCyoNeto', dir:1 };
-function renderCyoTable(){
-  const sorted = [...CYO].sort((a,b)=>{
-    let av=a[cyoSort.key], bv=b[cyoSort.key];
-    if(typeof av === 'string'){
-      if(av<bv) return -1*cyoSort.dir;
-      if(av>bv) return 1*cyoSort.dir;
-      return 0;
-    }
-    return (av-bv)*cyoSort.dir;
+const INV_COLS = ['fisico','nvEntregar','ordenCompra','enTransito','disponible'];
+function makeInvTableRenderer(dataArr, tableId, tbodyId, sortState){
+  function render(){
+    const sorted = [...dataArr].sort((a,b)=>{
+      let av=a[sortState.key], bv=b[sortState.key];
+      if(typeof av === 'string'){
+        if(av<bv) return -1*sortState.dir;
+        if(av>bv) return 1*sortState.dir;
+        return 0;
+      }
+      return (av-bv)*sortState.dir;
+    });
+    const tbody = document.getElementById(tbodyId);
+    tbody.innerHTML = '';
+    sorted.forEach(r=>{
+      const cls = r.disponible<0?'neg':(r.disponible>0?'pos':'');
+      const tr = document.createElement('tr');
+      tr.innerHTML = `<td>${r.hibrido}</td>
+        <td class="num">${r.fisico.toLocaleString('es-AR')}</td>
+        <td class="num">${r.nvEntregar.toLocaleString('es-AR')}</td>
+        <td class="num">${r.ordenCompra.toLocaleString('es-AR')}</td>
+        <td class="num">${r.enTransito.toLocaleString('es-AR')}</td>
+        <td class="num ${cls}">${r.disponible.toLocaleString('es-AR')}</td>`;
+      tbody.appendChild(tr);
+    });
+    const totals = dataArr.reduce((acc,r)=>{
+      INV_COLS.forEach(k=>{ acc[k]=(acc[k]||0)+r[k]; });
+      return acc;
+    }, {});
+    const totalTr = document.createElement('tr');
+    totalTr.style.borderTop = '2px solid var(--line)';
+    totalTr.style.fontWeight = '600';
+    totalTr.innerHTML = `<td>Total</td>
+      <td class="num">${totals.fisico.toLocaleString('es-AR')}</td>
+      <td class="num">${totals.nvEntregar.toLocaleString('es-AR')}</td>
+      <td class="num">${totals.ordenCompra.toLocaleString('es-AR')}</td>
+      <td class="num">${totals.enTransito.toLocaleString('es-AR')}</td>
+      <td class="num">${totals.disponible.toLocaleString('es-AR')}</td>`;
+    tbody.appendChild(totalTr);
+  }
+  document.querySelectorAll('#'+tableId+' thead th').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if(sortState.key===key){ sortState.dir *= -1; } else { sortState.key=key; sortState.dir=1; }
+      document.querySelectorAll('#'+tableId+' thead th .arrow').forEach(a=>a.textContent='');
+      th.querySelector('.arrow').textContent = sortState.dir===1?'▲':'▼';
+      render();
+    });
   });
-  const tbody = document.getElementById('cyo-tbody');
-  tbody.innerHTML = '';
-  sorted.forEach(r=>{
-    const tr = document.createElement('tr');
-    const cls = r.stockCyoNeto<0?'neg':(r.stockCyoNeto>0?'pos':'');
-    tr.innerHTML = `<td>${r.hibrido}</td>
-      <td class="num">${r.stockCyo.toLocaleString('es-AR')}</td>
-      <td class="num">${r.pendLiq.toLocaleString('es-AR')}</td>
-      <td class="num ${cls}">${r.stockCyoNeto.toLocaleString('es-AR')}</td>`;
-    tbody.appendChild(tr);
-  });
-  const totals = CYO.reduce((acc,r)=>({
-    stockCyo: acc.stockCyo + r.stockCyo,
-    pendLiq: acc.pendLiq + r.pendLiq,
-    stockCyoNeto: acc.stockCyoNeto + r.stockCyoNeto,
-  }), {stockCyo:0, pendLiq:0, stockCyoNeto:0});
-  const totalTr = document.createElement('tr');
-  totalTr.style.borderTop = '2px solid var(--line)';
-  totalTr.style.fontWeight = '600';
-  totalTr.innerHTML = `<td>Total</td>
-    <td class="num">${totals.stockCyo.toLocaleString('es-AR')}</td>
-    <td class="num">${totals.pendLiq.toLocaleString('es-AR')}</td>
-    <td class="num">${totals.stockCyoNeto.toLocaleString('es-AR')}</td>`;
-  tbody.appendChild(totalTr);
+  return render;
 }
-document.querySelectorAll('#cyo-table thead th').forEach(th=>{
-  th.addEventListener('click', ()=>{
-    const key = th.dataset.key;
-    if(cyoSort.key===key){ cyoSort.dir *= -1; } else { cyoSort.key=key; cyoSort.dir=1; }
-    document.querySelectorAll('#cyo-table thead th .arrow').forEach(a=>a.textContent='');
-    th.querySelector('.arrow').textContent = cyoSort.dir===1?'▲':'▼';
-    renderCyoTable();
-  });
-});
+
+let cyoSort = { key:'disponible', dir:1 };
+const renderCyoTable = makeInvTableRenderer(INV_MAIZ, 'cyo-table', 'cyo-tbody', cyoSort);
 
 function renderSprintPanel(){
   const now = new Date();
@@ -2573,51 +2610,11 @@ function renderGirRankingVendedor(){
   });
 }
 
-let cyoGirSort = { key:'stockCyoNeto', dir:1 };
-function renderCyoGirTable(){
-  const sorted = [...CYO_GIR].sort((a,b)=>{
-    let av=a[cyoGirSort.key], bv=b[cyoGirSort.key];
-    if(typeof av === 'string'){
-      if(av<bv) return -1*cyoGirSort.dir;
-      if(av>bv) return 1*cyoGirSort.dir;
-      return 0;
-    }
-    return (av-bv)*cyoGirSort.dir;
-  });
-  const tbody = document.getElementById('cyogir-tbody');
-  tbody.innerHTML = '';
-  sorted.forEach(r=>{
-    const tr = document.createElement('tr');
-    const cls = r.stockCyoNeto<0?'neg':(r.stockCyoNeto>0?'pos':'');
-    tr.innerHTML = `<td>${r.hibrido}</td>
-      <td class="num">${r.stockCyo.toLocaleString('es-AR')}</td>
-      <td class="num">${r.pendLiq.toLocaleString('es-AR')}</td>
-      <td class="num ${cls}">${r.stockCyoNeto.toLocaleString('es-AR')}</td>`;
-    tbody.appendChild(tr);
-  });
-  const totals = CYO_GIR.reduce((acc,r)=>({
-    stockCyo: acc.stockCyo + r.stockCyo,
-    pendLiq: acc.pendLiq + r.pendLiq,
-    stockCyoNeto: acc.stockCyoNeto + r.stockCyoNeto,
-  }), {stockCyo:0, pendLiq:0, stockCyoNeto:0});
-  const totalTr = document.createElement('tr');
-  totalTr.style.borderTop = '2px solid var(--line)';
-  totalTr.style.fontWeight = '600';
-  totalTr.innerHTML = `<td>Total</td>
-    <td class="num">${totals.stockCyo.toLocaleString('es-AR')}</td>
-    <td class="num">${totals.pendLiq.toLocaleString('es-AR')}</td>
-    <td class="num">${totals.stockCyoNeto.toLocaleString('es-AR')}</td>`;
-  tbody.appendChild(totalTr);
-}
-document.querySelectorAll('#cyogir-table thead th').forEach(th=>{
-  th.addEventListener('click', ()=>{
-    const key = th.dataset.key;
-    if(cyoGirSort.key===key){ cyoGirSort.dir *= -1; } else { cyoGirSort.key=key; cyoGirSort.dir=1; }
-    document.querySelectorAll('#cyogir-table thead th .arrow').forEach(a=>a.textContent='');
-    th.querySelector('.arrow').textContent = cyoGirSort.dir===1?'▲':'▼';
-    renderCyoGirTable();
-  });
-});
+let cyoGirSort = { key:'disponible', dir:1 };
+const renderCyoGirTable = makeInvTableRenderer(INV_GIRASOL, 'cyogir-table', 'cyogir-tbody', cyoGirSort);
+
+let invSojaSort = { key:'disponible', dir:1 };
+const renderInvSojaTable = makeInvTableRenderer(INV_SOJA, 'invsoja-table', 'invsoja-tbody', invSojaSort);
 
 renderGirVentasKPIs();
 renderGirHibridoSummary();
@@ -2857,6 +2854,7 @@ document.querySelectorAll('#soja-sales-table thead th').forEach(th=>{
 renderSojaKPIs();
 renderSojaRecibido();
 renderSojaSales();
+renderInvSojaTable();
 
 // ============================================================
 // GLOBAL
@@ -3179,33 +3177,37 @@ function renderGlobal(){
     prelimTbody.appendChild(tr);
   });
 
-  // Stock CYO combinado
-  const cyoTotals = {
-    maiz: CYO.reduce((acc,r)=>({stockCyo:acc.stockCyo+r.stockCyo, pendLiq:acc.pendLiq+r.pendLiq, stockCyoNeto:acc.stockCyoNeto+r.stockCyoNeto}), {stockCyo:0,pendLiq:0,stockCyoNeto:0}),
-    girasol: CYO_GIR.reduce((acc,r)=>({stockCyo:acc.stockCyo+r.stockCyo, pendLiq:acc.pendLiq+r.pendLiq, stockCyoNeto:acc.stockCyoNeto+r.stockCyoNeto}), {stockCyo:0,pendLiq:0,stockCyoNeto:0}),
+  // Inventario disponible combinado
+  const sumInv = arr => arr.reduce((acc,r)=>({fisico:acc.fisico+r.fisico, nvEntregar:acc.nvEntregar+r.nvEntregar, disponible:acc.disponible+r.disponible}), {fisico:0,nvEntregar:0,disponible:0});
+  const invTotals = {
+    maiz: sumInv(INV_MAIZ),
+    girasol: sumInv(INV_GIRASOL),
+    soja: sumInv(INV_SOJA),
   };
   const cyoTbody = document.getElementById('glob-cyo-tbody');
   cyoTbody.innerHTML = '';
-  [['Maíz', cyoTotals.maiz], ['Girasol', cyoTotals.girasol]].forEach(([name, t])=>{
+  [['Maíz', invTotals.maiz, 'Bolsas'], ['Girasol', invTotals.girasol, 'Bolsas'], ['Soja', invTotals.soja, 'Kg']].forEach(([name, t, unidad])=>{
     const tr = document.createElement('tr');
     tr.innerHTML = `<td>${name}</td>
-      <td class="num">${t.stockCyo.toLocaleString('es-AR')}</td>
-      <td class="num">${t.pendLiq.toLocaleString('es-AR')}</td>
-      <td class="num">${t.stockCyoNeto.toLocaleString('es-AR')}</td>`;
+      <td class="num">${t.fisico.toLocaleString('es-AR')}</td>
+      <td class="num">${t.nvEntregar.toLocaleString('es-AR')}</td>
+      <td class="num">${t.disponible.toLocaleString('es-AR')}</td>
+      <td>${unidad}</td>`;
     cyoTbody.appendChild(tr);
   });
   const totalTr = document.createElement('tr');
   totalTr.style.borderTop = '2px solid var(--line)';
   totalTr.style.fontWeight = '600';
   const grand = {
-    stockCyo: cyoTotals.maiz.stockCyo + cyoTotals.girasol.stockCyo,
-    pendLiq: cyoTotals.maiz.pendLiq + cyoTotals.girasol.pendLiq,
-    stockCyoNeto: cyoTotals.maiz.stockCyoNeto + cyoTotals.girasol.stockCyoNeto,
+    fisico: invTotals.maiz.fisico + invTotals.girasol.fisico,
+    nvEntregar: invTotals.maiz.nvEntregar + invTotals.girasol.nvEntregar,
+    disponible: invTotals.maiz.disponible + invTotals.girasol.disponible,
   };
   totalTr.innerHTML = `<td>Total (maíz + girasol)</td>
-    <td class="num">${grand.stockCyo.toLocaleString('es-AR')}</td>
-    <td class="num">${grand.pendLiq.toLocaleString('es-AR')}</td>
-    <td class="num">${grand.stockCyoNeto.toLocaleString('es-AR')}</td>`;
+    <td class="num">${grand.fisico.toLocaleString('es-AR')}</td>
+    <td class="num">${grand.nvEntregar.toLocaleString('es-AR')}</td>
+    <td class="num">${grand.disponible.toLocaleString('es-AR')}</td>
+    <td>Bolsas</td>`;
   cyoTbody.appendChild(totalTr);
 }
 renderGlobal();
