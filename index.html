@@ -584,6 +584,34 @@
     </section>
 
     <section class="panel">
+      <h2>Existencias disponibles por sucursal</h2>
+      <div class="panel-sub">Semilla libre para vender (propio + CYO), sin estar tomada por ninguna NV ni factura — abierta por sucursal</div>
+      <div class="table-scroll">
+        <table id="exist-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="Tandil" style="text-align:right">Tandil<span class="arrow"></span></th>
+              <th data-key="Azul" style="text-align:right">Azul<span class="arrow"></span></th>
+              <th data-key="Olavarría" style="text-align:right">Olavarría<span class="arrow"></span></th>
+              <th data-key="Bolívar" style="text-align:right">Bolívar<span class="arrow"></span></th>
+              <th data-key="Belgrano" style="text-align:right">Belgrano<span class="arrow"></span></th>
+              <th data-key="central" style="text-align:right">Central<span class="arrow"></span></th>
+              <th data-key="total" style="text-align:right">Total<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="exist-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Ranking de existencias por sucursal</h2>
+      <div class="panel-sub">Total disponible (todos los híbridos de maíz) por sucursal — sucursales con poco o negativo son las que menos margen tienen para seguir vendiendo sin traer más</div>
+      <div class="barlist" id="exist-rk-sucursal"></div>
+    </section>
+
+    <section class="panel">
       <h2>Avance de ventas mensual</h2>
       <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
       <div id="vm-chart"></div>
@@ -827,6 +855,34 @@
           <tbody id="cyogir-tbody"></tbody>
         </table>
       </div>
+    </section>
+
+    <section class="panel">
+      <h2>Existencias disponibles por sucursal</h2>
+      <div class="panel-sub">Semilla libre para vender (propio + CYO), sin estar tomada por ninguna NV ni factura — abierta por sucursal</div>
+      <div class="table-scroll">
+        <table id="existgir-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="Tandil" style="text-align:right">Tandil<span class="arrow"></span></th>
+              <th data-key="Azul" style="text-align:right">Azul<span class="arrow"></span></th>
+              <th data-key="Olavarría" style="text-align:right">Olavarría<span class="arrow"></span></th>
+              <th data-key="Bolívar" style="text-align:right">Bolívar<span class="arrow"></span></th>
+              <th data-key="Belgrano" style="text-align:right">Belgrano<span class="arrow"></span></th>
+              <th data-key="central" style="text-align:right">Central<span class="arrow"></span></th>
+              <th data-key="total" style="text-align:right">Total<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="existgir-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Ranking de existencias por sucursal</h2>
+      <div class="panel-sub">Total disponible (todos los híbridos de girasol) por sucursal</div>
+      <div class="barlist" id="existgir-rk-sucursal"></div>
     </section>
 
     <section class="panel">
@@ -1162,6 +1218,8 @@ const CYO_GIR = [{"hibrido": "4225 CL", "stockCyo": 650.0, "pendLiq": 186.0, "st
 const INV_MAIZ = [{"hibrido": "8181", "fisico": 2014, "nvEntregar": 564, "ordenCompra": 0, "enTransito": 0, "disponible": 1450}, {"hibrido": "8380", "fisico": 5457, "nvEntregar": 2225, "ordenCompra": 0, "enTransito": 0, "disponible": 3232}, {"hibrido": "8421", "fisico": 1023, "nvEntregar": 955, "ordenCompra": 0, "enTransito": 0, "disponible": 68}, {"hibrido": "8472", "fisico": 3287, "nvEntregar": 1350, "ordenCompra": 0, "enTransito": 0, "disponible": 1937}, {"hibrido": "NEXT 22.6", "fisico": 797, "nvEntregar": 806, "ordenCompra": 0, "enTransito": 0, "disponible": -9}, {"hibrido": "RFG 22", "fisico": 1684, "nvEntregar": 994, "ordenCompra": 0, "enTransito": 0, "disponible": 690}];
 const INV_GIRASOL = [{"hibrido": "4225 CL", "fisico": 4496, "nvEntregar": 904, "ordenCompra": 0, "enTransito": 0, "disponible": 3592}, {"hibrido": "H280 CL AO", "fisico": 619, "nvEntregar": 530, "ordenCompra": 0, "enTransito": 0, "disponible": 89}, {"hibrido": "L210 CP", "fisico": 800, "nvEntregar": 154, "ordenCompra": 0, "enTransito": 0, "disponible": 646}, {"hibrido": "MG 360", "fisico": 256, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 256}, {"hibrido": "NTO 2.5 CP", "fisico": 116, "nvEntregar": 55, "ordenCompra": 0, "enTransito": 0, "disponible": 61}];
 const INV_SOJA = [{"hibrido": "53722 SE", "fisico": 9674, "nvEntregar": 6, "ordenCompra": 0, "enTransito": 0, "disponible": 9668}, {"hibrido": "SEM. SOJA DM 47E23 STS", "fisico": 4920, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 4920}, {"hibrido": "53325 SE", "fisico": 800, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 800}, {"hibrido": "4124 SE", "fisico": 7200, "nvEntregar": 6600, "ordenCompra": 0, "enTransito": 0, "disponible": 600}, {"hibrido": "54321 SE", "fisico": 223, "nvEntregar": 5, "ordenCompra": 0, "enTransito": 0, "disponible": 218}, {"hibrido": "SEM. SOJA DM 46R18", "fisico": 2, "nvEntregar": 0, "ordenCompra": 0, "enTransito": 0, "disponible": 2}, {"hibrido": "SEM. SOJA LDC 8.5 PASTOREO", "fisico": 111, "nvEntregar": 702, "ordenCompra": 0, "enTransito": 0, "disponible": -591}, {"hibrido": "4524 SE", "fisico": 0, "nvEntregar": 22400, "ordenCompra": 0, "enTransito": 0, "disponible": -22400}];
+const EXIST_MAIZ = [{"hibrido": "8181", "Tandil": 359, "Azul": 115, "Olavarría": 791, "Bolívar": 72, "Belgrano": 113, "central": 0, "total": 1450}, {"hibrido": "8380", "Tandil": 1358, "Azul": 667, "Olavarría": 859, "Bolívar": 225, "Belgrano": 123, "central": 0, "total": 3232}, {"hibrido": "8421", "Tandil": -39, "Azul": 152, "Olavarría": -117, "Bolívar": -72, "Belgrano": 144, "central": 0, "total": 68}, {"hibrido": "8472", "Tandil": 430, "Azul": 462, "Olavarría": 887, "Bolívar": -30, "Belgrano": 188, "central": 0, "total": 1937}, {"hibrido": "NEXT 22.6", "Tandil": 0, "Azul": 103, "Olavarría": -112, "Bolívar": 0, "Belgrano": 0, "central": 0, "total": -9}, {"hibrido": "RFG 22", "Tandil": 108, "Azul": 262, "Olavarría": 187, "Bolívar": 72, "Belgrano": 61, "central": 0, "total": 690}];
+const EXIST_GIRASOL = [{"hibrido": "4225 CL", "Tandil": 1400, "Azul": 120, "Olavarría": 1917, "Bolívar": 155, "Belgrano": 0, "central": 0, "total": 3592}, {"hibrido": "H280 CL AO", "Tandil": -23, "Azul": 87, "Olavarría": 0, "Bolívar": 0, "Belgrano": 25, "central": 0, "total": 89}, {"hibrido": "L210 CP", "Tandil": 396, "Azul": 250, "Olavarría": 0, "Bolívar": 0, "Belgrano": 0, "central": 0, "total": 646}, {"hibrido": "MG 360", "Tandil": 14, "Azul": 1, "Olavarría": 241, "Bolívar": 0, "Belgrano": 0, "central": 0, "total": 256}, {"hibrido": "NTO 2.5 CP", "Tandil": 52, "Azul": 2, "Olavarría": 7, "Bolívar": 0, "Belgrano": 0, "central": 0, "total": 61}];
 const VENTAS_MENSUAL_MAIZ = [{"mes": "2026-01", "cantidad": -104}, {"mes": "2026-02", "cantidad": -10}, {"mes": "2026-03", "cantidad": 0}, {"mes": "2026-04", "cantidad": 147}, {"mes": "2026-05", "cantidad": 148}, {"mes": "2026-06", "cantidad": 1293}, {"mes": "2026-07", "cantidad": 2056}, {"mes": "2026-08", "cantidad": 1922}, {"mes": "2026-09", "cantidad": 3433}];
 const VENTAS_MENSUAL_GIRASOL = [{"mes": "2026-01", "cantidad": -1}, {"mes": "2026-02", "cantidad": 0}, {"mes": "2026-03", "cantidad": -55}, {"mes": "2026-04", "cantidad": 30}, {"mes": "2026-05", "cantidad": 160}, {"mes": "2026-06", "cantidad": 429}, {"mes": "2026-07", "cantidad": 136}, {"mes": "2026-08", "cantidad": 253}, {"mes": "2026-09", "cantidad": 596}];
 const AGRINTEL = [{"partido": "Tandil", "maiz": 81000, "girasol": 49000, "soja": 44000, "trigoSoja2": 29000, "cebadaSoja2": 56000, "total": 259000}, {"partido": "Azul", "maiz": 53000, "girasol": 18000, "soja": 36000, "trigoSoja2": 22000, "cebadaSoja2": 29000, "total": 158000}, {"partido": "Olavarría", "maiz": 30000, "girasol": 10000, "soja": 17000, "trigoSoja2": 9000, "cebadaSoja2": 25000, "total": 91000}, {"partido": "Bolívar", "maiz": 51000, "girasol": 16000, "soja": 46000, "trigoSoja2": 6000, "cebadaSoja2": 17000, "total": 136000}, {"partido": "General La Madrid", "maiz": 32000, "girasol": 17000, "soja": 21000, "trigoSoja2": 18000, "cebadaSoja2": 49000, "total": 137000}, {"partido": "Laprida", "maiz": 11000, "girasol": 3000, "soja": 5000, "trigoSoja2": 5000, "cebadaSoja2": 17000, "total": 41000}, {"partido": "Rauch", "maiz": 7000, "girasol": 3000, "soja": 3000, "trigoSoja2": 1000, "cebadaSoja2": 2000, "total": 16000}, {"partido": "Ayacucho", "maiz": 32000, "girasol": 18000, "soja": 9000, "trigoSoja2": 3000, "cebadaSoja2": 6000, "total": 68000}, {"partido": "General Belgrano", "maiz": 14000, "girasol": 5000, "soja": 11000, "trigoSoja2": 4000, "cebadaSoja2": 5000, "total": 39000}, {"partido": "Benito Juárez", "maiz": 42000, "girasol": 14000, "soja": 23000, "trigoSoja2": 17000, "cebadaSoja2": 40000, "total": 136000}, {"partido": "Total", "maiz": 353000, "girasol": 153000, "soja": 215000, "trigoSoja2": 114000, "cebadaSoja2": 246000, "total": 1081000}];
@@ -2055,6 +2113,80 @@ function makeInvTableRenderer(dataArr, tableId, tbodyId, sortState){
 let cyoSort = { key:'disponible', dir:1 };
 const renderCyoTable = makeInvTableRenderer(INV_MAIZ, 'cyo-table', 'cyo-tbody', cyoSort);
 
+const EXIST_SUCS = ['Tandil','Azul','Olavarría','Bolívar','Belgrano'];
+function makeExistTableRenderer(dataArr, tableId, tbodyId, sortState){
+  function render(){
+    const sorted = [...dataArr].sort((a,b)=>{
+      let av=a[sortState.key], bv=b[sortState.key];
+      if(typeof av === 'string'){
+        if(av<bv) return -1*sortState.dir;
+        if(av>bv) return 1*sortState.dir;
+        return 0;
+      }
+      return (av-bv)*sortState.dir;
+    });
+    const tbody = document.getElementById(tbodyId);
+    tbody.innerHTML = '';
+    sorted.forEach(r=>{
+      const tr = document.createElement('tr');
+      const cells = EXIST_SUCS.map(s=>{
+        const cls = r[s]<0?'neg':(r[s]>0?'pos':'');
+        return `<td class="num ${cls}">${r[s].toLocaleString('es-AR')}</td>`;
+      }).join('');
+      tr.innerHTML = `<td>${r.hibrido}</td>${cells}
+        <td class="num">${r.central.toLocaleString('es-AR')}</td>
+        <td class="num">${r.total.toLocaleString('es-AR')}</td>`;
+      tbody.appendChild(tr);
+    });
+    const totals = { central:0, total:0 };
+    EXIST_SUCS.forEach(s=>totals[s]=0);
+    dataArr.forEach(r=>{
+      EXIST_SUCS.forEach(s=>{ totals[s]+=r[s]; });
+      totals.central += r.central; totals.total += r.total;
+    });
+    const totalTr = document.createElement('tr');
+    totalTr.style.borderTop = '2px solid var(--line)';
+    totalTr.style.fontWeight = '600';
+    const totCells = EXIST_SUCS.map(s=>`<td class="num">${totals[s].toLocaleString('es-AR')}</td>`).join('');
+    totalTr.innerHTML = `<td>Total</td>${totCells}
+      <td class="num">${totals.central.toLocaleString('es-AR')}</td>
+      <td class="num">${totals.total.toLocaleString('es-AR')}</td>`;
+    tbody.appendChild(totalTr);
+  }
+  document.querySelectorAll('#'+tableId+' thead th').forEach(th=>{
+    th.addEventListener('click', ()=>{
+      const key = th.dataset.key;
+      if(sortState.key===key){ sortState.dir *= -1; } else { sortState.key=key; sortState.dir=1; }
+      document.querySelectorAll('#'+tableId+' thead th .arrow').forEach(a=>a.textContent='');
+      th.querySelector('.arrow').textContent = sortState.dir===1?'▲':'▼';
+      render();
+    });
+  });
+  return render;
+}
+
+function renderExistRankingSucursal(dataArr, elId){
+  const totals = {};
+  EXIST_SUCS.forEach(s=>totals[s]=0);
+  dataArr.forEach(r=>{ EXIST_SUCS.forEach(s=>{ totals[s]+=r[s]; }); });
+  const entries = Object.entries(totals).sort((a,b)=>b[1]-a[1]);
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  const max = Math.max(1, ...entries.map(e=>Math.abs(e[1])));
+  entries.forEach(([name,val],i)=>{
+    const pct = Math.max(2, Math.round(Math.abs(val)/max*100));
+    const row = document.createElement('div');
+    row.className = 'barrow';
+    row.innerHTML = `<div class="name">${i+1}. ${name}</div>
+      <div class="track"><div class="fill ${val<0?'zero':''}" style="width:${val<0?3:pct}%"></div></div>
+      <div class="val">${val.toLocaleString('es-AR')}</div>`;
+    el.appendChild(row);
+  });
+}
+
+let existSort = { key:'total', dir:1 };
+const renderExistTable = makeExistTableRenderer(EXIST_MAIZ, 'exist-table', 'exist-tbody', existSort);
+
 function renderSprintPanel(){
   const now = new Date();
   const msPerDay = 1000*60*60*24;
@@ -2131,6 +2263,8 @@ function renderVentasTab(){
   renderHibridoSummary();
   renderVentasHibridoChart(SALES, 'vh-chart');
   renderCyoTable();
+  renderExistTable();
+  renderExistRankingSucursal(EXIST_MAIZ, 'exist-rk-sucursal');
   renderMonthlyChart(VENTAS_MENSUAL_MAIZ, 'vm-chart');
   renderRankingSucursal();
   renderRankingVendedor();
@@ -2613,6 +2747,9 @@ function renderGirRankingVendedor(){
 let cyoGirSort = { key:'disponible', dir:1 };
 const renderCyoGirTable = makeInvTableRenderer(INV_GIRASOL, 'cyogir-table', 'cyogir-tbody', cyoGirSort);
 
+let existGirSort = { key:'total', dir:1 };
+const renderExistGirTable = makeExistTableRenderer(EXIST_GIRASOL, 'existgir-table', 'existgir-tbody', existGirSort);
+
 let invSojaSort = { key:'disponible', dir:1 };
 const renderInvSojaTable = makeInvTableRenderer(INV_SOJA, 'invsoja-table', 'invsoja-tbody', invSojaSort);
 
@@ -2620,6 +2757,8 @@ renderGirVentasKPIs();
 renderGirHibridoSummary();
 renderVentasHibridoChart(SALES_GIR, 'vhgir-chart');
 renderCyoGirTable();
+renderExistGirTable();
+renderExistRankingSucursal(EXIST_GIRASOL, 'existgir-rk-sucursal');
 renderMonthlyChart(VENTAS_MENSUAL_GIRASOL, 'vmgir-chart');
 renderGirRankingSucursal();
 renderGirRankingVendedor();
