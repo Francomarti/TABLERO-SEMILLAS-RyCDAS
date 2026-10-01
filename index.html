@@ -126,9 +126,7 @@
   }
   #fc-kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
   #vt-kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
-  #sprint-kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-bottom:18px;}
   #soja-kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));}
-  #sprint-panel{border-color:var(--gold);}
   #ob-kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
   .kpi{
     background:var(--bg-panel);
@@ -517,23 +515,6 @@
     <div class="kpis" id="vt-kpis"></div>
 
     <div id="vt-callout"></div>
-
-    <section class="panel" id="sprint-panel">
-      <h2>🏁 Sprint final de mes</h2>
-      <div class="panel-sub">Ranking de ventas de maíz específico del <b>21 al 30 de septiembre</b> — se actualiza cada vez que subís datos nuevos, independiente del acumulado del mes</div>
-      <div class="kpis" id="sprint-kpis"></div>
-      <div id="sprint-empty" class="empty-state" style="display:none;"></div>
-      <div class="grid-2" id="sprint-rankings">
-        <div>
-          <h2 style="font-size:14px;margin-bottom:10px;">Por vendedor</h2>
-          <div class="barlist" id="sprint-rk-vendedor"></div>
-        </div>
-        <div>
-          <h2 style="font-size:14px;margin-bottom:10px;">Por sucursal</h2>
-          <div class="barlist" id="sprint-rk-sucursal"></div>
-        </div>
-      </div>
-    </section>
 
     <section class="panel">
       <h2>Resumen por híbrido — todas las sucursales</h2>
@@ -1225,10 +1206,6 @@ const VENTAS_MENSUAL_MAIZ = [{"mes": "2026-01", "cantidad": -104}, {"mes": "2026
 const VENTAS_MENSUAL_GIRASOL = [{"mes": "2026-01", "cantidad": -1}, {"mes": "2026-02", "cantidad": 0}, {"mes": "2026-03", "cantidad": -55}, {"mes": "2026-04", "cantidad": 30}, {"mes": "2026-05", "cantidad": 160}, {"mes": "2026-06", "cantidad": 429}, {"mes": "2026-07", "cantidad": 136}, {"mes": "2026-08", "cantidad": 253}, {"mes": "2026-09", "cantidad": 899}, {"mes": "2026-10", "cantidad": 0}];
 const AGRINTEL = [{"partido": "Tandil", "maiz": 81000, "girasol": 49000, "soja": 44000, "trigoSoja2": 29000, "cebadaSoja2": 56000, "total": 259000}, {"partido": "Azul", "maiz": 53000, "girasol": 18000, "soja": 36000, "trigoSoja2": 22000, "cebadaSoja2": 29000, "total": 158000}, {"partido": "Olavarría", "maiz": 30000, "girasol": 10000, "soja": 17000, "trigoSoja2": 9000, "cebadaSoja2": 25000, "total": 91000}, {"partido": "Bolívar", "maiz": 51000, "girasol": 16000, "soja": 46000, "trigoSoja2": 6000, "cebadaSoja2": 17000, "total": 136000}, {"partido": "General La Madrid", "maiz": 32000, "girasol": 17000, "soja": 21000, "trigoSoja2": 18000, "cebadaSoja2": 49000, "total": 137000}, {"partido": "Laprida", "maiz": 11000, "girasol": 3000, "soja": 5000, "trigoSoja2": 5000, "cebadaSoja2": 17000, "total": 41000}, {"partido": "Rauch", "maiz": 7000, "girasol": 3000, "soja": 3000, "trigoSoja2": 1000, "cebadaSoja2": 2000, "total": 16000}, {"partido": "Ayacucho", "maiz": 32000, "girasol": 18000, "soja": 9000, "trigoSoja2": 3000, "cebadaSoja2": 6000, "total": 68000}, {"partido": "General Belgrano", "maiz": 14000, "girasol": 5000, "soja": 11000, "trigoSoja2": 4000, "cebadaSoja2": 5000, "total": 39000}, {"partido": "Benito Juárez", "maiz": 42000, "girasol": 14000, "soja": 23000, "trigoSoja2": 17000, "cebadaSoja2": 40000, "total": 136000}, {"partido": "Total", "maiz": 353000, "girasol": 153000, "soja": 215000, "trigoSoja2": 114000, "cebadaSoja2": 246000, "total": 1081000}];
 const RYCDAS_PARTIDOS = new Set(['Tandil','Azul','Olavarría','Bolívar','General Belgrano']);
-const SPRINT_VENDEDOR = [{"vendedor": "Fabricio Lacoste", "cantidad": 707.0}, {"vendedor": "Claudino De Dominicis", "cantidad": 515.0}, {"vendedor": "Fabricio Perez", "cantidad": 407.0}, {"vendedor": "Agustin Oliverio", "cantidad": 350.0}, {"vendedor": "Ricardo Silvestro", "cantidad": 260.0}, {"vendedor": "Veronica Flores", "cantidad": 223.0}, {"vendedor": "Sergio Lopez", "cantidad": 158.0}, {"vendedor": "Sixto Fernandez", "cantidad": 104.0}, {"vendedor": "Mariano Ruiz", "cantidad": 91.0}, {"vendedor": "Marcelo Bollani", "cantidad": 54.0}, {"vendedor": "Barbara Saez", "cantidad": 38.0}, {"vendedor": "Luciano Miramon", "cantidad": 17.0}];
-const SPRINT_SUCURSAL = [{"sucursal": "Olavarría", "cantidad": 967.0}, {"sucursal": "Azul", "cantidad": 903.0}, {"sucursal": "Bolívar", "cantidad": 515.0}, {"sucursal": "Tandil", "cantidad": 309.0}, {"sucursal": "Belgrano", "cantidad": 230.0}];
-const SPRINT_START = new Date('2026-09-21T00:00:00');
-const SPRINT_END = new Date('2026-09-30T23:59:59');
 const SUCS_ALL = ['Azul','Belgrano','Bolívar','Olavarría','Tandil'];
 const OBJETIVO_SOJA_BOLSAS = 15000;
 const OBJETIVO_SOJA_KG = OBJETIVO_SOJA_BOLSAS * 40;
@@ -2189,79 +2166,10 @@ function renderExistRankingSucursal(dataArr, elId){
 let existSort = { key:'total', dir:1 };
 const renderExistTable = makeExistTableRenderer(EXIST_MAIZ, 'exist-table', 'exist-tbody', existSort);
 
-function renderSprintPanel(){
-  const now = new Date();
-  const msPerDay = 1000*60*60*24;
-  let diasRestantes = Math.ceil((SPRINT_END - now) / msPerDay);
-  let estadoTexto;
-  if(now < SPRINT_START){
-    const diasParaEmpezar = Math.ceil((SPRINT_START - now) / msPerDay);
-    estadoTexto = `Arranca en ${diasParaEmpezar} día${diasParaEmpezar!==1?'s':''}`;
-  } else if(now > SPRINT_END){
-    estadoTexto = 'Sprint terminado';
-  } else {
-    diasRestantes = Math.max(0, diasRestantes);
-    estadoTexto = `Quedan ${diasRestantes} día${diasRestantes!==1?'s':''}`;
-  }
-
-  const totalSprint = SPRINT_VENDEDOR.reduce((s,r)=>s+r.cantidad,0);
-
-  const kpis = document.getElementById('sprint-kpis');
-  kpis.innerHTML = '';
-  const cards = [
-    { label:'Ventana del sprint', value:'21–30 Sep', unit:'', foot: estadoTexto, alert:false },
-    { label:'Vendido en el sprint', value: totalSprint.toLocaleString('es-AR'), unit:'bolsas', foot:'maíz, facturado a la fecha de la última carga', alert:false, good: totalSprint>0 },
-  ];
-  cards.forEach(c=>{
-    const div = document.createElement('div');
-    div.className = 'kpi' + (c.alert?' alert':(c.good?' good':''));
-    div.innerHTML = `<div class="label">${c.label}</div><div class="value">${c.value}<small>${c.unit}</small></div><div class="foot">${c.foot}</div>`;
-    kpis.appendChild(div);
-  });
-
-  const emptyEl = document.getElementById('sprint-empty');
-  const rankingsEl = document.getElementById('sprint-rankings');
-  if(!SPRINT_VENDEDOR.length && !SPRINT_SUCURSAL.length){
-    emptyEl.style.display = 'block';
-    emptyEl.textContent = 'Todavía no hay ventas cargadas dentro de la ventana del sprint (21–30 sep) — vas a ver el ranking en cuanto subas datos más nuevos.';
-    rankingsEl.style.display = 'none';
-    return;
-  }
-  emptyEl.style.display = 'none';
-  rankingsEl.style.display = '';
-
-  const vEl = document.getElementById('sprint-rk-vendedor');
-  vEl.innerHTML = '';
-  const maxV = Math.max(1, ...SPRINT_VENDEDOR.map(r=>Math.abs(r.cantidad)));
-  SPRINT_VENDEDOR.forEach((r,i)=>{
-    const pct = Math.max(2, Math.round(Math.abs(r.cantidad)/maxV*100));
-    const row = document.createElement('div');
-    row.className = 'barrow';
-    row.innerHTML = `<div class="name">${i+1}. ${r.vendedor}</div>
-      <div class="track"><div class="fill ${r.cantidad<0?'zero':''}" style="width:${r.cantidad<0?3:pct}%"></div></div>
-      <div class="val">${r.cantidad.toLocaleString('es-AR')}</div>`;
-    vEl.appendChild(row);
-  });
-
-  const sEl = document.getElementById('sprint-rk-sucursal');
-  sEl.innerHTML = '';
-  const maxS = Math.max(1, ...SPRINT_SUCURSAL.map(r=>Math.abs(r.cantidad)));
-  SPRINT_SUCURSAL.forEach((r,i)=>{
-    const pct = Math.max(2, Math.round(Math.abs(r.cantidad)/maxS*100));
-    const row = document.createElement('div');
-    row.className = 'barrow';
-    row.innerHTML = `<div class="name">${i+1}. ${r.sucursal}</div>
-      <div class="track"><div class="fill ${r.cantidad<0?'zero':''}" style="width:${r.cantidad<0?3:pct}%"></div></div>
-      <div class="val">${r.cantidad.toLocaleString('es-AR')}</div>`;
-    sEl.appendChild(row);
-  });
-}
-
 function renderVentasTab(){
   const matrix = applyVtFilters(buildVentasMatrix());
   renderVtKPIs(matrix);
   renderVtCallout(matrix);
-  renderSprintPanel();
   renderHibridoSummary();
   renderVentasHibridoChart(SALES, 'vh-chart');
   renderCyoTable();
