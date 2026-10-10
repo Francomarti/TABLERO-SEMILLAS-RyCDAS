@@ -385,10 +385,6 @@
         <h2>Bolsas netas por híbrido</h2>
         <div class="panel-sub">Agrupado por híbrido base, sin abrir por calibre ni tecnología</div>
         <div class="barlist" id="chart-hibrido"></div>
-        <div class="legend-line">
-          <span><span class="legend-swatch" style="background:var(--gold)"></span>Recibido</span>
-          <span><span class="legend-swatch hatch"></span>En camino — OA</span>
-        </div>
       </section>
     </div>
 
@@ -454,36 +450,14 @@
       </section>
       <section class="panel">
         <h2>Cumplimiento por híbrido</h2>
-        <div class="panel-sub">Total recibido vs. forecasteado, todas las sucursales del filtro. Incluye OA en tránsito (rayado)</div>
+        <div class="panel-sub">Total recibido vs. forecasteado, todas las sucursales del filtro</div>
         <div id="fc-chart-hibrido"></div>
         <div class="legend-line">
           <span><span class="legend-swatch" style="background:var(--gold)"></span>Recibido</span>
-          <span><span class="legend-swatch hatch"></span>OA en tránsito</span>
           <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo (forecast)</span>
         </div>
       </section>
     </div>
-
-    <section class="panel">
-      <h2>Órdenes pendientes de recibir (OA)</h2>
-      <div class="panel-sub">Pedidos ya realizados a Corteva que todavía no llegaron físicamente. El archivo no distingue sucursal, así que se muestra a nivel compañía y se suma al recibido para ver la brecha real contra el forecast.</div>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Híbrido</th>
-              <th style="text-align:right">Forecast (todas las sucursales)</th>
-              <th style="text-align:right">Recibido</th>
-              <th style="text-align:right">OA pendiente</th>
-              <th style="text-align:right">Recibido + OA</th>
-              <th style="text-align:right">Brecha final</th>
-              <th>Estado</th>
-            </tr>
-          </thead>
-          <tbody id="oa-tbody"></tbody>
-        </table>
-      </div>
-    </section>
 
     <section class="panel">
       <h2>Detalle sucursal × híbrido</h2>
@@ -1339,17 +1313,14 @@ function renderHibridoChart(data){
   const el = document.getElementById('chart-hibrido');
   el.innerHTML = '';
   if(!entries.length){ el.innerHTML = '<div class="empty-state">Sin movimientos netos en este filtro</div>'; return; }
-  const oaMap = oaByHibrido();
-  const max = Math.max(1, ...entries.map(([name,val])=>Math.abs(val)+(oaMap[name]||0)));
+  const max = Math.max(1, ...entries.map(([name,val])=>Math.abs(val)));
   entries.forEach(([name,val])=>{
-    const oa = oaMap[name] || 0;
     const pct = Math.max(2, Math.round(Math.abs(val)/max*100));
-    const oaPct = oa>0 ? Math.max(1, Math.round(oa/max*100)) : 0;
     const row = document.createElement('div');
     row.className = 'barrow';
     row.innerHTML = `<div class="name" title="${name}">${name}</div>
-      <div class="track"><div class="fill ${oa>0?'':'solo'}" style="width:${pct}%"></div>${oa>0?`<div class="fill-oa" style="width:${oaPct}%"></div>`:''}</div>
-      <div class="val">${val.toLocaleString('es-AR')}${oa>0?`<small>+${Math.round(oa).toLocaleString('es-AR')} OA</small>`:''}</div>`;
+      <div class="track"><div class="fill solo" style="width:${pct}%"></div></div>
+      <div class="val">${val.toLocaleString('es-AR')}</div>`;
     el.appendChild(row);
   });
 }
@@ -1551,21 +1522,13 @@ function renderFcKPIs(matrix){
   const pct = totalFc>0 ? (totalRec/totalFc*100) : 0;
   const underCount = matrix.filter(r=>r.estado==='under').length;
 
-  const oaMap = oaByHibrido();
-  const hibridosInFilter = new Set(matrix.map(r=>r.hibrido));
-  const totalOA = [...hibridosInFilter].reduce((s,h)=>s+(oaMap[h]||0),0);
-  const deltaAdj = (totalRec+totalOA) - totalFc;
-  const pctAdj = totalFc>0 ? ((totalRec+totalOA)/totalFc*100) : 0;
-
   const kpis = document.getElementById('fc-kpis');
   kpis.innerHTML = '';
   const cards = [
     { label:'Forecast total', value: Math.round(totalFc).toLocaleString('es-AR'), unit:'bolsas', foot:'suma de clientes cargados', alert:false },
     { label:'Recibido a la fecha', value: totalRec.toLocaleString('es-AR'), unit:'bolsas', foot:'neto, todas las sucursales del filtro', alert:false, good:true },
-    { label:'OA pendiente de recibir', value: Math.round(totalOA).toLocaleString('es-AR'), unit:'bolsas', foot:'pedidos ya hechos a Corteva, a nivel compañía', alert:false },
     { label:'Brecha vs. forecast', value: (delta>=0?'+':'')+delta.toLocaleString('es-AR'), unit:'bolsas', foot: delta<0 ? 'falta traer para cubrir lo forecasteado' : 'por encima de lo forecasteado', alert: delta<0 },
-    { label:'Brecha ajustada (recibido + OA)', value: (deltaAdj>=0?'+':'')+Math.round(deltaAdj).toLocaleString('es-AR'), unit:'bolsas', foot: deltaAdj<0 ? 'aún falta pedir, ni sumando el OA alcanza' : 'se cubre el forecast con lo ya pedido', alert: deltaAdj<0, good: deltaAdj>=0 },
-    { label:'Cumplimiento ajustado', value: Math.round(pctAdj)+'%', unit:'', foot: 'recibido + OA sobre forecast · '+underCount+' combinaciones bajo 90% sin OA', alert: pctAdj<90 },
+    { label:'Cumplimiento', value: Math.round(pct)+'%', unit:'', foot: 'recibido sobre forecast · '+underCount+' combinaciones bajo 90%', alert: pct<90 },
   ];
   cards.forEach(c=>{
     const div = document.createElement('div');
@@ -1698,9 +1661,8 @@ function renderForecastTab(){
   renderFcKPIs(matrix);
   renderFcCallout(matrix);
   renderFcCompareChart(matrix, 'sucursal', 'fc-chart-sucursal', false);
-  renderFcCompareChart(matrix, 'hibrido', 'fc-chart-hibrido', true);
+  renderFcCompareChart(matrix, 'hibrido', 'fc-chart-hibrido', false);
   renderFcTable(matrix);
-  renderOaTable(matrix);
 }
 renderForecastTab();
 
@@ -2834,7 +2796,6 @@ function renderSojaKPIs(){
     { label:'Vendido (neto)', value: Math.round(totalVendido).toLocaleString('es-AR'), unit:'Kg', foot: Math.round(totalFacturado).toLocaleString('es-AR')+' facturado + '+Math.round(totalPendiente).toLocaleString('es-AR')+' pend. de facturar', alert:false },
     { label:'Objetivo 2026', value: OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR'), unit:'bolsas (40kg)', foot: OBJETIVO_SOJA_KG.toLocaleString('es-AR')+' Kg equivalentes', alert:false },
     { label:'% objetivo vendido', value: pctObjetivo.toFixed(1)+'%', unit:'', foot: vendidoBolsasEq.toFixed(1)+' de '+OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR')+' bolsas equivalentes', alert: pctObjetivo<10 },
-    { label:'OA en camino', value: OA_SOJA_KG.toLocaleString('es-AR'), unit:'Kg', foot:'pedidos ya hechos a Corteva — 3325 SE, 4124 SE y 4524 SE, casi todo con destino Tandil', alert:false },
   ];
   cards.forEach(c=>{
     const div = document.createElement('div');
