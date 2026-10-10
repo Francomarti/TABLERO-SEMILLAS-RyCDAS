@@ -518,7 +518,7 @@
 
     <section class="panel">
       <h2>Resumen por híbrido — todas las sucursales</h2>
-      <div class="panel-sub">Vendido, forecast y recibido (+ OA en camino) combinando las cinco sucursales, para saber qué híbrido falta traer sin importar dónde. Ordenado por lo que más urge traer.</div>
+      <div class="panel-sub">Vendido, forecast y recibido combinando las cinco sucursales, para saber qué híbrido falta traer sin importar dónde. Ordenado por lo que más urge traer.</div>
       <div class="table-scroll">
         <table id="hs-table">
           <thead>
@@ -526,8 +526,6 @@
               <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
               <th data-key="forecast" style="text-align:right">Forecast<span class="arrow"></span></th>
               <th data-key="recibido" style="text-align:right">Recibido<span class="arrow"></span></th>
-              <th data-key="oa" style="text-align:right">OA en camino<span class="arrow"></span></th>
-              <th data-key="recibidoOA" style="text-align:right">Recibido + OA<span class="arrow"></span></th>
               <th data-key="vendido" style="text-align:right">Vendido<span class="arrow"></span></th>
               <th data-key="stock" style="text-align:right">Stock disp.<span class="arrow"></span></th>
               <th data-key="faltaTraer" style="text-align:right">Falta traer<span class="arrow"></span></th>
@@ -1759,9 +1757,6 @@ function renderVtKPIs(matrix){
   const totalStock = matrix.reduce((s,r)=>s+r.stock,0);
   const pctForecast = totalForecast>0 ? (totalVendido/totalForecast*100) : 0;
   const stockoutCount = matrix.filter(r=>r.estado==='stockout').length;
-  const oaMap = oaByHibrido();
-  const hibridosInFilter = new Set(matrix.map(r=>r.hibrido));
-  const totalOA = [...hibridosInFilter].reduce((s,h)=>s+(oaMap[h]||0),0);
 
   const kpis = document.getElementById('vt-kpis');
   kpis.innerHTML = '';
@@ -1770,7 +1765,6 @@ function renderVtKPIs(matrix){
     { label:'% del forecast vendido', value: Math.round(pctForecast)+'%', unit:'', foot: pctForecast>=85 ? 'demanda cerca de agotar lo planificado' : 'dentro de lo esperado para la campaña', alert: pctForecast>=85 },
     { label:'Stock disponible', value: totalStock.toLocaleString('es-AR'), unit:'bolsas', foot:'recibido menos vendido, todas las combinaciones', alert: totalStock<0 },
     { label:'Combinaciones en quiebre', value: stockoutCount, unit:'de '+matrix.length, foot: stockoutCount ? 'vendieron más de lo que llegó físicamente' : 'ninguna combinación en quiebre', alert: stockoutCount>0 },
-    { label:'OA en camino (sin asignar)', value: Math.round(totalOA).toLocaleString('es-AR'), unit:'bolsas', foot:'pedidos a Corteva, a nivel compañía · ver detalle en Forecast vs Recibido', alert:false },
   ];
   cards.forEach(c=>{
     const div = document.createElement('div');
@@ -1892,7 +1886,6 @@ function buildHibridoSummary(){
   FORECAST.forEach(f=>{ fcByH[f.hibrido] = (fcByH[f.hibrido]||0) + f.forecast; });
   const recByH = {};
   RAW.forEach(r=>{ recByH[r.hibrido] = (recByH[r.hibrido]||0) + r.cantidad; });
-  const oaByH = oaByHibrido();
   const ventaByH = {};
   SALES.forEach(s=>{ ventaByH[s.hibrido] = (ventaByH[s.hibrido]||0) + s.vendido; });
 
@@ -1900,15 +1893,13 @@ function buildHibridoSummary(){
   return hibridos.map(h=>{
     const forecast = fcByH[h] || 0;
     const recibido = recByH[h] || 0;
-    const oa = oaByH[h] || 0;
-    const recibidoOA = recibido + oa;
     const vendido = ventaByH[h] || 0;
     const stock = recibido - vendido;
-    const faltaTraer = Math.max(0, forecast - recibidoOA);
+    const faltaTraer = Math.max(0, forecast - recibido);
     let estado = 'ok', label = 'Cubierto';
     if(faltaTraer > 0){ estado='traer'; label='Traer más'; }
     else if(stock < 0){ estado='alerta'; label='Vendido > recibido'; }
-    return { hibrido:h, forecast, recibido, oa, recibidoOA, vendido, stock, faltaTraer, estado, label };
+    return { hibrido:h, forecast, recibido, vendido, stock, faltaTraer, estado, label };
   });
 }
 
@@ -1933,8 +1924,6 @@ function renderHibridoSummary(){
     tr.innerHTML = `<td>${r.hibrido}</td>
       <td class="num">${Math.round(r.forecast).toLocaleString('es-AR')}</td>
       <td class="num">${r.recibido.toLocaleString('es-AR')}</td>
-      <td class="num">${r.oa>0?'+':''}${Math.round(r.oa).toLocaleString('es-AR')}</td>
-      <td class="num">${Math.round(r.recibidoOA).toLocaleString('es-AR')}</td>
       <td class="num">${Math.round(r.vendido).toLocaleString('es-AR')}</td>
       <td class="num ${stockCls}">${r.stock.toLocaleString('es-AR')}</td>
       <td class="num ${faltaCls}">${r.faltaTraer>0 ? Math.round(r.faltaTraer).toLocaleString('es-AR') : '—'}</td>
