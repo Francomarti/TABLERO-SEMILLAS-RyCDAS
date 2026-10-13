@@ -1152,6 +1152,13 @@
   <!-- CLIENTES NUEVOS (N) — productores que prueban Brevant           -->
   <!-- ############################################################ -->
   <div class="croppanel" id="crop-clientes">
+  <style>
+    @media (max-width:520px){
+      #crop-clientes table th, #crop-clientes table td{padding-left:6px;padding-right:6px;}
+      #cn-tbody-suc td:first-child{white-space:normal;min-width:60px;}
+      #cn-tbody-suc td .badge{padding:2px 5px;}
+    }
+  </style>
 
     <section class="panel">
       <h2>Productores nuevos con Brevant (N)</h2>
@@ -1164,21 +1171,22 @@
     </section>
 
     <section class="panel">
-      <h2>Nuevos por sucursal</h2>
-      <div class="panel-sub">Misma fecha en los tres años (hasta 10/10), según la sucursal de la primera compra.</div>
+      <h2>Dónde trabajar: nuevos por sucursal</h2>
+      <div class="panel-sub">Meta de cada sucursal = los nuevos con que cerró en 2024, el mejor año (entre todas suman <b id="cn-meta-total">111</b>). Ordenado por lo que falta.</div>
       <div class="table-scroll" style="max-height:none;">
         <table>
           <thead><tr>
             <th>Sucursal</th>
-            <th style="text-align:right">2024</th>
-            <th style="text-align:right">2025</th>
-            <th style="text-align:right">2026</th>
-            <th style="text-align:right">Dif. vs 2025</th>
+            <th style="text-align:right">Llevamos</th>
+            <th style="text-align:right">Meta</th>
+            <th style="text-align:right">Faltan</th>
+            <th>Avance</th>
+            <th style="text-align:right">vs 2025*</th>
           </tr></thead>
           <tbody id="cn-tbody-suc"></tbody>
         </table>
       </div>
-      <div class="rowcount">2021 es el primer año del archivo: los N de 2022 pueden incluir a alguien que ya compraba BRV antes. Solo totales, sin nombres.</div>
+      <div class="rowcount">* Mismos días del año: nuevos hasta 10/10 de 2025 contra 2026. Sucursal = la de la primera compra. 2021 es el primer año del archivo: los N de 2022 pueden incluir a alguien que ya compraba BRV antes. Solo totales, sin nombres.</div>
     </section>
 
   </div><!-- /crop-clientes -->
@@ -3253,27 +3261,28 @@ renderGlobSucCultivoTable();
 
 <script id="clientes-n-script">
 (function(){
-const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,103,73,111,88,56],"N_corte":[null,68,35,61,41,56],"N_anio":[null,103,73,111,88,56],"suc":{"AZUL":{"2024":9,"2025":10,"2026":4},"BOLIVAR":{"2024":18,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":12,"2025":5,"2026":10},"OLAVARRIA":{"2024":7,"2025":3,"2026":6},"TANDIL":{"2024":15,"2025":14,"2026":8}}};
+const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,103,73,111,88,56],"N_corte":[null,68,35,61,41,56],"N_anio":[null,103,73,111,88,56],"suc":{"AZUL":{"2024":9,"2025":10,"2026":4},"BOLIVAR":{"2024":18,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":12,"2025":5,"2026":10},"OLAVARRIA":{"2024":7,"2025":3,"2026":6},"TANDIL":{"2024":15,"2025":14,"2026":8}},"meta":{"AZUL":20,"BOLIVAR":27,"GENERAL BELGRANO":21,"OLAVARRIA":16,"TANDIL":27}};
 const fmt = n => (n===null||n===undefined) ? '—' : Number(n).toLocaleString('es-AR');
 const el = id => document.getElementById(id);
 const iy = y => D.anios.indexOf(y);
 const SUC_NAMES = {TANDIL:'Tandil', AZUL:'Azul', OLAVARRIA:'Olavarría', BOLIVAR:'Bolívar', 'GENERAL BELGRANO':'General Belgrano'};
-const SUC_ORDER = ['TANDIL','AZUL','OLAVARRIA','BOLIVAR','GENERAL BELGRANO'];
 const difBadge = d => `<span class="badge ${d>0?'over':(d<0?'under':'ontrack')}">${d>0?'+':(d<0?'−':'')}${Math.abs(d)}</span>`;
+const avanceBar = p => `<span style="display:inline-block;width:84px;height:8px;background:var(--bg-panel-alt);border-radius:2px;vertical-align:middle;margin-right:8px;overflow:hidden;"><span style="display:block;height:100%;width:${Math.min(100,p)}%;background:${p>=100?'var(--green-accent)':'var(--gold)'};"></span></span>${p}%`;
 
 const N26 = D.N_corte[iy(2026)], N25 = D.N_corte[iy(2025)];
 const ratios = [2022,2023,2024,2025].map(y => D.N_corte[iy(y)]/D.N_anio[iy(y)]);
 const projs = ratios.map(r => N26/r);
 const pMin = Math.round(Math.min(...projs)/5)*5, pMax = Math.round(Math.max(...projs)/5)*5;
 const dP = Math.round((N26/N25-1)*100);
-const atras = SUC_ORDER.filter(k => D.suc[k] && D.suc[k]['2026'] < D.suc[k]['2025'])
-  .map(k => `${SUC_NAMES[k]} (${D.suc[k]['2026']} vs ${D.suc[k]['2025']})`);
+const metaTotal = Object.values(D.meta).reduce((a,b)=>a+b,0);
+const faltanTotal = Math.max(0, metaTotal - N26);
 
 el('cn-corte').textContent = D.corte.split('-').reverse().join('/');
+el('cn-meta-total').textContent = metaTotal;
 el('cn-kpis').innerHTML = `
   <div class="kpi good"><div class="label">Nuevos 2026 (hasta hoy)</div><div class="value">${fmt(N26)}</div><div class="foot">2025 a la misma fecha: ${fmt(N25)} (${dP>=0?'+':''}${dP}%)</div></div>
   <div class="kpi"><div class="label">Cierre estimado 2026</div><div class="value">${pMin}–${pMax}</div><div class="foot">2025 cerró con ${fmt(D.N_anio[iy(2025)])} · 2024 con ${fmt(D.N_anio[iy(2024)])}</div></div>
-  <div class="kpi ${atras.length?'alert':''}"><div class="label">Sucursales por debajo de 2025</div><div class="value" style="font-size:20px;line-height:1.35;">${atras.length?atras.join('<br>'):'Ninguna'}</div><div class="foot">Nuevos hasta 10/10, 2026 vs 2025</div></div>`;
+  <div class="kpi"><div class="label">Meta 2026: igualar el mejor año</div><div class="value">${fmt(metaTotal)}</div><div class="foot">Faltan ${fmt(faltanTotal)} · llevamos el ${Math.round(N26/metaTotal*100)}%</div></div>`;
 
 // barras: N por año (2026 con estimado)
 const yrs = [2022,2023,2024,2025,2026];
@@ -3285,13 +3294,17 @@ el('cn-bars-anio').innerHTML = yrs.map((y,i) => {
   return `<div class="barrow"><div class="name">${hoy?'2026':y}</div><div class="track"><div class="fill solo" style="width:${(vals[i]/max*100).toFixed(1)}%;${hoy?'background:var(--gold);':''}"></div></div><div class="val">${fmt(vals[i])}${est}</div></div>`;
 }).join('');
 
-// por sucursal (misma fecha)
-let t = {'2024':0,'2025':0,'2026':0};
-const rows = SUC_ORDER.filter(k => D.suc[k]).map(k => {
-  const v = D.suc[k]; ['2024','2025','2026'].forEach(y => t[y]+=v[y]);
-  return `<tr><td>${SUC_NAMES[k]}</td><td class="num">${fmt(v['2024'])}</td><td class="num">${fmt(v['2025'])}</td><td class="num"><b>${fmt(v['2026'])}</b></td><td class="num">${difBadge(v['2026']-v['2025'])}</td></tr>`;
-}).join('');
-el('cn-tbody-suc').innerHTML = rows + `<tr class="rycdas-row"><td>Total</td><td class="num">${t['2024']}</td><td class="num">${t['2025']}</td><td class="num">${t['2026']}</td><td class="num">${difBadge(t['2026']-t['2025'])}</td></tr>`;
+// por sucursal: meta, avance, faltan (ordenado por brecha)
+const rows = Object.keys(D.suc).map(k => {
+  const ll = D.suc[k]['2026'], meta = D.meta[k];
+  return {k, ll, meta, falta: meta-ll, av: Math.round(ll/meta*100), d25: ll - D.suc[k]['2025']};
+}).sort((a,b) => b.falta - a.falta);
+const tl = rows.reduce((a,r)=>a+r.ll,0), tm = rows.reduce((a,r)=>a+r.meta,0), td = rows.reduce((a,r)=>a+r.d25,0);
+el('cn-tbody-suc').innerHTML = rows.map((r,i) => `<tr><td>${SUC_NAMES[r.k]||r.k}</td>
+  <td class="num"><b>${fmt(r.ll)}</b></td><td class="num">${fmt(r.meta)}</td>
+  <td class="num ${i<2&&r.falta>0?'neg':''}">${r.falta>0?'<b>'+fmt(r.falta)+'</b>':'<span class="badge over">Cumplida</span>'}</td>
+  <td>${avanceBar(r.av)}</td><td class="num">${difBadge(r.d25)}</td></tr>`).join('')
+  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(tl)}</td><td class="num">${fmt(tm)}</td><td class="num">${fmt(Math.max(0,tm-tl))}</td><td>${avanceBar(Math.round(tl/tm*100))}</td><td class="num">${difBadge(td)}</td></tr>`;
 })();
 </script>
 </body>
