@@ -1153,70 +1153,66 @@
   <!-- ############################################################ -->
   <div class="croppanel" id="crop-clientes">
   <style>
+    #crop-clientes .cn-sub{display:flex;gap:8px;margin:0 0 14px;}
+    #crop-clientes .cn-sub button{flex:1;font:inherit;font-size:13px;padding:10px 12px;background:var(--bg-panel);color:var(--text-muted);border:1px solid var(--line);border-radius:var(--radius);cursor:pointer;}
+    #crop-clientes .cn-sub button.on{background:var(--gold);color:#1B2B21;border-color:var(--gold);font-weight:600;}
     @media (max-width:520px){
       #crop-clientes table th, #crop-clientes table td{padding-left:4px;padding-right:4px;font-size:12px;}
-      #crop-clientes table th:first-child, #cn-tbody-suc td:first-child, #ct-tbody-suc td:first-child, #crop-clientes .rycdas-row td:first-child{white-space:normal;min-width:0;width:64px;}
+      #crop-clientes table th:first-child, #crop-clientes table td:first-child{white-space:normal;min-width:0;width:64px;}
       #crop-clientes .table-scroll{padding:0;}
       #crop-clientes table th{white-space:normal;line-height:1.2;vertical-align:bottom;}
-      #cn-tbody-suc td .badge, #ct-tbody-suc td .badge{font-size:10px;}
-      #cn-tbody-suc td .badge, #ct-tbody-suc td .badge{padding:2px 5px;}
-      /* en el celular: se ocultan 2025 y la barra de avance para que entre la tabla */
-      #ct-tabla-estado tr > :nth-child(5){display:none;}
-      #crop-clientes table:not(#ct-tabla-estado) tr > :nth-child(2), #crop-clientes table:not(#ct-tabla-estado) tr > :nth-child(7){display:none;}
+      #crop-clientes .badge{padding:2px 5px;font-size:10px;}
+      #ct-tbody-estado td{white-space:normal;} #ct-tbody-estado small{font-size:10px;line-height:1.25;display:inline-block;}
+      /* en el celular: en las tablas de metas se ocultan 2025 y la barra de avance para que entre todo */
+      #crop-clientes table.cn-t7 tr > :nth-child(2), #crop-clientes table.cn-t7 tr > :nth-child(7){display:none;}
     }
   </style>
 
-    <section class="panel">
-      <h2>Cuánto hacemos con Brevant</h2>
-      <div class="panel-sub">En bolsas de semilla BRV (maíz y girasol), restando notas de crédito. La soja se vende en kilos y queda aparte. Datos hasta el <b id="cn-corte">10/10/2026</b>.</div>
-      <div class="kpis" id="ct-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
+    <div class="cn-sub" id="cn-sub">
+      <button data-sub="cli" class="on">1 · Clientes que compraron</button>
+      <button data-sub="bol">2 · Bolsas</button>
+    </div>
 
-      <h2 style="font-size:14px;margin-bottom:2px;">Bolsas por año</h2>
+    <!-- ============ PARTE 1: CLIENTES (solo si compró) ============ -->
+    <div id="cn-sub-cli">
+
+    <section class="panel">
+      <h2>Clientes que compraron Brevant</h2>
+      <div class="panel-sub">Cliente que compró = tuvo compras netas de bolsas de maíz o girasol en el año (restando notas de crédito). Acá no importa cuántas bolsas, solo si compró. Datos hasta el <b id="cn-corte">10/10/2026</b>.</div>
+      <div class="kpis" id="cc-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
+
+      <h2 style="font-size:14px;margin-bottom:2px;">Clientes que compraron por año</h2>
       <div class="panel-sub" style="margin-bottom:14px;">2026 = lo que va hasta hoy, más el cierre estimado</div>
-      <div class="barlist" id="ct-bars-anio"></div>
+      <div class="barlist" id="cc-bars-anio"></div>
     </section>
 
     <section class="panel">
-      <h2>Dónde trabajar: bolsas por sucursal</h2>
-      <div class="panel-sub">Meta de crecimiento de cada sucursal: parte del promedio 2022–2025 y de lo que hizo en 2025, ajustado para que entre todas lleguen a <b id="ct-meta-total"></b> bolsas (el mejor año, 2021). Ordenado por lo que falta.</div>
+      <h2>Nuevos, volvieron y siguen</h2>
+      <div class="panel-sub"><b>Nuevo</b> = nunca había comprado BRV. <b>Volvió</b> = compró antes pero no el año anterior (no es nuevo). <b>Siguen</b> = compró también el año anterior.</div>
       <div class="table-scroll" style="max-height:none;">
         <table>
-          <thead><tr>
-            <th>Sucursal</th>
-            <th style="text-align:right">2025</th>
-            <th style="text-align:right">Meta 2026</th>
-            <th style="text-align:right">Crecer</th>
-            <th style="text-align:right">Llevamos</th>
-            <th style="text-align:right">Faltan</th>
-            <th>Avance</th>
-          </tr></thead>
-          <tbody id="ct-tbody-suc"></tbody>
+          <thead><tr><th>Año</th><th style="text-align:right">Nuevos</th><th style="text-align:right">Volvieron</th><th style="text-align:right">Siguen</th><th style="text-align:right">Total</th></tr></thead>
+          <tbody id="cc-tbody-estado"></tbody>
         </table>
       </div>
-      <div class="rowcount">Bolsas de maíz y girasol. 2025 = lo que cerró el año. Crecer = meta 2026 contra 2025. Llevamos = bolsas hasta 10/10/2026. Solo totales por sucursal, sin nombres.</div>
+      <div class="rowcount">Las filas “al 10/10” comparan 2025 y 2026 hasta el mismo día. Los datos empiezan en 2021: en 2022 no se puede distinguir quién volvió, y en 2022-2023 algún “nuevo” pudo haber comprado antes de 2021. Desde 2024 el dato es más firme.</div>
     </section>
 
     <section class="panel">
-      <h2>De dónde vienen las bolsas</h2>
-      <div class="panel-sub"><b>Nuevo</b> = nunca había comprado BRV. <b>Volvió</b> = compró antes pero no el año anterior (no es nuevo). <b>Sigue</b> = compró también el año anterior. Cada celda: clientes y bolsas.</div>
+      <h2>Clientes por sucursal</h2>
+      <div class="panel-sub">Cuántos clientes compraron en cada sucursal, 2026 contra 2025 hasta el mismo día. Ordenado por quién viene más atrasada.</div>
       <div class="table-scroll" style="max-height:none;">
-        <table id="ct-tabla-estado">
-          <thead><tr>
-            <th>Año</th>
-            <th style="text-align:right">Nuevos</th>
-            <th style="text-align:right">Volvieron</th>
-            <th style="text-align:right">Siguen</th>
-            <th style="text-align:right">Total</th>
-          </tr></thead>
-          <tbody id="ct-tbody-estado"></tbody>
+        <table>
+          <thead><tr><th>Sucursal</th><th style="text-align:right">2025 cerró</th><th style="text-align:right">2025 al 10/10</th><th style="text-align:right">2026 al 10/10</th><th style="text-align:right">Dif.</th></tr></thead>
+          <tbody id="cc-tbody-suc"></tbody>
         </table>
       </div>
-      <div class="rowcount">Las filas “al 10/10” comparan 2025 y 2026 hasta el mismo día. Los datos empiezan en 2021: en 2022 no se puede distinguir quién volvió, y en 2022-2023 algún “nuevo” pudo haber comprado antes de 2021. Desde 2024 el dato es más firme. El total suma solo clientes con compra neta, por eso puede diferir apenas del total de arriba.</div>
+      <div class="rowcount">Solo totales por sucursal, sin nombres.</div>
     </section>
 
     <section class="panel">
       <h2>Productores nuevos (N)</h2>
-      <div class="panel-sub">Nuevo = primera compra de semilla BRV desde 2021. Es la parte de la facturación que hay que sumar con productores que prueban Brevant.</div>
+      <div class="panel-sub">Nuevo = primera compra de bolsas BRV desde 2021. Es lo que hay que sumar con productores que prueban Brevant.</div>
       <div class="kpis" id="cn-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
 
       <h2 style="font-size:14px;margin-bottom:2px;">Nuevos por año</h2>
@@ -1225,10 +1221,10 @@
     </section>
 
     <section class="panel">
-      <h2>Nuevos por sucursal</h2>
-      <div class="panel-sub">Meta de crecimiento de cada sucursal: parte del promedio de sus nuevos 2022–2025 y de lo que hizo en 2025, ajustado para que entre todas lleguen a <b id="cn-meta-total">111</b> (el mejor año, 2024). Ordenado por lo que falta.</div>
+      <h2>Dónde trabajar: nuevos por sucursal</h2>
+      <div class="panel-sub">Meta de crecimiento de cada sucursal: parte del promedio de sus nuevos 2022–2025 y de lo que hizo en 2025, ajustado para que entre todas lleguen a <b id="cn-meta-total">111</b> (el mejor año). Ordenado por lo que falta.</div>
       <div class="table-scroll" style="max-height:none;">
-        <table>
+        <table class="cn-t7">
           <thead><tr>
             <th>Sucursal</th>
             <th style="text-align:right">2025</th>
@@ -1241,8 +1237,69 @@
           <tbody id="cn-tbody-suc"></tbody>
         </table>
       </div>
-      <div class="rowcount">2025 = nuevos con que cerró el año. Crecer = meta 2026 contra 2025. Llevamos = nuevos hasta 10/10/2026. Sucursal = la de la primera compra. 2021 es el primer año del archivo: los N de 2022 pueden incluir a alguien que ya compraba BRV antes. Solo totales, sin nombres.</div>
+      <div class="rowcount">2025 = nuevos con que cerró el año. Crecer = meta 2026 contra 2025. Llevamos = nuevos hasta 10/10/2026. Sucursal = la de la primera compra. Solo totales, sin nombres.</div>
     </section>
+
+    </div><!-- /cn-sub-cli -->
+
+    <!-- ============ PARTE 2: BOLSAS ============ -->
+    <div id="cn-sub-bol" style="display:none;">
+
+    <section class="panel">
+      <h2>Cuánto hacemos con Brevant</h2>
+      <div class="panel-sub">En bolsas de semilla BRV (maíz y girasol), restando notas de crédito. La soja se vende en kilos y queda afuera.</div>
+      <div class="kpis" id="ct-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
+
+      <h2 style="font-size:14px;margin-bottom:2px;">Bolsas por año</h2>
+      <div class="panel-sub" style="margin-bottom:14px;">2026 = lo que va hasta hoy, más el cierre estimado</div>
+      <div class="barlist" id="ct-bars-anio"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Dónde trabajar: bolsas por sucursal</h2>
+      <div class="panel-sub">Meta de crecimiento de cada sucursal: parte del promedio 2022–2025 y de lo que hizo en 2025, ajustado para que entre todas lleguen a <b id="ct-meta-total"></b> bolsas (el mejor año, 2021). Ordenado por lo que falta.</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table class="cn-t7">
+          <thead><tr>
+            <th>Sucursal</th>
+            <th style="text-align:right">2025</th>
+            <th style="text-align:right">Meta 2026</th>
+            <th style="text-align:right">Crecer</th>
+            <th style="text-align:right">Llevamos</th>
+            <th style="text-align:right">Faltan</th>
+            <th>Avance</th>
+          </tr></thead>
+          <tbody id="ct-tbody-suc"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">2025 = lo que cerró el año. Crecer = meta 2026 contra 2025. Llevamos = bolsas hasta 10/10/2026. Solo totales por sucursal, sin nombres.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Bolsas por cliente</h2>
+      <div class="panel-sub">Cuántas bolsas representa cada tipo de cliente. Cada celda: bolsas, y debajo clientes y promedio por cliente.</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table>
+          <thead><tr><th>Año</th><th style="text-align:right">Nuevos</th><th style="text-align:right">Volvieron</th><th style="text-align:right">Siguen</th></tr></thead>
+          <tbody id="ct-tbody-estado"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">Promedio por cliente = bolsas / clientes que compraron. “al 10/10” compara 2025 y 2026 hasta el mismo día.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Cuántas bolsas compra cada cliente</h2>
+      <div class="panel-sub" id="ct-buck-sub"></div>
+      <div class="table-scroll" style="max-height:none;">
+        <table>
+          <thead><tr><th>Bolsas por cliente</th><th style="text-align:right">Clientes 2025</th><th style="text-align:right">% bolsas 2025</th><th style="text-align:right">Clientes 2026</th><th style="text-align:right">% bolsas 2026</th></tr></thead>
+          <tbody id="ct-tbody-buck"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">Ambos años hasta el 10/10. % bolsas = qué parte del total de bolsas compraron los clientes de ese rango.</div>
+    </section>
+
+    </div><!-- /cn-sub-bol -->
 
   </div><!-- /crop-clientes -->
 
@@ -3316,94 +3373,103 @@ renderGlobSucCultivoTable();
 
 <script id="clientes-n-script">
 (function(){
-const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,103,73,111,88,56],"N_corte":[null,68,35,61,41,56],"N_anio":[null,103,73,111,88,56],"suc":{"AZUL":{"2024":9,"2025":10,"2026":4},"BOLIVAR":{"2024":18,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":12,"2025":5,"2026":10},"OLAVARRIA":{"2024":7,"2025":3,"2026":6},"TANDIL":{"2024":15,"2025":14,"2026":8}},"cierre25":{"AZUL":19,"BOLIVAR":18,"GENERAL BELGRANO":14,"OLAVARRIA":13,"TANDIL":24},"prom":{"AZUL":17.0,"BOLIVAR":21.0,"GENERAL BELGRANO":13.75,"OLAVARRIA":16.75,"TANDIL":25.25},"meta":{"AZUL":22,"BOLIVAR":24,"GENERAL BELGRANO":17,"OLAVARRIA":18,"TANDIL":30},"usd_tot":[3844303,3407756,2617459,2709709,3365480,2437512],"usd_cut":[3349109,2813231,2010057,1811185,2131476,2437512],"cli":[274,240,193,285,286,209],"cli_cut":[219,198,130,174,163,209],"bol":{"AZUL":[4346,4402,1510,2120,4912,2640],"BOLIVAR":[2835,1987,1094,2755,2441,2487],"GENERAL BELGRANO":[2064,1875,870,2037,2087,2039],"OLAVARRIA":[3579,3836,2699,3254,2688,3496],"TANDIL":[8415,5041,4851,4873,6070,4036]},"bol_tot":[21239,17141,11024,15039,18198,14698],"bol_tot_cut":[18487,14712,9352,10443,12899,14698],"maiz":[18258,11961,9860,12562,14865,12638],"girasol":[2981,5180,1164,2477,3333,2060],"est_full":{"2022":{"N":[103,4626],"R":[137,12546],"V":[0,0]},"2023":{"N":[73,3686],"R":[98,6631],"V":[22,1008]},"2024":{"N":[111,4099],"R":[113,8143],"V":[61,3199]},"2025":{"N":[88,3767],"R":[143,10841],"V":[55,3603]},"2026":{"N":[56,2968],"R":[123,10538],"V":[30,1291]}},"est_cut":{"2022":{"N":[68,3623],"R":[127,11089],"V":[0,0]},"2023":{"N":[35,3072],"R":[80,5605],"V":[12,854]},"2024":{"N":[61,3089],"R":[79,5702],"V":[31,1991]},"2025":{"N":[41,1809],"R":[88,7748],"V":[29,2851]},"2026":{"N":[56,2968],"R":[123,10538],"V":[30,1291]}},"metaB":{"AZUL":5160,"BOLIVAR":2860,"GENERAL BELGRANO":2410,"OLAVARRIA":3680,"TANDIL":7129}};
+const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,100,48,106,78,58],"N_corte":[null,68,30,64,44,58],"N_anio":[null,100,48,106,78,58],"suc":{"AZUL":{"2024":7,"2025":11,"2026":4},"BOLIVAR":{"2024":19,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":13,"2025":5,"2026":9},"OLAVARRIA":{"2024":9,"2025":5,"2026":8},"TANDIL":{"2024":16,"2025":14,"2026":9}},"cierre25":{"AZUL":21,"BOLIVAR":18,"GENERAL BELGRANO":9,"OLAVARRIA":9,"TANDIL":21},"prom":{"AZUL":16.0,"BOLIVAR":18.75,"GENERAL BELGRANO":12.25,"OLAVARRIA":13.25,"TANDIL":22.75},"N_mejor_anio":2024,"meta":{"AZUL":24,"BOLIVAR":24,"GENERAL BELGRANO":14,"OLAVARRIA":15,"TANDIL":29},"bol":{"AZUL":[4346,4402,1510,2120,4912,2640],"BOLIVAR":[2835,1987,1094,2755,2441,2487],"GENERAL BELGRANO":[2064,1875,870,2037,2087,2039],"OLAVARRIA":[3579,3836,2699,3254,2688,3496],"TANDIL":[8415,5041,4851,4873,6070,4036]},"bol_tot":[21239,17141,11024,15039,18198,14698],"bol_tot_cut":[18487,14712,9352,10443,12899,14698],"maiz":[18258,11961,9860,12562,14865,12638],"girasol":[2981,5180,1164,2477,3333,2060],"cli":[272,232,153,255,256,205],"cli_cut":[219,190,114,161,158,205],"cli_suc":{"AZUL":{"full":[37,44,18,32,47,24],"cut":[31,38,14,17,30,24]},"BOLIVAR":{"full":[78,48,42,67,55,74],"cut":[63,42,28,54,35,74]},"GENERAL BELGRANO":{"full":[34,30,21,45,37,32],"cut":[27,23,18,29,21,32]},"OLAVARRIA":{"full":[56,43,35,54,49,35],"cut":[43,37,24,29,27,35]},"TANDIL":{"full":[67,67,37,57,68,40],"cut":[55,50,30,32,45,40]}},"est_full":{"2022":{"N":[100,4626],"R":[132,12546],"V":[0,0]},"2023":{"N":[48,3686],"R":[85,6604],"V":[20,1051]},"2024":{"N":[106,4542],"R":[89,7397],"V":[60,3586]},"2025":{"N":[78,3888],"R":[125,10616],"V":[53,3740]},"2026":{"N":[58,3155],"R":[114,10129],"V":[33,1513]}},"est_cut":{"2022":{"N":[68,3623],"R":[122,11089],"V":[0,0]},"2023":{"N":[30,3072],"R":[73,5571],"V":[11,897]},"2024":{"N":[64,3466],"R":[62,4947],"V":[35,2369]},"2025":{"N":[44,1842],"R":[86,8080],"V":[28,2900]},"2026":{"N":[58,3155],"R":[114,10129],"V":[33,1513]}},"bucket_labels":["1 a 10","11 a 30","31 a 100","Más de 100"],"buckets":{"2025cut":[[19,142],[42,847],[60,3495],[37,8338]],"2026cut":[[26,190],[70,1483],[68,4061],[41,9063]],"2025full":[[30,183],[78,1507],[97,5229],[51,11325]]},"prom25":71,"med25":36,"prom_anio":[79,74,74,61,71,72],"prom_cut":[85,77,84,67,81,72],"usd_cut26":2437512,"metaB":{"AZUL":5160,"BOLIVAR":2850,"GENERAL BELGRANO":2410,"OLAVARRIA":3680,"TANDIL":7139}};
 const fmt = n => (n===null||n===undefined) ? '—' : Number(n).toLocaleString('es-AR');
 const el = id => document.getElementById(id);
 const iy = y => D.anios.indexOf(y);
 const SUC_NAMES = {TANDIL:'Tandil', AZUL:'Azul', OLAVARRIA:'Olavarría', BOLIVAR:'Bolívar', 'GENERAL BELGRANO':'General Belgrano'};
+const difBadge = d => `<span class="badge ${d>0?'over':(d<0?'under':'ontrack')}">${d>0?'+':(d<0?'−':'')}${Math.abs(d)}</span>`;
 const avanceBar = p => `<span style="display:inline-block;width:84px;height:8px;background:var(--bg-panel-alt);border-radius:2px;vertical-align:middle;margin-right:8px;overflow:hidden;"><span style="display:block;height:100%;width:${Math.min(100,p)}%;background:${p>=100?'var(--green-accent)':'var(--gold)'};"></span></span>${p}%`;
+const dim = t => `<br><small style="color:var(--text-dim);">${t}</small>`;
+const pct = (a,b) => Math.round((a/b-1)*100);
+const sgn = n => (n>=0?'+':'−') + Math.abs(n);
+const r5 = n => Math.round(n/5)*5;
+const bars = (labels, vals, extra, maxv) => labels.map((l,i) => `<div class="barrow"><div class="name">${l}</div><div class="track"><div class="fill solo" style="width:${(vals[i]/maxv*100).toFixed(1)}%;${extra[i]?'background:var(--gold);':''}"></div></div><div class="val">${fmt(vals[i])}${extra[i]||''}</div></div>`).join('');
+const est = t => `<small style="white-space:nowrap;">${t}</small>`;
 
+// ---------- sub-pestañas ----------
+document.querySelectorAll('#cn-sub button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('#cn-sub button').forEach(x => x.classList.toggle('on', x===b));
+  el('cn-sub-cli').style.display = b.dataset.sub==='cli' ? '' : 'none';
+  el('cn-sub-bol').style.display = b.dataset.sub==='bol' ? '' : 'none';
+}));
+el('cn-corte').textContent = D.corte.split('-').reverse().join('/');
+
+// ================= PARTE 1: CLIENTES =================
+const C26 = D.cli_cut[iy(2026)], C25 = D.cli_cut[iy(2025)];
+const cProj = [2022,2023,2024,2025].map(y => C26 / (D.cli_cut[iy(y)]/D.cli[iy(y)]));
+const cMin = r5(Math.min(...cProj)), cMax = r5(Math.max(...cProj));
 const N26 = D.N_corte[iy(2026)], N25 = D.N_corte[iy(2025)];
+const V26 = D.est_cut['2026'].V[0], V25 = D.est_cut['2025'].V[0];
+el('cc-kpis').innerHTML = `
+  <div class="kpi good"><div class="label">Clientes que compraron 2026</div><div class="value">${fmt(C26)}</div><div class="foot">2025 a la misma fecha: ${fmt(C25)} (${pct(C26,C25)>=0?'+':''}${pct(C26,C25)}%) · 2025 cerró con ${fmt(D.cli[iy(2025)])}</div></div>
+  <div class="kpi"><div class="label">Cierre estimado 2026</div><div class="value">${cMin}–${cMax}</div><div class="foot">Mejor año: ${fmt(Math.max(...D.cli))} clientes</div></div>
+  <div class="kpi"><div class="label">Nuevos / volvieron / siguen</div><div class="value">${fmt(N26)} · ${fmt(V26)} · ${fmt(D.est_cut['2026'].R[0])}</div><div class="foot">2025 a la misma fecha: ${fmt(N25)} · ${fmt(V25)} · ${fmt(D.est_cut['2025'].R[0])}</div></div>`;
+const cy = [2021,2022,2023,2024,2025,2026];
+const cv = cy.map(y => D.cli[iy(y)]);
+el('cc-bars-anio').innerHTML = bars(cy, cv, cy.map(y => y===2026 ? ' ' : ''), Math.max(...cv, cMax)).replace(/(<div class="val">[\d.]+) <\/div>/, `$1${est('est. '+cMin+'–'+cMax)}</div>`);
+const nums = e => { const t = e.N[0]+e.V[0]+e.R[0]; return `<td class="num"><b>${fmt(e.N[0])}</b></td><td class="num">${(e.V[0]||e.V[1])?fmt(e.V[0]):'—'}</td><td class="num">${fmt(e.R[0])}</td><td class="num">${fmt(t)}</td>`; };
+el('cc-tbody-estado').innerHTML =
+  [2022,2023,2024,2025].map(y => `<tr><td>${y}</td>${nums(D.est_full[y])}</tr>`).join('')
+  + `<tr><td>2025 al 10/10</td>${nums(D.est_cut['2025'])}</tr><tr class="rycdas-row"><td>2026 al 10/10</td>${nums(D.est_cut['2026'])}</tr>`;
+const crows = Object.keys(D.cli_suc).map(k => { const f = D.cli_suc[k].full, c = D.cli_suc[k].cut; return {k, c25f:f[iy(2025)], c25:c[iy(2025)], c26:c[iy(2026)], d:c[iy(2026)]-c[iy(2025)]}; }).sort((a,b)=>a.d-b.d);
+const tt = crows.reduce((a,r)=>[a[0]+r.c25f,a[1]+r.c25,a[2]+r.c26,a[3]+r.d],[0,0,0,0]);
+el('cc-tbody-suc').innerHTML = crows.map((r,i) => `<tr><td>${SUC_NAMES[r.k]||r.k}</td><td class="num">${fmt(r.c25f)}</td><td class="num">${fmt(r.c25)}</td><td class="num"><b>${fmt(r.c26)}</b></td><td class="num">${difBadge(r.d)}</td></tr>`).join('')
+  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(tt[0])}</td><td class="num">${fmt(tt[1])}</td><td class="num">${fmt(tt[2])}</td><td class="num">${difBadge(tt[3])}</td></tr>`;
+
+// nuevos (N)
 const ratios = [2022,2023,2024,2025].map(y => D.N_corte[iy(y)]/D.N_anio[iy(y)]);
 const projs = ratios.map(r => N26/r);
-const pMin = Math.round(Math.min(...projs)/5)*5, pMax = Math.round(Math.max(...projs)/5)*5;
-const dP = Math.round((N26/N25-1)*100);
+const pMin = r5(Math.min(...projs)), pMax = r5(Math.max(...projs));
+const metaTotal = Object.values(D.meta).reduce((a,b)=>a+b,0);
+const faltanTotal = Math.max(0, metaTotal - N26);
+el('cn-meta-total').textContent = metaTotal;
+el('cn-kpis').innerHTML = `
+  <div class="kpi good"><div class="label">Nuevos 2026 (hasta hoy)</div><div class="value">${fmt(N26)}</div><div class="foot">2025 a la misma fecha: ${fmt(N25)} (${pct(N26,N25)>=0?'+':''}${pct(N26,N25)}%)</div></div>
+  <div class="kpi"><div class="label">Cierre estimado 2026</div><div class="value">${pMin}–${pMax}</div><div class="foot">2025 cerró con ${fmt(D.N_anio[iy(2025)])} · ${D.N_mejor_anio} con ${fmt(metaTotal)}</div></div>
+  <div class="kpi"><div class="label">Meta 2026: igualar el mejor año (${D.N_mejor_anio})</div><div class="value">${fmt(metaTotal)}</div><div class="foot">Faltan ${fmt(faltanTotal)} · llevamos el ${Math.round(N26/metaTotal*100)}%</div></div>`;
+const yrs = [2022,2023,2024,2025,2026];
+const vals = yrs.map(y => y===2026 ? N26 : D.nuevos[iy(y)]);
+el('cn-bars-anio').innerHTML = bars(yrs, vals, yrs.map(y => y===2026 ? ' ' : ''), Math.max(...vals, pMax)).replace(/(<div class="val">[\d.]+) <\/div>/, `$1${est('est. '+pMin+'–'+pMax)}</div>`);
+const rows = Object.keys(D.suc).map(k => {
+  const ll = D.suc[k]['2026'], meta = D.meta[k], c25 = D.cierre25[k];
+  return {k, ll, meta, c25, cre: Math.round((meta/c25-1)*100), falta: meta-ll, av: Math.round(ll/meta*100)};
+}).sort((a,b) => b.falta - a.falta);
+const tl = rows.reduce((a,r)=>a+r.ll,0), tm = rows.reduce((a,r)=>a+r.meta,0), t25 = rows.reduce((a,r)=>a+r.c25,0);
+const fila7 = (r,i,f) => `<tr><td>${SUC_NAMES[r.k]||r.k}</td><td class="num">${f(r.c25)}</td><td class="num"><b>${f(r.meta)}</b></td><td class="num"><span class="badge over">${r.cre>=0?'+':'−'}${Math.abs(r.cre)}%</span></td><td class="num"><b>${f(r.ll)}</b></td><td class="num ${i<2&&r.falta>0?'neg':''}">${r.falta>0?'<b>'+f(r.falta)+'</b>':'<span class="badge over">Cumplida</span>'}</td><td>${avanceBar(r.av)}</td></tr>`;
+const tot7 = (a,m,l,f) => `<tr class="rycdas-row"><td>Total</td><td class="num">${f(a)}</td><td class="num">${f(m)}</td><td class="num">+${Math.round((m/a-1)*100)}%</td><td class="num">${f(l)}</td><td class="num">${f(Math.max(0,m-l))}</td><td>${avanceBar(Math.round(l/m*100))}</td></tr>`;
+el('cn-tbody-suc').innerHTML = rows.map((r,i)=>fila7(r,i,fmt)).join('') + tot7(t25,tm,tl,fmt);
 
-// ===== TOTAL en bolsas =====
+// ================= PARTE 2: BOLSAS =================
 const fM = n => (n/1e6).toFixed(2).replace('.',',') + ' M';
 const B26 = D.bol_tot[iy(2026)], B25c = D.bol_tot_cut[iy(2025)];
 const bProj = [2022,2023,2024,2025].map(y => B26 / (D.bol_tot_cut[iy(y)]/D.bol_tot[iy(y)]));
-const bMin = Math.round(Math.min(...bProj)/1000), bMax = Math.round(Math.max(...bProj)/1000);
+const bMin = Math.round(Math.min(...bProj)/1000)*1000, bMax = Math.round(Math.max(...bProj)/1000)*1000;
 const bMetaT = Object.values(D.metaB).reduce((a,b)=>a+b,0);
-const dB = Math.round((B26/B25c-1)*100);
-const C26 = D.cli_cut[iy(2026)], C25 = D.cli_cut[iy(2025)], dC = Math.round((C26/C25-1)*100);
 el('ct-meta-total').textContent = fmt(bMetaT);
 el('ct-kpis').innerHTML = `
-  <div class="kpi good"><div class="label">Bolsas 2026 (hasta hoy)</div><div class="value">${fmt(B26)}</div><div class="foot">2025 a la misma fecha: ${fmt(B25c)} (${dB>=0?'+':''}${dB}%) · USD ${fM(D.usd_cut[iy(2026)])}</div></div>
-  <div class="kpi"><div class="label">Clientes que compraron 2026</div><div class="value">${fmt(C26)}</div><div class="foot">2025 a la misma fecha: ${fmt(C25)} (${dC>=0?'+':''}${dC}%) · cerró con ${fmt(D.cli[iy(2025)])}</div></div>
+  <div class="kpi good"><div class="label">Bolsas 2026 (hasta hoy)</div><div class="value">${fmt(B26)}</div><div class="foot">2025 a la misma fecha: ${fmt(B25c)} (${pct(B26,B25c)>=0?'+':''}${pct(B26,B25c)}%) · USD ${fM(D.usd_cut26)}</div></div>
+  <div class="kpi"><div class="label">Bolsas por cliente (promedio)</div><div class="value">${fmt(D.prom_cut[iy(2026)])}</div><div class="foot">2025 a la misma fecha: ${fmt(D.prom_cut[iy(2025)])} · 2025 cerró con ${fmt(D.prom25)} (mitad de los clientes compra menos de ${fmt(D.med25)})</div></div>
   <div class="kpi"><div class="label">Meta 2026: igualar el mejor año (2021)</div><div class="value">${fmt(bMetaT)}</div><div class="foot">Faltan ${fmt(Math.max(0,bMetaT-B26))} bolsas · llevamos el ${Math.round(B26/bMetaT*100)}%</div></div>`;
 const by = [2021,2022,2023,2024,2025,2026];
 const bv = by.map(y => D.bol_tot[iy(y)]);
-const bMax2 = Math.max(...bv, bMax*1000);
-el('ct-bars-anio').innerHTML = by.map((y,i) => {
-  const hoy = y===2026;
-  const est = hoy ? `<small style="white-space:nowrap;">est. ${fmt(bMin*1000)}–${fmt(bMax*1000)}</small>` : '';
-  return `<div class="barrow"><div class="name">${y}</div><div class="track"><div class="fill solo" style="width:${(bv[i]/bMax2*100).toFixed(1)}%;${hoy?'background:var(--gold);':''}"></div></div><div class="val">${fmt(bv[i])}${est}</div></div>`;
-}).join('');
+el('ct-bars-anio').innerHTML = bars(by, bv, by.map(y => y===2026 ? ' ' : ''), Math.max(...bv, bMax)).replace(/(<div class="val">[\d.]+) <\/div>/, `$1${est('est. '+fmt(bMin)+'–'+fmt(bMax))}</div>`);
 const urows = Object.keys(D.bol).map(k => {
   const v = D.bol[k], c25 = v[iy(2025)], ll = v[iy(2026)], meta = D.metaB[k];
   return {k, c25, ll, meta, cre: Math.round((meta/c25-1)*100), falta: meta-ll, av: Math.round(ll/meta*100)};
 }).sort((a,b) => b.falta - a.falta);
 const u25 = urows.reduce((a,r)=>a+r.c25,0), ull = urows.reduce((a,r)=>a+r.ll,0);
-el('ct-tbody-suc').innerHTML = urows.map((r,i) => `<tr><td>${SUC_NAMES[r.k]||r.k}</td>
-  <td class="num">${fmt(r.c25)}</td><td class="num"><b>${fmt(r.meta)}</b></td><td class="num"><span class="badge over">${r.cre>=0?'+':'−'}${Math.abs(r.cre)}%</span></td>
-  <td class="num"><b>${fmt(r.ll)}</b></td>
-  <td class="num ${i<2&&r.falta>0?'neg':''}">${r.falta>0?'<b>'+fmt(r.falta)+'</b>':'<span class="badge over">Cumplida</span>'}</td>
-  <td>${avanceBar(r.av)}</td></tr>`).join('')
-  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(u25)}</td><td class="num">${fmt(bMetaT)}</td><td class="num">+${Math.round((bMetaT/u25-1)*100)}%</td><td class="num">${fmt(ull)}</td><td class="num">${fmt(Math.max(0,bMetaT-ull))}</td><td>${avanceBar(Math.round(ull/bMetaT*100))}</td></tr>`;
-
-// de dónde vienen las bolsas: nuevos / volvieron / siguen
-const cel = (a) => `<b>${fmt(a[0])}</b><br><small style="color:var(--text-dim);">${fmt(a[1])} bol.</small>`;
-const filaE = (lab, e, strong) => {
-  const tot = ['N','V','R'].reduce((x,k)=>[x[0]+e[k][0], x[1]+e[k][1]],[0,0]);
-  return `<tr${strong?' class="rycdas-row"':''}><td>${lab}</td><td class="num">${cel(e.N)}</td><td class="num">${e.V[0]||e.V[1] ? cel(e.V) : '—'}</td><td class="num">${cel(e.R)}</td><td class="num">${cel(tot)}</td></tr>`;
-};
-el('ct-tbody-estado').innerHTML =
-  [2022,2023,2024,2025].map(y => filaE(String(y), D.est_full[y])).join('')
+el('ct-tbody-suc').innerHTML = urows.map((r,i)=>fila7(r,i,fmt)).join('') + tot7(u25,bMetaT,ull,fmt);
+const cel = a => `<b>${fmt(a[1])}</b>${dim(fmt(a[0])+' cl.<br>prom '+(a[0]?fmt(Math.round(a[1]/a[0])):'—'))}`;
+const filaE = (lab, e, strong) => `<tr${strong?' class="rycdas-row"':''}><td>${lab}</td><td class="num">${cel(e.N)}</td><td class="num">${(e.V[0]||e.V[1])?cel(e.V):'—'}</td><td class="num">${cel(e.R)}</td></tr>`;
+el('ct-tbody-estado').innerHTML = [2022,2023,2024,2025].map(y => filaE(String(y), D.est_full[y])).join('')
   + filaE('2025 al 10/10', D.est_cut['2025']) + filaE('2026 al 10/10', D.est_cut['2026'], true);
-const metaTotal = Object.values(D.meta).reduce((a,b)=>a+b,0);
-const faltanTotal = Math.max(0, metaTotal - N26);
-
-el('cn-corte').textContent = D.corte.split('-').reverse().join('/');
-el('cn-meta-total').textContent = metaTotal;
-el('cn-kpis').innerHTML = `
-  <div class="kpi good"><div class="label">Nuevos 2026 (hasta hoy)</div><div class="value">${fmt(N26)}</div><div class="foot">2025 a la misma fecha: ${fmt(N25)} (${dP>=0?'+':''}${dP}%)</div></div>
-  <div class="kpi"><div class="label">Cierre estimado 2026</div><div class="value">${pMin}–${pMax}</div><div class="foot">2025 cerró con ${fmt(D.N_anio[iy(2025)])} · 2024 con ${fmt(D.N_anio[iy(2024)])}</div></div>
-  <div class="kpi"><div class="label">Meta 2026: igualar el mejor año (2024)</div><div class="value">${fmt(metaTotal)}</div><div class="foot">Faltan ${fmt(faltanTotal)} · llevamos el ${Math.round(N26/metaTotal*100)}%</div></div>`;
-
-// barras: N por año (2026 con estimado)
-const yrs = [2022,2023,2024,2025,2026];
-const vals = yrs.map(y => y===2026 ? N26 : D.nuevos[iy(y)]);
-const max = Math.max(...vals, pMax);
-el('cn-bars-anio').innerHTML = yrs.map((y,i) => {
-  const hoy = y===2026;
-  const est = hoy ? `<small style="white-space:nowrap;">est. ${pMin}–${pMax}</small>` : '';
-  return `<div class="barrow"><div class="name">${hoy?'2026':y}</div><div class="track"><div class="fill solo" style="width:${(vals[i]/max*100).toFixed(1)}%;${hoy?'background:var(--gold);':''}"></div></div><div class="val">${fmt(vals[i])}${est}</div></div>`;
-}).join('');
-
-// por sucursal: meta, avance, faltan (ordenado por brecha)
-const rows = Object.keys(D.suc).map(k => {
-  const ll = D.suc[k]['2026'], meta = D.meta[k];
-  const c25 = D.cierre25[k];
-  return {k, ll, meta, c25, cre: Math.round((meta/c25-1)*100), falta: meta-ll, av: Math.round(ll/meta*100)};
-}).sort((a,b) => b.falta - a.falta);
-const tl = rows.reduce((a,r)=>a+r.ll,0), tm = rows.reduce((a,r)=>a+r.meta,0), t25 = rows.reduce((a,r)=>a+r.c25,0);
-el('cn-tbody-suc').innerHTML = rows.map((r,i) => `<tr><td>${SUC_NAMES[r.k]||r.k}</td>
-  <td class="num">${fmt(r.c25)}</td><td class="num"><b>${fmt(r.meta)}</b></td><td class="num"><span class="badge over">+${r.cre}%</span></td>
-  <td class="num"><b>${fmt(r.ll)}</b></td>
-  <td class="num ${i<2&&r.falta>0?'neg':''}">${r.falta>0?'<b>'+fmt(r.falta)+'</b>':'<span class="badge over">Cumplida</span>'}</td>
-  <td>${avanceBar(r.av)}</td></tr>`).join('')
-  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(t25)}</td><td class="num">${fmt(tm)}</td><td class="num">+${Math.round((tm/t25-1)*100)}%</td><td class="num">${fmt(tl)}</td><td class="num">${fmt(Math.max(0,tm-tl))}</td><td>${avanceBar(Math.round(tl/tm*100))}</td></tr>`;
+const b25 = D.buckets['2025cut'], b26 = D.buckets['2026cut'];
+const s25 = b25.reduce((a,x)=>a+x[1],0), s26 = b26.reduce((a,x)=>a+x[1],0);
+const top25 = b25[3], top26 = b26[3];
+el('ct-buck-sub').innerHTML = `Los clientes que compran más de 100 bolsas son ${top26[0]} en 2026 (${Math.round(top26[1]/s26*100)}% de las bolsas) contra ${top25[0]} a esta fecha de 2025 (${Math.round(top25[1]/s25*100)}%).`;
+el('ct-tbody-buck').innerHTML = D.bucket_labels.map((l,i) => `<tr><td>${l}</td><td class="num">${fmt(b25[i][0])}</td><td class="num">${Math.round(b25[i][1]/s25*100)}%</td><td class="num"><b>${fmt(b26[i][0])}</b></td><td class="num"><b>${Math.round(b26[i][1]/s26*100)}%</b></td></tr>`).join('')
+  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(b25.reduce((a,x)=>a+x[0],0))}</td><td class="num">100%</td><td class="num">${fmt(b26.reduce((a,x)=>a+x[0],0))}</td><td class="num">100%</td></tr>`;
 })();
 </script>
 </body>
