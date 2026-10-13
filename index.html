@@ -1161,23 +1161,24 @@
       #cn-tbody-suc td .badge, #ct-tbody-suc td .badge{font-size:10px;}
       #cn-tbody-suc td .badge, #ct-tbody-suc td .badge{padding:2px 5px;}
       /* en el celular: se ocultan 2025 y la barra de avance para que entre la tabla */
-      #crop-clientes table tr > :nth-child(2), #crop-clientes table tr > :nth-child(7){display:none;}
+      #ct-tabla-estado tr > :nth-child(5){display:none;}
+      #crop-clientes table:not(#ct-tabla-estado) tr > :nth-child(2), #crop-clientes table:not(#ct-tabla-estado) tr > :nth-child(7){display:none;}
     }
   </style>
 
     <section class="panel">
       <h2>Cuánto hacemos con Brevant</h2>
-      <div class="panel-sub">Facturación neta de semilla BRV (maíz, girasol y soja, en USD, restando notas de crédito). Datos hasta el <b id="cn-corte">10/10/2026</b>.</div>
+      <div class="panel-sub">En bolsas de semilla BRV (maíz y girasol), restando notas de crédito. La soja se vende en kilos y queda aparte. Datos hasta el <b id="cn-corte">10/10/2026</b>.</div>
       <div class="kpis" id="ct-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
 
-      <h2 style="font-size:14px;margin-bottom:2px;">Facturado por año</h2>
+      <h2 style="font-size:14px;margin-bottom:2px;">Bolsas por año</h2>
       <div class="panel-sub" style="margin-bottom:14px;">2026 = lo que va hasta hoy, más el cierre estimado</div>
       <div class="barlist" id="ct-bars-anio"></div>
     </section>
 
     <section class="panel">
-      <h2>Dónde trabajar: facturación por sucursal</h2>
-      <div class="panel-sub">Meta de crecimiento de cada sucursal: parte del promedio 2022–2025 y de lo que hizo en 2025, ajustado para que entre todas lleguen a <b id="ct-meta-total"></b> (el mejor año, 2021). Ordenado por lo que falta.</div>
+      <h2>Dónde trabajar: bolsas por sucursal</h2>
+      <div class="panel-sub">Meta de crecimiento de cada sucursal: parte del promedio 2022–2025 y de lo que hizo en 2025, ajustado para que entre todas lleguen a <b id="ct-meta-total"></b> bolsas (el mejor año, 2021). Ordenado por lo que falta.</div>
       <div class="table-scroll" style="max-height:none;">
         <table>
           <thead><tr>
@@ -1192,7 +1193,25 @@
           <tbody id="ct-tbody-suc"></tbody>
         </table>
       </div>
-      <div class="rowcount">Miles de USD. 2025 = lo que cerró el año. Crecer = meta 2026 contra 2025. Llevamos = facturado hasta 10/10/2026. Solo totales por sucursal, sin nombres.</div>
+      <div class="rowcount">Bolsas de maíz y girasol. 2025 = lo que cerró el año. Crecer = meta 2026 contra 2025. Llevamos = bolsas hasta 10/10/2026. Solo totales por sucursal, sin nombres.</div>
+    </section>
+
+    <section class="panel">
+      <h2>De dónde vienen las bolsas</h2>
+      <div class="panel-sub"><b>Nuevo</b> = nunca había comprado BRV. <b>Volvió</b> = compró antes pero no el año anterior (no es nuevo). <b>Sigue</b> = compró también el año anterior. Cada celda: clientes y bolsas.</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table id="ct-tabla-estado">
+          <thead><tr>
+            <th>Año</th>
+            <th style="text-align:right">Nuevos</th>
+            <th style="text-align:right">Volvieron</th>
+            <th style="text-align:right">Siguen</th>
+            <th style="text-align:right">Total</th>
+          </tr></thead>
+          <tbody id="ct-tbody-estado"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">Las filas “al 10/10” comparan 2025 y 2026 hasta el mismo día. Los datos empiezan en 2021: en 2022 no se puede distinguir quién volvió, y en 2022-2023 algún “nuevo” pudo haber comprado antes de 2021. Desde 2024 el dato es más firme. El total suma solo clientes con compra neta, por eso puede diferir apenas del total de arriba.</div>
     </section>
 
     <section class="panel">
@@ -3297,7 +3316,7 @@ renderGlobSucCultivoTable();
 
 <script id="clientes-n-script">
 (function(){
-const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,103,73,111,88,56],"N_corte":[null,68,35,61,41,56],"N_anio":[null,103,73,111,88,56],"suc":{"AZUL":{"2024":9,"2025":10,"2026":4},"BOLIVAR":{"2024":18,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":12,"2025":5,"2026":10},"OLAVARRIA":{"2024":7,"2025":3,"2026":6},"TANDIL":{"2024":15,"2025":14,"2026":8}},"cierre25":{"AZUL":19,"BOLIVAR":18,"GENERAL BELGRANO":14,"OLAVARRIA":13,"TANDIL":24},"prom":{"AZUL":17.0,"BOLIVAR":21.0,"GENERAL BELGRANO":13.75,"OLAVARRIA":16.75,"TANDIL":25.25},"meta":{"AZUL":22,"BOLIVAR":24,"GENERAL BELGRANO":17,"OLAVARRIA":18,"TANDIL":30},"usd":{"AZUL":[812071,841828,321282,341222,820094,425450],"BOLIVAR":[505733,395128,274262,519125,407837,354899],"GENERAL BELGRANO":[360109,398380,234899,381137,413486,306579],"OLAVARRIA":[680152,758008,692983,627601,604068,605147],"TANDIL":[1486238,1014411,1094032,840624,1119995,745436]},"usd_cut":{"AZUL":[709369,744041,283889,218341,527978,425450],"BOLIVAR":[418499,352519,202036,436903,321250,354899],"GENERAL BELGRANO":[272454,287790,165887,286210,216670,306579],"OLAVARRIA":[602515,643659,408588,385362,283819,605147],"TANDIL":[1346272,785222,949656,484369,781759,745436]},"tot":[3844303,3407756,2617459,2709709,3365480,2437512],"tot_cut":[3349109,2813231,2010057,1811185,2131476,2437512],"cli":[274,240,193,285,286,209],"cli_cut":[219,198,130,174,163,209],"metaUSD":{"AZUL":840000,"BOLIVAR":480000,"GENERAL BELGRANO":460000,"OLAVARRIA":770000,"TANDIL":1290000}};
+const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,103,73,111,88,56],"N_corte":[null,68,35,61,41,56],"N_anio":[null,103,73,111,88,56],"suc":{"AZUL":{"2024":9,"2025":10,"2026":4},"BOLIVAR":{"2024":18,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":12,"2025":5,"2026":10},"OLAVARRIA":{"2024":7,"2025":3,"2026":6},"TANDIL":{"2024":15,"2025":14,"2026":8}},"cierre25":{"AZUL":19,"BOLIVAR":18,"GENERAL BELGRANO":14,"OLAVARRIA":13,"TANDIL":24},"prom":{"AZUL":17.0,"BOLIVAR":21.0,"GENERAL BELGRANO":13.75,"OLAVARRIA":16.75,"TANDIL":25.25},"meta":{"AZUL":22,"BOLIVAR":24,"GENERAL BELGRANO":17,"OLAVARRIA":18,"TANDIL":30},"usd_tot":[3844303,3407756,2617459,2709709,3365480,2437512],"usd_cut":[3349109,2813231,2010057,1811185,2131476,2437512],"cli":[274,240,193,285,286,209],"cli_cut":[219,198,130,174,163,209],"bol":{"AZUL":[4346,4402,1510,2120,4912,2640],"BOLIVAR":[2835,1987,1094,2755,2441,2487],"GENERAL BELGRANO":[2064,1875,870,2037,2087,2039],"OLAVARRIA":[3579,3836,2699,3254,2688,3496],"TANDIL":[8415,5041,4851,4873,6070,4036]},"bol_tot":[21239,17141,11024,15039,18198,14698],"bol_tot_cut":[18487,14712,9352,10443,12899,14698],"maiz":[18258,11961,9860,12562,14865,12638],"girasol":[2981,5180,1164,2477,3333,2060],"est_full":{"2022":{"N":[103,4626],"R":[137,12546],"V":[0,0]},"2023":{"N":[73,3686],"R":[98,6631],"V":[22,1008]},"2024":{"N":[111,4099],"R":[113,8143],"V":[61,3199]},"2025":{"N":[88,3767],"R":[143,10841],"V":[55,3603]},"2026":{"N":[56,2968],"R":[123,10538],"V":[30,1291]}},"est_cut":{"2022":{"N":[68,3623],"R":[127,11089],"V":[0,0]},"2023":{"N":[35,3072],"R":[80,5605],"V":[12,854]},"2024":{"N":[61,3089],"R":[79,5702],"V":[31,1991]},"2025":{"N":[41,1809],"R":[88,7748],"V":[29,2851]},"2026":{"N":[56,2968],"R":[123,10538],"V":[30,1291]}},"metaB":{"AZUL":5160,"BOLIVAR":2860,"GENERAL BELGRANO":2410,"OLAVARRIA":3680,"TANDIL":7129}};
 const fmt = n => (n===null||n===undefined) ? '—' : Number(n).toLocaleString('es-AR');
 const el = id => document.getElementById(id);
 const iy = y => D.anios.indexOf(y);
@@ -3310,39 +3329,48 @@ const projs = ratios.map(r => N26/r);
 const pMin = Math.round(Math.min(...projs)/5)*5, pMax = Math.round(Math.max(...projs)/5)*5;
 const dP = Math.round((N26/N25-1)*100);
 
-// ===== TOTAL facturado (USD) =====
-const fK = n => fmt(Math.round(n/1000));
+// ===== TOTAL en bolsas =====
 const fM = n => (n/1e6).toFixed(2).replace('.',',') + ' M';
-const U26 = D.tot_cut[iy(2026)], U25 = D.tot_cut[iy(2025)];
-const uProj = [2022,2023,2024,2025].map(y => U26 / (D.tot_cut[iy(y)]/D.tot[iy(y)]));
-const uMin = Math.round(Math.min(...uProj)/1e5)/10, uMax = Math.round(Math.max(...uProj)/1e5)/10;
-const uMetaT = Object.values(D.metaUSD).reduce((a,b)=>a+b,0);
-const dU = Math.round((U26/U25-1)*100);
+const B26 = D.bol_tot[iy(2026)], B25c = D.bol_tot_cut[iy(2025)];
+const bProj = [2022,2023,2024,2025].map(y => B26 / (D.bol_tot_cut[iy(y)]/D.bol_tot[iy(y)]));
+const bMin = Math.round(Math.min(...bProj)/1000), bMax = Math.round(Math.max(...bProj)/1000);
+const bMetaT = Object.values(D.metaB).reduce((a,b)=>a+b,0);
+const dB = Math.round((B26/B25c-1)*100);
 const C26 = D.cli_cut[iy(2026)], C25 = D.cli_cut[iy(2025)], dC = Math.round((C26/C25-1)*100);
-el('ct-meta-total').textContent = 'USD ' + fM(uMetaT);
+el('ct-meta-total').textContent = fmt(bMetaT);
 el('ct-kpis').innerHTML = `
-  <div class="kpi good"><div class="label">Facturado 2026 (hasta hoy)</div><div class="value">USD ${fM(U26)}</div><div class="foot">2025 a la misma fecha: ${fM(U25)} (${dU>=0?'+':''}${dU}%)</div></div>
+  <div class="kpi good"><div class="label">Bolsas 2026 (hasta hoy)</div><div class="value">${fmt(B26)}</div><div class="foot">2025 a la misma fecha: ${fmt(B25c)} (${dB>=0?'+':''}${dB}%) · USD ${fM(D.usd_cut[iy(2026)])}</div></div>
   <div class="kpi"><div class="label">Clientes que compraron 2026</div><div class="value">${fmt(C26)}</div><div class="foot">2025 a la misma fecha: ${fmt(C25)} (${dC>=0?'+':''}${dC}%) · cerró con ${fmt(D.cli[iy(2025)])}</div></div>
-  <div class="kpi"><div class="label">Meta 2026: igualar el mejor año (2021)</div><div class="value">USD ${fM(uMetaT)}</div><div class="foot">Faltan USD ${fM(Math.max(0,uMetaT-U26))} · llevamos el ${Math.round(U26/uMetaT*100)}%</div></div>`;
-const uy = [2021,2022,2023,2024,2025,2026];
-const uv = uy.map(y => D.tot[iy(y)]);
-const uMax2 = Math.max(...uv, uMax*1e6);
-el('ct-bars-anio').innerHTML = uy.map((y,i) => {
+  <div class="kpi"><div class="label">Meta 2026: igualar el mejor año (2021)</div><div class="value">${fmt(bMetaT)}</div><div class="foot">Faltan ${fmt(Math.max(0,bMetaT-B26))} bolsas · llevamos el ${Math.round(B26/bMetaT*100)}%</div></div>`;
+const by = [2021,2022,2023,2024,2025,2026];
+const bv = by.map(y => D.bol_tot[iy(y)]);
+const bMax2 = Math.max(...bv, bMax*1000);
+el('ct-bars-anio').innerHTML = by.map((y,i) => {
   const hoy = y===2026;
-  const est = hoy ? `<small style="white-space:nowrap;">est. ${String(uMin).replace('.',',')}–${String(uMax).replace('.',',')} M</small>` : '';
-  return `<div class="barrow"><div class="name">${y}</div><div class="track"><div class="fill solo" style="width:${(uv[i]/uMax2*100).toFixed(1)}%;${hoy?'background:var(--gold);':''}"></div></div><div class="val">${fM(uv[i])}${est}</div></div>`;
+  const est = hoy ? `<small style="white-space:nowrap;">est. ${fmt(bMin*1000)}–${fmt(bMax*1000)}</small>` : '';
+  return `<div class="barrow"><div class="name">${y}</div><div class="track"><div class="fill solo" style="width:${(bv[i]/bMax2*100).toFixed(1)}%;${hoy?'background:var(--gold);':''}"></div></div><div class="val">${fmt(bv[i])}${est}</div></div>`;
 }).join('');
-const urows = Object.keys(D.usd).map(k => {
-  const v = D.usd[k], c25 = v[iy(2025)], ll = v[iy(2026)], meta = D.metaUSD[k];
+const urows = Object.keys(D.bol).map(k => {
+  const v = D.bol[k], c25 = v[iy(2025)], ll = v[iy(2026)], meta = D.metaB[k];
   return {k, c25, ll, meta, cre: Math.round((meta/c25-1)*100), falta: meta-ll, av: Math.round(ll/meta*100)};
 }).sort((a,b) => b.falta - a.falta);
 const u25 = urows.reduce((a,r)=>a+r.c25,0), ull = urows.reduce((a,r)=>a+r.ll,0);
 el('ct-tbody-suc').innerHTML = urows.map((r,i) => `<tr><td>${SUC_NAMES[r.k]||r.k}</td>
-  <td class="num">${fK(r.c25)}</td><td class="num"><b>${fK(r.meta)}</b></td><td class="num"><span class="badge over">${r.cre>=0?'+':'−'}${Math.abs(r.cre)}%</span></td>
-  <td class="num"><b>${fK(r.ll)}</b></td>
-  <td class="num ${i<2&&r.falta>0?'neg':''}">${r.falta>0?'<b>'+fK(r.falta)+'</b>':'<span class="badge over">Cumplida</span>'}</td>
+  <td class="num">${fmt(r.c25)}</td><td class="num"><b>${fmt(r.meta)}</b></td><td class="num"><span class="badge over">${r.cre>=0?'+':'−'}${Math.abs(r.cre)}%</span></td>
+  <td class="num"><b>${fmt(r.ll)}</b></td>
+  <td class="num ${i<2&&r.falta>0?'neg':''}">${r.falta>0?'<b>'+fmt(r.falta)+'</b>':'<span class="badge over">Cumplida</span>'}</td>
   <td>${avanceBar(r.av)}</td></tr>`).join('')
-  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fK(u25)}</td><td class="num">${fK(uMetaT)}</td><td class="num">+${Math.round((uMetaT/u25-1)*100)}%</td><td class="num">${fK(ull)}</td><td class="num">${fK(Math.max(0,uMetaT-ull))}</td><td>${avanceBar(Math.round(ull/uMetaT*100))}</td></tr>`;
+  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(u25)}</td><td class="num">${fmt(bMetaT)}</td><td class="num">+${Math.round((bMetaT/u25-1)*100)}%</td><td class="num">${fmt(ull)}</td><td class="num">${fmt(Math.max(0,bMetaT-ull))}</td><td>${avanceBar(Math.round(ull/bMetaT*100))}</td></tr>`;
+
+// de dónde vienen las bolsas: nuevos / volvieron / siguen
+const cel = (a) => `<b>${fmt(a[0])}</b><br><small style="color:var(--text-dim);">${fmt(a[1])} bol.</small>`;
+const filaE = (lab, e, strong) => {
+  const tot = ['N','V','R'].reduce((x,k)=>[x[0]+e[k][0], x[1]+e[k][1]],[0,0]);
+  return `<tr${strong?' class="rycdas-row"':''}><td>${lab}</td><td class="num">${cel(e.N)}</td><td class="num">${e.V[0]||e.V[1] ? cel(e.V) : '—'}</td><td class="num">${cel(e.R)}</td><td class="num">${cel(tot)}</td></tr>`;
+};
+el('ct-tbody-estado').innerHTML =
+  [2022,2023,2024,2025].map(y => filaE(String(y), D.est_full[y])).join('')
+  + filaE('2025 al 10/10', D.est_cut['2025']) + filaE('2026 al 10/10', D.est_cut['2026'], true);
 const metaTotal = Object.values(D.meta).reduce((a,b)=>a+b,0);
 const faltanTotal = Math.max(0, metaTotal - N26);
 
