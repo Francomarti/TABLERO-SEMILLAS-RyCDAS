@@ -346,6 +346,7 @@
     <button class="crop-btn" data-crop="girasol">Girasol</button>
     <button class="crop-btn" data-crop="soja">Soja</button>
     <button class="crop-btn" data-crop="global">Global</button>
+    <button class="crop-btn" data-crop="clientes">Clientes</button>
   </nav>
 
   <!-- ############################################################ -->
@@ -1146,6 +1147,118 @@
     </div>
 
   </div><!-- /crop-global -->
+
+  <!-- ############################################################ -->
+  <!-- CLIENTES NUEVOS (N) — análisis del histórico BRV 2021-2026     -->
+  <!-- ############################################################ -->
+  <div class="croppanel" id="crop-clientes">
+
+    <section class="panel">
+      <h2>Clientes nuevos (N) — Brevant</h2>
+      <div class="panel-sub">Cliente nuevo = primera compra BRV (maíz, girasol o soja) desde 2021. Fuente: histórico BRV facturado, 2021 hasta el <b id="cn-corte">10/10/2026</b>. 2026 está en curso: los comparativos usan el mismo corte de fecha en todos los años.</div>
+      <div class="kpis" id="cn-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
+
+      <div class="grid-2">
+        <div>
+          <h2 style="font-size:14px;margin-bottom:2px;">Nuevos al cierre de cada año</h2>
+          <div class="panel-sub" style="margin-bottom:14px;">2026 = lo que va hasta el corte</div>
+          <div class="barlist" id="cn-bars-anio"></div>
+        </div>
+        <div>
+          <h2 style="font-size:14px;margin-bottom:2px;">Nuevos a la misma fecha (hasta 10/10)</h2>
+          <div class="panel-sub" style="margin-bottom:14px;">Comparación pareja entre años</div>
+          <div class="barlist" id="cn-bars-corte"></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Evolución de clientes BRV</h2>
+      <div class="panel-sub">Activos = compraron (neto de notas de crédito) en el año. Perdidos = activos el año anterior que no compraron este año.</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table id="cn-tabla-evol">
+          <thead><tr>
+            <th>Año</th>
+            <th style="text-align:right">Activos</th>
+            <th style="text-align:right">Nuevos (N)</th>
+            <th style="text-align:right">Recurrentes</th>
+            <th style="text-align:right">Reactivados</th>
+            <th style="text-align:right">Perdidos</th>
+            <th style="text-align:right">Retención</th>
+            <th style="text-align:right">Activos al 10/10</th>
+            <th style="text-align:right">N al 10/10</th>
+          </tr></thead>
+          <tbody id="cn-tbody-evol"></tbody>
+        </table>
+      </div>
+      <div class="rowcount" id="cn-nota-evol"></div>
+    </section>
+
+    <section class="panel">
+      <h2>¿Cuántos N vuelven?</h2>
+      <div class="panel-sub">De los clientes nuevos de cada año, cuántos volvieron a comprar en los años siguientes (la fila 2021 es la base de clientes activos ese año).</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table>
+          <thead><tr>
+            <th>Cohorte</th>
+            <th style="text-align:right">Clientes</th>
+            <th style="text-align:right">+1 año</th>
+            <th style="text-align:right">+2 años</th>
+            <th style="text-align:right">+3 años</th>
+            <th style="text-align:right">+4 años</th>
+          </tr></thead>
+          <tbody id="cn-tbody-coh"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">* incluye 2026 en curso, todavía puede subir.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Nuevos por sucursal</h2>
+      <div class="panel-sub">Sucursal de la primera compra. A la derecha, comparación hasta 10/10: 2025 → 2026.</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table>
+          <thead><tr>
+            <th>Sucursal</th>
+            <th style="text-align:right">2022</th>
+            <th style="text-align:right">2023</th>
+            <th style="text-align:right">2024</th>
+            <th style="text-align:right">2025</th>
+            <th style="text-align:right">2026*</th>
+            <th style="text-align:right">N al 10/10 (2025 → 2026)</th>
+            <th style="text-align:right">Dif.</th>
+            <th style="text-align:right">Activos al 10/10 (2025 → 2026)</th>
+          </tr></thead>
+          <tbody id="cn-tbody-suc"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">* 2026 hasta el corte.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Perfil de los nuevos</h2>
+      <div class="grid-2">
+        <div>
+          <h2 style="font-size:14px;margin-bottom:2px;">Por dónde entran</h2>
+          <div class="panel-sub" style="margin-bottom:10px;">Cultivo de la primera compra</div>
+          <div class="table-scroll" style="max-height:none;"><table><thead id="cn-th-entrada"></thead><tbody id="cn-tbody-entrada"></tbody></table></div>
+          <h2 style="font-size:14px;margin:22px 0 2px;">Tipo de cliente</h2>
+          <div class="panel-sub" style="margin-bottom:10px;">Actividad registrada en el sistema</div>
+          <div class="table-scroll" style="max-height:none;"><table><thead id="cn-th-act"></thead><tbody id="cn-tbody-act"></tbody></table></div>
+        </div>
+        <div>
+          <h2 style="font-size:14px;margin-bottom:2px;">Maíz: cuánto compra un nuevo</h2>
+          <div class="panel-sub" style="margin-bottom:10px;">Bolsas netas por cliente en el año</div>
+          <div class="table-scroll" style="max-height:none;"><table><thead id="cn-th-maiz"></thead><tbody id="cn-tbody-maiz"></tbody></table></div>
+          <h2 style="font-size:14px;margin:22px 0 2px;">Por cultivo</h2>
+          <div class="panel-sub" style="margin-bottom:10px;">Clientes activos (N = primera compra de ese cultivo)</div>
+          <div class="table-scroll" style="max-height:none;"><table><thead id="cn-th-cult"></thead><tbody id="cn-tbody-cult"></tbody></table></div>
+        </div>
+      </div>
+      <div class="rowcount">2021 es el primer año del archivo: los N de 2022 pueden incluir a quien ya compraba BRV antes de 2021. El análisis es de totales; no incluye nombres de clientes.</div>
+    </section>
+
+  </div><!-- /crop-clientes -->
 
   <footer>
     <span>RyCDAS — Rindes y Cultivos DAS</span>
@@ -3213,6 +3326,107 @@ function renderGlobal(){
 }
 renderGlobal();
 renderGlobSucCultivoTable();
+</script>
+
+<script id="clientes-n-script">
+(function(){
+const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"total":{"activos":[274,240,194,286,287,209],"nuevos":[null,103,73,111,88,56],"recurrentes":[null,137,99,115,144,123],"reactivados":[null,0,22,60,55,30],"perdidos":[null,137,141,79,142,164],"retencion":[null,50,41,59,50,null]},"lfl":{"activos":[219,195,127,171,160,209],"N":[null,68,35,61,41,56],"N_anio":[null,103,73,111,88,56],"activos_anio":[274,240,194,286,287,209]},"cohortes":[{"anio":2021,"n":274,"sig":[{"k":1,"n":137,"pct":50,"parcial":false},{"k":2,"n":97,"pct":35,"parcial":false},{"k":3,"n":114,"pct":42,"parcial":false},{"k":4,"n":114,"pct":42,"parcial":false},{"k":5,"n":80,"pct":29,"parcial":true}]},{"anio":2022,"n":103,"sig":[{"k":1,"n":24,"pct":23,"parcial":false},{"k":2,"n":24,"pct":23,"parcial":false},{"k":3,"n":30,"pct":29,"parcial":false},{"k":4,"n":16,"pct":16,"parcial":true}]},{"anio":2023,"n":73,"sig":[{"k":1,"n":37,"pct":51,"parcial":false},{"k":2,"n":18,"pct":25,"parcial":false},{"k":3,"n":15,"pct":21,"parcial":true}]},{"anio":2024,"n":111,"sig":[{"k":1,"n":37,"pct":33,"parcial":false},{"k":2,"n":20,"pct":18,"parcial":true}]},{"anio":2025,"n":88,"sig":[{"k":1,"n":22,"pct":25,"parcial":true}]},{"anio":2026,"n":56,"sig":[]}],"cultivo":{"maiz":{"activos":[225,162,122,220,209,179],"nuevos":[null,62,42,92,60,61],"recurrentes":[null,100,61,69,107,89],"reactivados":[null,0,19,59,42,29],"perdidos":[null,125,101,53,113,120],"retencion":[null,44,38,57,49,null]},"girasol":{"activos":[93,113,42,66,87,60],"nuevos":[null,74,13,39,45,21],"recurrentes":[null,39,26,17,25,32],"reactivados":[null,0,3,10,17,7],"perdidos":[null,54,87,25,41,55],"retencion":[null,42,23,40,38,null]},"soja":{"activos":[5,19,67,66,60,12],"nuevos":[null,17,60,38,32,5],"recurrentes":[null,2,7,25,21,2],"reactivados":[null,0,0,3,7,5],"perdidos":[null,3,12,42,45,58],"retencion":[null,40,37,37,32,null]}},"N_sucursal":{"AZUL":[22,7,20,19,4],"BOLIVAR":[17,22,27,18,28],"GENERAL BELGRANO":[12,8,21,14,10],"OLAVARRIA":[18,20,16,13,6],"TANDIL":[34,16,27,24,8]},"N_actividad":{"Comercio":[6,1,2,5,1],"Gran Productor":[36,26,31,23,6],"Productor":[61,46,78,60,49]},"N_entrada":{"girasol":[51,9,25,26,7],"maiz":[49,39,71,46,48],"soja":[3,25,15,16,1]},"sucursal_lfl":{"AZUL":{"2024":{"N":9,"activos":19},"2025":{"N":10,"activos":31},"2026":{"N":4,"activos":24}},"BOLIVAR":{"2024":{"N":18,"activos":58},"2025":{"N":9,"activos":35},"2026":{"N":28,"activos":74}},"GENERAL BELGRANO":{"2024":{"N":12,"activos":30},"2025":{"N":5,"activos":22},"2026":{"N":10,"activos":33}},"OLAVARRIA":{"2024":{"N":7,"activos":30},"2025":{"N":3,"activos":27},"2026":{"N":6,"activos":37}},"TANDIL":{"2024":{"N":15,"activos":34},"2025":{"N":14,"activos":45},"2026":{"N":8,"activos":41}}},"maiz_bolsas":{"n_clientes":[null,62,42,92,60,61],"n_prom":[null,41,84,41,48,58],"resto_prom":[null,94,83,72,81,78],"pct_bolsas_n":[null,21,35,29,19,28],"bolsas_total":[18344,11991,10166,13047,14907,12718]}};
+const fmt = n => (n===null||n===undefined) ? '—' : Number(n).toLocaleString('es-AR');
+const Y = D.anios, iy = y => Y.indexOf(y);
+const SUC_NAMES = {TANDIL:'Tandil', AZUL:'Azul', OLAVARRIA:'Olavarría', BOLIVAR:'Bolívar', 'GENERAL BELGRANO':'General Belgrano'};
+const SUC_ORDER = ['TANDIL','AZUL','OLAVARRIA','BOLIVAR','GENERAL BELGRANO'];
+const el = id => document.getElementById(id);
+const pctBadge = p => `<span class="badge ${p>=40?'over':(p>=25?'ontrack':'under')}">${p}%</span>`;
+const difBadge = d => `<span class="badge ${d>0?'over':(d<0?'under':'ontrack')}">${d>0?'+':(d<0?'−':'')}${Math.abs(d)}</span>`;
+const ys = y => y===2026 ? '2026*' : String(y);
+
+// ---- datos base
+const T = D.total, L = D.lfl;
+const N26 = T.nuevos[iy(2026)], N26c = L.N[iy(2026)];
+const N25c = L.N[iy(2025)], A26c = L.activos[iy(2026)], A25c = L.activos[iy(2025)], A24c = L.activos[iy(2024)];
+const ratios = [2022,2023,2024,2025].map(y => L.N[iy(y)]/L.N_anio[iy(y)]);
+const projs = ratios.map(r => N26c/r);
+const pMin = Math.round(Math.min(...projs)/5)*5, pMax = Math.round(Math.max(...projs)/5)*5;
+const coh = D.cohortes.filter(c => c.anio>=2022 && c.anio<=2024).map(c => c.sig[0].pct);
+const cohAvg = Math.round(coh.reduce((a,b)=>a+b,0)/coh.length);
+const dP = Math.round((N26c/N25c-1)*100);
+
+el('cn-corte').textContent = D.corte.split('-').reverse().join('/');
+
+// ---- KPIs
+el('cn-kpis').innerHTML = `
+  <div class="kpi good"><div class="label">Clientes nuevos 2026 (hasta 10/10)</div><div class="value">${fmt(N26c)}</div><div class="foot">2025 a la misma fecha: ${fmt(N25c)} (${dP>=0?'+':''}${dP}%)</div></div>
+  <div class="kpi"><div class="label">Clientes activos 2026 (hasta 10/10)</div><div class="value">${fmt(A26c)}</div><div class="foot">2025 a la misma fecha: ${fmt(A25c)} · 2024: ${fmt(A24c)}</div></div>
+  <div class="kpi"><div class="label">Cierre estimado de N 2026</div><div class="value">${pMin}–${pMax}</div><div class="foot">Según qué parte de los N de 2022–2025 ya había entrado al 10/10 (${Math.round(Math.min(...ratios)*100)}%–${Math.round(Math.max(...ratios)*100)}%)</div></div>
+  <div class="kpi alert"><div class="label">N que vuelven al año siguiente</div><div class="value">${cohAvg}<small>%</small></div><div class="foot">Promedio cohortes 2022–2024 (${coh.join('% · ')}%)</div></div>`;
+
+// ---- barras
+function bars(id, vals, labels, hi){
+  const max = Math.max(...vals);
+  el(id).innerHTML = vals.map((v,i) => `<div class="barrow"><div class="name">${labels[i]}</div><div class="track"><div class="fill solo" style="width:${(v/max*100).toFixed(1)}%;${hi===i?'background:var(--gold);':''}"></div></div><div class="val">${fmt(v)}</div></div>`).join('');
+}
+const yrs = [2022,2023,2024,2025,2026];
+bars('cn-bars-anio', yrs.map(y=>T.nuevos[iy(y)]), yrs.map(ys), 4);
+bars('cn-bars-corte', yrs.map(y=>L.N[iy(y)]), yrs.map(y=>y===2026?'2026':String(y)), 4);
+
+// ---- evolución
+el('cn-tbody-evol').innerHTML = Y.map((y,i) => {
+  const cur = y===2026;
+  return `<tr${cur?' class="rycdas-row"':''}><td>${ys(y)}</td>
+    <td class="num">${fmt(T.activos[i])}</td>
+    <td class="num">${y===2021?'base':fmt(T.nuevos[i])}</td>
+    <td class="num">${fmt(T.recurrentes[i])}</td>
+    <td class="num">${fmt(T.reactivados[i])}</td>
+    <td class="num">${cur?fmt(T.perdidos[i])+'*':fmt(T.perdidos[i])}</td>
+    <td class="num">${T.retencion[i]===null?'—':T.retencion[i]+'%'}</td>
+    <td class="num">${fmt(L.activos[i])}</td>
+    <td class="num">${fmt(L.N[i])}</td></tr>`;
+}).join('');
+el('cn-nota-evol').textContent = '* 2026 en curso: los "perdidos" (activos 2025 que todavía no compraron este año) pueden volver a comprar antes de fin de año, y el año anterior se compara completo.';
+
+// ---- cohortes
+el('cn-tbody-coh').innerHTML = D.cohortes.filter(c=>c.sig.length || c.anio===2021).map(c => {
+  const cells = [1,2,3,4].map(k => {
+    const x = c.sig.find(z=>z.k===k);
+    if(!x) return '<td class="num">—</td>';
+    return `<td class="num"${x.parcial?' style="opacity:.7"':''}>${fmt(x.n)} ${pctBadge(x.pct)}${x.parcial?'*':''}</td>`;
+  }).join('');
+  return `<tr><td>${c.anio===2021?'2021 (base)':'N '+c.anio}</td><td class="num">${fmt(c.n)}</td>${cells}</tr>`;
+}).join('');
+
+// ---- sucursal
+let tN = [0,0,0,0,0], t25=0, t26=0, a25=0, a26=0;
+const rowsSuc = SUC_ORDER.filter(k => D.N_sucursal[k]).map(k => {
+  const n = D.N_sucursal[k], l = D.sucursal_lfl[k];
+  n.forEach((v,i)=>tN[i]+=v); t25+=l['2025'].N; t26+=l['2026'].N; a25+=l['2025'].activos; a26+=l['2026'].activos;
+  return `<tr><td>${SUC_NAMES[k]}</td>${n.map(v=>`<td class="num">${fmt(v)}</td>`).join('')}
+    <td class="num">${l['2025'].N} → <b>${l['2026'].N}</b></td><td class="num">${difBadge(l['2026'].N-l['2025'].N)}</td>
+    <td class="num">${l['2025'].activos} → <b>${l['2026'].activos}</b></td></tr>`;
+}).join('');
+el('cn-tbody-suc').innerHTML = rowsSuc + `<tr class="rycdas-row"><td>Total</td>${tN.map(v=>`<td class="num">${fmt(v)}</td>`).join('')}
+  <td class="num">${t25} → <b>${t26}</b></td><td class="num">${difBadge(t26-t25)}</td><td class="num">${a25} → <b>${a26}</b></td></tr>`;
+
+// ---- perfil
+function headYears(id, first){ el(id).innerHTML = `<tr><th>${first}</th>${yrs.map(y=>`<th style="text-align:right">${ys(y)}</th>`).join('')}</tr>`; }
+const ENTRADA = {maiz:'Maíz', girasol:'Girasol', soja:'Soja'};
+headYears('cn-th-entrada','Cultivo');
+el('cn-tbody-entrada').innerHTML = ['maiz','girasol','soja'].map(k => `<tr><td>${ENTRADA[k]}</td>${D.N_entrada[k].map(v=>`<td class="num">${fmt(v)}</td>`).join('')}</tr>`).join('');
+headYears('cn-th-act','Actividad');
+el('cn-tbody-act').innerHTML = ['Productor','Gran Productor','Comercio'].map(k => `<tr><td>${k}</td>${D.N_actividad[k].map(v=>`<td class="num">${fmt(v)}</td>`).join('')}</tr>`).join('');
+headYears('cn-th-maiz','Maíz');
+const M = D.maiz_bolsas, mi = y => iy(y);
+el('cn-tbody-maiz').innerHTML = [
+  ['Clientes nuevos con maíz', 'n_clientes', ''],
+  ['Bolsas por cliente nuevo', 'n_prom', ''],
+  ['Bolsas por cliente que ya venía', 'resto_prom', ''],
+  ['% de las bolsas de maíz que aportan los N', 'pct_bolsas_n', '%']
+].map(([lab,k,suf]) => `<tr><td>${lab}</td>${yrs.map(y=>`<td class="num">${M[k][mi(y)]===null?'—':fmt(M[k][mi(y)])+suf}</td>`).join('')}</tr>`).join('');
+headYears('cn-th-cult','Cultivo');
+el('cn-tbody-cult').innerHTML = ['maiz','girasol','soja'].map(k => {
+  const c = D.cultivo[k];
+  return `<tr><td>${ENTRADA[k]}</td>${yrs.map(y=>`<td class="num">${fmt(c.activos[iy(y)])} <small style="color:var(--gold-soft)">(${fmt(c.nuevos[iy(y)])} N)</small></td>`).join('')}</tr>`;
+}).join('');
+})();
 </script>
 </body>
 </html>
