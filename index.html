@@ -3082,7 +3082,6 @@ function renderSojaKPIs(){
   const kpis = document.getElementById('soja-kpis');
   kpis.innerHTML = '';
   const cards = [
-    { label:'Recibido campaña nueva', value: totalRecibido.toLocaleString('es-AR'), unit:'Kg', foot: nuevaCampania.length ? nuevaCampania.length+' movimiento(s) de la 2026/27' : 'todavía sin recepción de la campaña nueva', alert: totalRecibido===0 },
     { label:'Vendido (neto)', value: Math.round(totalVendido).toLocaleString('es-AR'), unit:'Kg', foot: Math.round(totalFacturado).toLocaleString('es-AR')+' facturado + '+Math.round(totalPendiente).toLocaleString('es-AR')+' pend. de facturar', alert:false },
     { label:'Objetivo 2026', value: OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR'), unit:'bolsas (40kg)', foot: OBJETIVO_SOJA_KG.toLocaleString('es-AR')+' Kg equivalentes', alert:false },
     { label:'% objetivo vendido', value: pctObjetivo.toFixed(1)+'%', unit:'', foot: vendidoBolsasEq.toFixed(1)+' de '+OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR')+' bolsas equivalentes', alert: pctObjetivo<10 },
