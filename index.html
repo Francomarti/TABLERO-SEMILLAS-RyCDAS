@@ -114,6 +114,21 @@
   .tabpanel.active{display:block;}
   .tabpanel-gir{display:none;}
   .tabpanel-gir.active{display:block;}
+  .tabpanel-soja{display:none;}
+  .tabpanel-soja.active{display:block;}
+
+  .group-head{
+    font-family:'Fraunces',serif;
+    font-size:14px;
+    font-weight:600;
+    color:var(--gold-soft);
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    margin:0 0 14px;
+    padding-top:20px;
+    border-top:1px solid var(--line);
+  }
+  .group-head:first-of-type{padding-top:0;border-top:none;}
 
   /* KPI row */
   .kpis{
@@ -352,17 +367,176 @@
   <!-- ############################################################ -->
   <!-- CROP: MAÍZ                                                    -->
   <!-- ############################################################ -->
+  <!-- ############################################################ -->
+  <!-- CROP: MAÍZ                                                    -->
+  <!-- ############################################################ -->
   <div class="croppanel active" id="crop-maiz">
 
   <nav class="tabs">
-    <button class="tab-btn active" data-tab="recibido">Recibido</button>
-    <button class="tab-btn" data-tab="forecast">Forecast vs Recibido</button>
-    <button class="tab-btn" data-tab="ventas">Ventas vs Stock</button>
+    <button class="tab-btn active" data-tab="ventas">Ventas</button>
+    <button class="tab-btn" data-tab="forecastventas">Forecast vs Ventas</button>
     <button class="tab-btn" data-tab="objetivo">Objetivo 2026</button>
+    <button class="tab-btn" data-tab="stock">Stock</button>
   </nav>
 
-  <!-- =================== TAB 1: RECIBIDO =================== -->
-  <div class="tabpanel active" id="tab-recibido">
+  <!-- =================== TAB 1: VENTAS =================== -->
+  <div class="tabpanel active" id="tab-ventas">
+
+    <div class="kpis" id="vt-kpis"></div>
+    <div id="vt-callout"></div>
+    <section class="panel">
+      <h2>Resumen por híbrido — todas las sucursales</h2>
+      <div class="panel-sub">Vendido, forecast y recibido combinando las cinco sucursales, para saber qué híbrido falta traer sin importar dónde. Ordenado por lo que más urge traer.</div>
+      <div class="table-scroll">
+        <table id="hs-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="forecast" style="text-align:right">Forecast<span class="arrow"></span></th>
+              <th data-key="recibido" style="text-align:right">Recibido<span class="arrow"></span></th>
+              <th data-key="vendido" style="text-align:right">Vendido<span class="arrow"></span></th>
+              <th data-key="stock" style="text-align:right">Stock disp.<span class="arrow"></span></th>
+              <th data-key="faltaTraer" style="text-align:right">Falta traer<span class="arrow"></span></th>
+              <th data-key="estado">Estado<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="hs-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Ventas por híbrido</h2>
+      <div class="panel-sub">Bolsas vendidas 2026 (facturado + pendiente de facturar), todas las sucursales</div>
+      <div class="barlist" id="vh-chart"></div>
+    </section>
+    <section class="panel">
+      <h2>Avance de ventas mensual</h2>
+      <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
+      <div id="vm-chart"></div>
+    </section>
+    <div class="grid-2">
+      <section class="panel">
+        <h2>Ranking por sucursal</h2>
+        <div class="panel-sub">Total vendido 2026 (facturado + pendiente de facturar), todas las marcas de maíz</div>
+        <div class="barlist" id="rk-sucursal"></div>
+      </section>
+      <section class="panel">
+        <h2>Ranking por vendedor</h2>
+        <div class="panel-sub">Bolsas facturadas en la campaña — el pendiente de facturar no trae vendedor asignado, así que no está incluido acá</div>
+        <div class="barlist" id="rk-vendedor"></div>
+      </section>
+    </div>
+
+  </div>
+
+  <!-- =================== TAB 2: FORECAST VS VENTAS =================== -->
+  <div class="tabpanel" id="tab-forecastventas">
+
+    <div class="filters">
+      <span class="flabel">Sucursal</span>
+      <select id="vt-f-sucursal"><option value="">Todas</option></select>
+      <button class="reset-btn" id="vt-reset">Limpiar filtros</button>
+    </div>
+
+    <div class="grid-2">
+      <section class="panel">
+        <h2>Ventas vs. forecast por sucursal</h2>
+        <div class="panel-sub">Bolsas vendidas (facturado + pendiente de facturar) vs. objetivo de la campaña</div>
+        <div id="vt-chart-sucursal"></div>
+        <div class="legend-line">
+          <span><span class="legend-swatch" style="background:var(--rust)"></span>Stock físico agotado o negativo</span>
+          <span><span class="legend-swatch" style="background:var(--gold)"></span>Demanda alta (&gt;85% del forecast vendido)</span>
+          <span><span class="legend-swatch" style="background:var(--green-accent)"></span>Cobertura tranquila</span>
+          <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo (forecast)</span>
+        </div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Detalle sucursal × híbrido</h2>
+      <div class="panel-sub">Stock disponible = recibido − vendido. Bolsas a traer = lo que falta para cubrir el forecast total (forecast − recibido), sin importar el ritmo de venta.</div>
+      <div class="table-scroll">
+        <table id="vt-detail-table">
+          <thead>
+            <tr>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="forecast" style="text-align:right">Forecast<span class="arrow"></span></th>
+              <th data-key="recibido" style="text-align:right">Recibido<span class="arrow"></span></th>
+              <th data-key="facturado" style="text-align:right">Facturado<span class="arrow"></span></th>
+              <th data-key="pendiente" style="text-align:right">Pend. facturar<span class="arrow"></span></th>
+              <th data-key="vendido" style="text-align:right">Vendido total<span class="arrow"></span></th>
+              <th data-key="stock" style="text-align:right">Stock disp.<span class="arrow"></span></th>
+              <th data-key="pctForecast" style="text-align:right">% forecast vendido<span class="arrow"></span></th>
+              <th data-key="estado">Estado<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="vt-tbody"></tbody>
+        </table>
+      </div>
+      <div class="rowcount" id="vt-rowcount"></div>
+    </section>
+
+  </div>
+
+  <!-- =================== TAB 3: OBJETIVO 2026 =================== -->
+  <div class="tabpanel" id="tab-objetivo">
+
+    <div class="kpis" id="ob-kpis"></div>
+
+    <section class="panel">
+      <h2>Avance real de ventas 2026</h2>
+      <div class="panel-sub">Lo efectivamente vendido a la fecha (facturado + pendiente de facturar), comparado contra el objetivo anual — esta es la foto real de cómo venimos</div>
+      <div id="av-chart"></div>
+      <div class="legend-line">
+        <span><span class="legend-swatch" style="background:var(--gold)"></span>Vendido 2026</span>
+        <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo 2026</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Forecast vs. Objetivo</h2>
+      <div class="panel-sub">Cuánto se forecasteó para cada sucursal comparado con el objetivo anual de la compañía. Esto es planificación, no ventas reales — la sección de arriba es la que muestra el avance real.</div>
+      <div id="ob-chart"></div>
+      <div class="legend-line">
+        <span><span class="legend-swatch" style="background:var(--rust)"></span>Brecha grande (forecast &gt;20% bajo el objetivo)</span>
+        <span><span class="legend-swatch" style="background:var(--gold)"></span>Brecha moderada (5–20%)</span>
+        <span><span class="legend-swatch" style="background:var(--green-accent)"></span>Forecast alineado o por encima</span>
+        <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo 2026</span>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Detalle por sucursal</h2>
+      <div class="panel-sub">Ventas 2026 a la fecha comparadas contra 2025, contra el forecast planificado y contra el objetivo anual</div>
+      <div class="table-scroll">
+        <table id="ob-table">
+          <thead>
+            <tr>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="ventas2026" style="text-align:right">Vendido 2026<span class="arrow"></span></th>
+              <th data-key="pctObjVendido" style="text-align:right">% objetivo vendido<span class="arrow"></span></th>
+              <th data-key="vsForecast" style="text-align:right">Vs. forecast<span class="arrow"></span></th>
+              <th data-key="vsObjetivo" style="text-align:right">Vs. objetivo<span class="arrow"></span></th>
+              <th data-key="forecastActual" style="text-align:right">Forecast<span class="arrow"></span></th>
+              <th data-key="objetivo" style="text-align:right">Objetivo 2026<span class="arrow"></span></th>
+              <th data-key="ventas2025" style="text-align:right">Vendido 2025<span class="arrow"></span></th>
+              <th data-key="vsVentas2025" style="text-align:right">Vs. 2025<span class="arrow"></span></th>
+              <th data-key="estado">Estado<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="ob-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+
+  <!-- =================== TAB 4: STOCK =================== -->
+  <div class="tabpanel" id="tab-stock">
+
+    <h3 class="group-head">Recepción</h3>
 
     <div class="kpis" id="kpis"></div>
 
@@ -422,10 +596,8 @@
       <div class="rowcount" id="rowcount"></div>
     </section>
 
-  </div>
 
-  <!-- =================== TAB 2: FORECAST VS RECIBIDO =================== -->
-  <div class="tabpanel" id="tab-forecast">
+    <h3 class="group-head">Forecast de recepción</h3>
 
     <div class="kpis" id="fc-kpis"></div>
 
@@ -482,42 +654,8 @@
       <div class="rowcount" id="fc-rowcount"></div>
     </section>
 
-  </div>
 
-  <!-- =================== TAB 3: VENTAS VS STOCK =================== -->
-  <div class="tabpanel" id="tab-ventas">
-
-    <div class="kpis" id="vt-kpis"></div>
-
-    <div id="vt-callout"></div>
-
-    <section class="panel">
-      <h2>Resumen por híbrido — todas las sucursales</h2>
-      <div class="panel-sub">Vendido, forecast y recibido combinando las cinco sucursales, para saber qué híbrido falta traer sin importar dónde. Ordenado por lo que más urge traer.</div>
-      <div class="table-scroll">
-        <table id="hs-table">
-          <thead>
-            <tr>
-              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
-              <th data-key="forecast" style="text-align:right">Forecast<span class="arrow"></span></th>
-              <th data-key="recibido" style="text-align:right">Recibido<span class="arrow"></span></th>
-              <th data-key="vendido" style="text-align:right">Vendido<span class="arrow"></span></th>
-              <th data-key="stock" style="text-align:right">Stock disp.<span class="arrow"></span></th>
-              <th data-key="faltaTraer" style="text-align:right">Falta traer<span class="arrow"></span></th>
-              <th data-key="estado">Estado<span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="hs-tbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Ventas por híbrido</h2>
-      <div class="panel-sub">Bolsas vendidas 2026 (facturado + pendiente de facturar), todas las sucursales</div>
-      <div class="barlist" id="vh-chart"></div>
-    </section>
-
+    <h3 class="group-head">Disponibilidad</h3>
     <section class="panel">
       <h2>Inventario disponible (propio + CYO)</h2>
       <div class="panel-sub">Inventario total de la compañía — stock propio y en consignación (CYO) juntos — menos las notas de venta que ya están para entregar. "Disponible" es la foto más al día de lo que queda para vender.</div>
@@ -537,7 +675,6 @@
         </table>
       </div>
     </section>
-
     <section class="panel">
       <h2>Existencias disponibles por sucursal</h2>
       <div class="panel-sub">Semilla libre para vender (propio + CYO), sin estar tomada por ninguna NV ni factura — abierta por sucursal</div>
@@ -559,134 +696,22 @@
         </table>
       </div>
     </section>
-
     <section class="panel">
       <h2>Ranking de existencias por sucursal</h2>
       <div class="panel-sub">Total disponible (todos los híbridos de maíz) por sucursal — sucursales con poco o negativo son las que menos margen tienen para seguir vendiendo sin traer más</div>
       <div class="barlist" id="exist-rk-sucursal"></div>
     </section>
 
-    <section class="panel">
-      <h2>Avance de ventas mensual</h2>
-      <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
-      <div id="vm-chart"></div>
-    </section>
-
-    <div class="grid-2">
-      <section class="panel">
-        <h2>Ranking por sucursal</h2>
-        <div class="panel-sub">Total vendido 2026 (facturado + pendiente de facturar), todas las marcas de maíz</div>
-        <div class="barlist" id="rk-sucursal"></div>
-      </section>
-      <section class="panel">
-        <h2>Ranking por vendedor</h2>
-        <div class="panel-sub">Bolsas facturadas en la campaña — el pendiente de facturar no trae vendedor asignado, así que no está incluido acá</div>
-        <div class="barlist" id="rk-vendedor"></div>
-      </section>
-    </div>
-
     <div class="filters">
       <span class="flabel">Sucursal</span>
-      <select id="vt-f-sucursal"><option value="">Todas</option></select>
-      <button class="reset-btn" id="vt-reset">Limpiar filtros</button>
+      <select id="vtstock-f-sucursal"><option value="">Todas</option></select>
+      <button class="reset-btn" id="vtstock-reset">Limpiar filtros</button>
     </div>
-
-    <div class="grid-2">
-      <section class="panel">
-        <h2>Ventas vs. forecast por sucursal</h2>
-        <div class="panel-sub">Bolsas vendidas (facturado + pendiente de facturar) vs. objetivo de la campaña</div>
-        <div id="vt-chart-sucursal"></div>
-        <div class="legend-line">
-          <span><span class="legend-swatch" style="background:var(--rust)"></span>Stock físico agotado o negativo</span>
-          <span><span class="legend-swatch" style="background:var(--gold)"></span>Demanda alta (&gt;85% del forecast vendido)</span>
-          <span><span class="legend-swatch" style="background:var(--green-accent)"></span>Cobertura tranquila</span>
-          <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo (forecast)</span>
-        </div>
-      </section>
       <section class="panel">
         <h2>Stock disponible por híbrido</h2>
         <div class="panel-sub">Recibido menos vendido. Negativo: se vendió más de lo que llegó físicamente</div>
         <div id="vt-chart-stock"></div>
       </section>
-    </div>
-
-    <section class="panel">
-      <h2>Detalle sucursal × híbrido</h2>
-      <div class="panel-sub">Stock disponible = recibido − vendido. Bolsas a traer = lo que falta para cubrir el forecast total (forecast − recibido), sin importar el ritmo de venta.</div>
-      <div class="table-scroll">
-        <table id="vt-detail-table">
-          <thead>
-            <tr>
-              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
-              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
-              <th data-key="forecast" style="text-align:right">Forecast<span class="arrow"></span></th>
-              <th data-key="recibido" style="text-align:right">Recibido<span class="arrow"></span></th>
-              <th data-key="facturado" style="text-align:right">Facturado<span class="arrow"></span></th>
-              <th data-key="pendiente" style="text-align:right">Pend. facturar<span class="arrow"></span></th>
-              <th data-key="vendido" style="text-align:right">Vendido total<span class="arrow"></span></th>
-              <th data-key="stock" style="text-align:right">Stock disp.<span class="arrow"></span></th>
-              <th data-key="pctForecast" style="text-align:right">% forecast vendido<span class="arrow"></span></th>
-              <th data-key="estado">Estado<span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="vt-tbody"></tbody>
-        </table>
-      </div>
-      <div class="rowcount" id="vt-rowcount"></div>
-    </section>
-
-  </div>
-
-  <!-- =================== TAB 4: OBJETIVO 2026 =================== -->
-  <div class="tabpanel" id="tab-objetivo">
-
-    <div class="kpis" id="ob-kpis"></div>
-
-    <section class="panel">
-      <h2>Avance real de ventas 2026</h2>
-      <div class="panel-sub">Lo efectivamente vendido a la fecha (facturado + pendiente de facturar), comparado contra el objetivo anual — esta es la foto real de cómo venimos</div>
-      <div id="av-chart"></div>
-      <div class="legend-line">
-        <span><span class="legend-swatch" style="background:var(--gold)"></span>Vendido 2026</span>
-        <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo 2026</span>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Forecast vs. Objetivo</h2>
-      <div class="panel-sub">Cuánto se forecasteó para cada sucursal comparado con el objetivo anual de la compañía. Esto es planificación, no ventas reales — la sección de arriba es la que muestra el avance real.</div>
-      <div id="ob-chart"></div>
-      <div class="legend-line">
-        <span><span class="legend-swatch" style="background:var(--rust)"></span>Brecha grande (forecast &gt;20% bajo el objetivo)</span>
-        <span><span class="legend-swatch" style="background:var(--gold)"></span>Brecha moderada (5–20%)</span>
-        <span><span class="legend-swatch" style="background:var(--green-accent)"></span>Forecast alineado o por encima</span>
-        <span><span class="legend-swatch" style="background:var(--blue-accent)"></span>Objetivo 2026</span>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Detalle por sucursal</h2>
-      <div class="panel-sub">Ventas 2026 a la fecha comparadas contra 2025, contra el forecast planificado y contra el objetivo anual</div>
-      <div class="table-scroll">
-        <table id="ob-table">
-          <thead>
-            <tr>
-              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
-              <th data-key="ventas2026" style="text-align:right">Vendido 2026<span class="arrow"></span></th>
-              <th data-key="pctObjVendido" style="text-align:right">% objetivo vendido<span class="arrow"></span></th>
-              <th data-key="vsForecast" style="text-align:right">Vs. forecast<span class="arrow"></span></th>
-              <th data-key="vsObjetivo" style="text-align:right">Vs. objetivo<span class="arrow"></span></th>
-              <th data-key="forecastActual" style="text-align:right">Forecast<span class="arrow"></span></th>
-              <th data-key="objetivo" style="text-align:right">Objetivo 2026<span class="arrow"></span></th>
-              <th data-key="ventas2025" style="text-align:right">Vendido 2025<span class="arrow"></span></th>
-              <th data-key="vsVentas2025" style="text-align:right">Vs. 2025<span class="arrow"></span></th>
-              <th data-key="estado">Estado<span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="ob-tbody"></tbody>
-        </table>
-      </div>
-    </section>
 
   </div>
 
@@ -698,76 +723,15 @@
   <div class="croppanel" id="crop-girasol">
 
   <nav class="tabs">
-    <button class="tab-btn-gir active" data-tab="gir-recibido">Recibido</button>
-    <button class="tab-btn-gir" data-tab="gir-ventas">Ventas</button>
+    <button class="tab-btn-gir active" data-tab="gir-ventas">Ventas</button>
     <button class="tab-btn-gir" data-tab="gir-objetivo">Objetivo</button>
+    <button class="tab-btn-gir" data-tab="gir-stock">Stock</button>
   </nav>
 
-  <!-- ===== GIRASOL: RECIBIDO ===== -->
-  <div class="tabpanel-gir active" id="tab-gir-recibido">
-
-    <div class="kpis" id="gir-kpis"></div>
-
-    <div class="filters">
-      <span class="flabel">Sucursal</span>
-      <select id="gir-f-sucursal"><option value="">Todas</option></select>
-      <span class="flabel">Híbrido</span>
-      <select id="gir-f-hibrido"><option value="">Todos</option></select>
-      <button class="reset-btn" id="gir-reset">Limpiar filtros</button>
-    </div>
-
-    <div class="grid-2">
-      <section class="panel">
-        <h2>Bolsas netas por sucursal</h2>
-        <div class="panel-sub">Suma de cantidades recibidas menos transferencias, por sucursal</div>
-        <div class="barlist" id="gir-chart-sucursal"></div>
-      </section>
-      <section class="panel">
-        <h2>Bolsas netas por híbrido</h2>
-        <div class="panel-sub">Agrupado por híbrido base, sin abrir por generación de semilla</div>
-        <div class="barlist" id="gir-chart-hibrido"></div>
-      </section>
-    </div>
-
-    <section class="panel">
-      <h2>Recepción acumulada en el tiempo</h2>
-      <div class="panel-sub">Bolsas netas acumuladas desde el inicio de la campaña</div>
-      <div class="chart-wrap">
-        <svg id="gir-timeline" viewBox="0 0 1080 220" preserveAspectRatio="none"></svg>
-        <div class="tl-tooltip" id="gir-tl-tooltip"></div>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Detalle de movimientos</h2>
-      <div class="panel-sub">Los valores negativos son salidas por transferencia entre depósitos</div>
-      <div class="table-scroll">
-        <table id="gir-table">
-          <thead>
-            <tr>
-              <th data-key="fecha">Fecha<span class="arrow"></span></th>
-              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
-              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
-              <th data-key="generacion">Generación<span class="arrow"></span></th>
-              <th data-key="deposito">Depósito<span class="arrow"></span></th>
-              <th data-key="cantidad" style="text-align:right">Cantidad<span class="arrow"></span></th>
-              <th data-key="lote">Lote<span class="arrow"></span></th>
-              <th data-key="vto">Vto. partida<span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="gir-tbody"></tbody>
-        </table>
-      </div>
-      <div class="rowcount" id="gir-rowcount"></div>
-    </section>
-
-  </div>
-
   <!-- ===== GIRASOL: VENTAS ===== -->
-  <div class="tabpanel-gir" id="tab-gir-ventas">
+  <div class="tabpanel-gir active" id="tab-gir-ventas">
 
     <div class="kpis" id="girv-kpis"></div>
-
     <section class="panel">
       <h2>Resumen por híbrido — todas las sucursales</h2>
       <div class="panel-sub">Recibido vs. vendido, para ver stock disponible por híbrido</div>
@@ -785,67 +749,16 @@
         </table>
       </div>
     </section>
-
     <section class="panel">
       <h2>Ventas por híbrido</h2>
       <div class="panel-sub">Bolsas vendidas 2026 (facturado + pendiente de facturar), todas las sucursales</div>
       <div class="barlist" id="vhgir-chart"></div>
     </section>
-
-    <section class="panel">
-      <h2>Inventario disponible (propio + CYO)</h2>
-      <div class="panel-sub">Inventario total de girasol — stock propio y en consignación (CYO) juntos — menos las notas de venta que ya están para entregar</div>
-      <div class="table-scroll">
-        <table id="cyogir-table">
-          <thead>
-            <tr>
-              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
-              <th data-key="fisico" style="text-align:right">Físico<span class="arrow"></span></th>
-              <th data-key="nvEntregar" style="text-align:right">NV a entregar<span class="arrow"></span></th>
-              <th data-key="ordenCompra" style="text-align:right">O. Compra<span class="arrow"></span></th>
-              <th data-key="enTransito" style="text-align:right">En tránsito<span class="arrow"></span></th>
-              <th data-key="disponible" style="text-align:right">Disponible<span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="cyogir-tbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Existencias disponibles por sucursal</h2>
-      <div class="panel-sub">Semilla libre para vender (propio + CYO), sin estar tomada por ninguna NV ni factura — abierta por sucursal</div>
-      <div class="table-scroll">
-        <table id="existgir-table">
-          <thead>
-            <tr>
-              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
-              <th data-key="Tandil" style="text-align:right">Tandil<span class="arrow"></span></th>
-              <th data-key="Azul" style="text-align:right">Azul<span class="arrow"></span></th>
-              <th data-key="Olavarría" style="text-align:right">Olavarría<span class="arrow"></span></th>
-              <th data-key="Bolívar" style="text-align:right">Bolívar<span class="arrow"></span></th>
-              <th data-key="Belgrano" style="text-align:right">Belgrano<span class="arrow"></span></th>
-              <th data-key="central" style="text-align:right">Central<span class="arrow"></span></th>
-              <th data-key="total" style="text-align:right">Total<span class="arrow"></span></th>
-            </tr>
-          </thead>
-          <tbody id="existgir-tbody"></tbody>
-        </table>
-      </div>
-    </section>
-
-    <section class="panel">
-      <h2>Ranking de existencias por sucursal</h2>
-      <div class="panel-sub">Total disponible (todos los híbridos de girasol) por sucursal</div>
-      <div class="barlist" id="existgir-rk-sucursal"></div>
-    </section>
-
     <section class="panel">
       <h2>Avance de ventas mensual</h2>
       <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
       <div id="vmgir-chart"></div>
     </section>
-
     <div class="grid-2">
       <section class="panel">
         <h2>Ranking por sucursal</h2>
@@ -913,6 +826,117 @@
 
   </div>
 
+
+  <!-- ===== GIRASOL: STOCK ===== -->
+  <div class="tabpanel-gir" id="tab-gir-stock">
+
+    <h3 class="group-head">Recepción</h3>
+
+    <div class="kpis" id="gir-kpis"></div>
+
+    <div class="filters">
+      <span class="flabel">Sucursal</span>
+      <select id="gir-f-sucursal"><option value="">Todas</option></select>
+      <span class="flabel">Híbrido</span>
+      <select id="gir-f-hibrido"><option value="">Todos</option></select>
+      <button class="reset-btn" id="gir-reset">Limpiar filtros</button>
+    </div>
+
+    <div class="grid-2">
+      <section class="panel">
+        <h2>Bolsas netas por sucursal</h2>
+        <div class="panel-sub">Suma de cantidades recibidas menos transferencias, por sucursal</div>
+        <div class="barlist" id="gir-chart-sucursal"></div>
+      </section>
+      <section class="panel">
+        <h2>Bolsas netas por híbrido</h2>
+        <div class="panel-sub">Agrupado por híbrido base, sin abrir por generación de semilla</div>
+        <div class="barlist" id="gir-chart-hibrido"></div>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2>Recepción acumulada en el tiempo</h2>
+      <div class="panel-sub">Bolsas netas acumuladas desde el inicio de la campaña</div>
+      <div class="chart-wrap">
+        <svg id="gir-timeline" viewBox="0 0 1080 220" preserveAspectRatio="none"></svg>
+        <div class="tl-tooltip" id="gir-tl-tooltip"></div>
+      </div>
+    </section>
+
+    <section class="panel">
+      <h2>Detalle de movimientos</h2>
+      <div class="panel-sub">Los valores negativos son salidas por transferencia entre depósitos</div>
+      <div class="table-scroll">
+        <table id="gir-table">
+          <thead>
+            <tr>
+              <th data-key="fecha">Fecha<span class="arrow"></span></th>
+              <th data-key="sucursal">Sucursal<span class="arrow"></span></th>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="generacion">Generación<span class="arrow"></span></th>
+              <th data-key="deposito">Depósito<span class="arrow"></span></th>
+              <th data-key="cantidad" style="text-align:right">Cantidad<span class="arrow"></span></th>
+              <th data-key="lote">Lote<span class="arrow"></span></th>
+              <th data-key="vto">Vto. partida<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="gir-tbody"></tbody>
+        </table>
+      </div>
+      <div class="rowcount" id="gir-rowcount"></div>
+    </section>
+
+
+    <h3 class="group-head">Disponibilidad</h3>
+    <section class="panel">
+      <h2>Inventario disponible (propio + CYO)</h2>
+      <div class="panel-sub">Inventario total de girasol — stock propio y en consignación (CYO) juntos — menos las notas de venta que ya están para entregar</div>
+      <div class="table-scroll">
+        <table id="cyogir-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="fisico" style="text-align:right">Físico<span class="arrow"></span></th>
+              <th data-key="nvEntregar" style="text-align:right">NV a entregar<span class="arrow"></span></th>
+              <th data-key="ordenCompra" style="text-align:right">O. Compra<span class="arrow"></span></th>
+              <th data-key="enTransito" style="text-align:right">En tránsito<span class="arrow"></span></th>
+              <th data-key="disponible" style="text-align:right">Disponible<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="cyogir-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Existencias disponibles por sucursal</h2>
+      <div class="panel-sub">Semilla libre para vender (propio + CYO), sin estar tomada por ninguna NV ni factura — abierta por sucursal</div>
+      <div class="table-scroll">
+        <table id="existgir-table">
+          <thead>
+            <tr>
+              <th data-key="hibrido">Híbrido<span class="arrow"></span></th>
+              <th data-key="Tandil" style="text-align:right">Tandil<span class="arrow"></span></th>
+              <th data-key="Azul" style="text-align:right">Azul<span class="arrow"></span></th>
+              <th data-key="Olavarría" style="text-align:right">Olavarría<span class="arrow"></span></th>
+              <th data-key="Bolívar" style="text-align:right">Bolívar<span class="arrow"></span></th>
+              <th data-key="Belgrano" style="text-align:right">Belgrano<span class="arrow"></span></th>
+              <th data-key="central" style="text-align:right">Central<span class="arrow"></span></th>
+              <th data-key="total" style="text-align:right">Total<span class="arrow"></span></th>
+            </tr>
+          </thead>
+          <tbody id="existgir-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+    <section class="panel">
+      <h2>Ranking de existencias por sucursal</h2>
+      <div class="panel-sub">Total disponible (todos los híbridos de girasol) por sucursal</div>
+      <div class="barlist" id="existgir-rk-sucursal"></div>
+    </section>
+
+  </div>
+
   </div><!-- /crop-girasol -->
 
   <!-- ############################################################ -->
@@ -921,26 +945,16 @@
   <div class="croppanel" id="crop-soja">
 
     <div class="kpis" id="soja-kpis"></div>
-
     <div class="callout" style="border-color:var(--blue-accent);background:rgba(110,155,196,.08);color:#B9D3E8;">
       <b>Todavía no llegó nada de la campaña nueva:</b> el único movimiento con depósito registrado es del 02/01/2026, anterior al inicio de la campaña 2026/27 — lo dejamos visible en la tabla marcado como "campaña anterior", pero no cuenta en el KPI de recibido. Tampoco hay forecast por cliente cargado, y las cantidades de origen vienen mezcladas (Kg a granel/big bag, bolsas de 40kg fraccionadas) — las normalicé todas a Kg usando el precio de cada línea (~USD 1/Kg vs. ~USD 40/bolsa).
     </div>
 
-    <section class="panel">
-      <h2>Recepción registrada</h2>
-      <div class="panel-sub">Movimientos con depósito asignado — el resto son facturas de compra a Corteva sin movimiento físico todavía</div>
-      <div class="table-scroll">
-        <table>
-          <thead>
-            <tr>
-              <th>Fecha</th><th>Sucursal</th><th>Híbrido</th><th>Presentación</th>
-              <th style="text-align:right">Cantidad (Kg)</th><th>Lote</th><th>Depósito</th>
-            </tr>
-          </thead>
-          <tbody id="soja-rec-tbody"></tbody>
-        </table>
-      </div>
-    </section>
+  <nav class="tabs">
+    <button class="tab-btn-soja active" data-tab="soja-ventas">Ventas</button>
+    <button class="tab-btn-soja" data-tab="soja-stock">Stock</button>
+  </nav>
+
+  <div class="tabpanel-soja active" id="tab-soja-ventas">
 
     <section class="panel">
       <h2>Ventas por híbrido y sucursal</h2>
@@ -961,6 +975,28 @@
       </div>
     </section>
 
+  </div>
+
+  <div class="tabpanel-soja" id="tab-soja-stock">
+
+    <h3 class="group-head">Recepción</h3>
+    <section class="panel">
+      <h2>Recepción registrada</h2>
+      <div class="panel-sub">Movimientos con depósito asignado — el resto son facturas de compra a Corteva sin movimiento físico todavía</div>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Fecha</th><th>Sucursal</th><th>Híbrido</th><th>Presentación</th>
+              <th style="text-align:right">Cantidad (Kg)</th><th>Lote</th><th>Depósito</th>
+            </tr>
+          </thead>
+          <tbody id="soja-rec-tbody"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <h3 class="group-head">Disponibilidad</h3>
     <section class="panel">
       <h2>Inventario disponible (propio + CYO)</h2>
       <div class="panel-sub">Inventario total de soja en Kg — stock propio y en consignación juntos — menos las notas de venta a entregar. Incluye marcas no BRV que también se comercializan</div>
@@ -980,6 +1016,8 @@
         </table>
       </div>
     </section>
+
+  </div>
 
   </div><!-- /crop-soja -->
 
@@ -1432,6 +1470,15 @@ document.querySelectorAll('.tab-btn-gir').forEach(btn=>{
   btn.addEventListener('click', ()=>{
     document.querySelectorAll('.tab-btn-gir').forEach(b=>b.classList.remove('active'));
     document.querySelectorAll('.tabpanel-gir').forEach(p=>p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
+  });
+});
+
+document.querySelectorAll('.tab-btn-soja').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    document.querySelectorAll('.tab-btn-soja').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('.tabpanel-soja').forEach(p=>p.classList.remove('active'));
     btn.classList.add('active');
     document.getElementById('tab-'+btn.dataset.tab).classList.add('active');
   });
@@ -1895,14 +1942,34 @@ renderForecastTab();
 let vtFilters = { sucursal:'' };
 let vtSort = { key:'stock', dir:1 };
 
+function syncVtSucursalSelects(val){
+  const a = document.getElementById('vt-f-sucursal');
+  const b = document.getElementById('vtstock-f-sucursal');
+  if(a) a.value = val;
+  if(b) b.value = val;
+}
+
 fillSelect('vt-f-sucursal', unique(SALES,'sucursal'));
 document.getElementById('vt-f-sucursal').addEventListener('change', e=>{
   vtFilters.sucursal = e.target.value;
+  syncVtSucursalSelects(vtFilters.sucursal);
   renderVentasTab();
 });
 document.getElementById('vt-reset').addEventListener('click', ()=>{
   vtFilters = { sucursal:'' };
-  document.getElementById('vt-f-sucursal').value = '';
+  syncVtSucursalSelects('');
+  renderVentasTab();
+});
+
+fillSelect('vtstock-f-sucursal', unique(SALES,'sucursal'));
+document.getElementById('vtstock-f-sucursal').addEventListener('change', e=>{
+  vtFilters.sucursal = e.target.value;
+  syncVtSucursalSelects(vtFilters.sucursal);
+  renderVentasTab();
+});
+document.getElementById('vtstock-reset').addEventListener('click', ()=>{
+  vtFilters = { sucursal:'' };
+  syncVtSucursalSelects('');
   renderVentasTab();
 });
 
