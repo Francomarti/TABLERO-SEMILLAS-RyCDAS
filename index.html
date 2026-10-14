@@ -1164,6 +1164,7 @@
       #crop-clientes .badge{padding:2px 5px;font-size:10px;}
       #ct-tbody-estado td{white-space:normal;} #ct-tbody-estado small{font-size:10px;line-height:1.25;display:inline-block;}
       /* en el celular: en las tablas de metas se ocultan 2025 y la barra de avance para que entre todo */
+      #cr-t-hist tr > :nth-child(2), #cr-t-refl tr > :nth-child(6){display:none;}
       #crop-clientes table.cn-t7 tr > :nth-child(2), #crop-clientes table.cn-t7 tr > :nth-child(7){display:none;}
     }
   </style>
@@ -1238,6 +1239,43 @@
         </table>
       </div>
       <div class="rowcount">2025 = nuevos con que cerró el año. Crecer = meta 2026 contra 2025. Llevamos = nuevos hasta 10/10/2026. Sucursal = la de la primera compra. Solo totales, sin nombres.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Historia de nuevos por sucursal</h2>
+      <div class="panel-sub">Cuántos productores nuevos sumó cada sucursal por año y cuál es el desafío 2026. Ordenado por la meta.</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table id="cr-t-hist">
+          <thead><tr><th>Sucursal</th><th style="text-align:right">2022</th><th style="text-align:right">2023</th><th style="text-align:right">2024</th><th style="text-align:right">2025</th><th style="text-align:right">2026 hoy</th><th style="text-align:right">Meta 2026</th></tr></thead>
+          <tbody id="cr-tbody-hist"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">Nuevo = nunca había comprado BRV. 2022 puede incluir a alguien que ya compraba antes de 2021. Sucursal = la de la primera compra. Solo totales, sin nombres.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Reflotar: los que dejaron de comprar</h2>
+      <div class="panel-sub" id="cr-sub"></div>
+      <div class="kpis" id="cr-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
+      <div class="table-scroll" style="max-height:none;">
+        <table id="cr-t-refl">
+          <thead><tr><th>Sucursal</th><th style="text-align:right">Aún sin 2026</th><th style="text-align:right">Dormidos 1 año</th><th style="text-align:right">Dormidos 2+ años</th><th style="text-align:right">Meta</th><th style="text-align:right">Bolsas que compraban</th></tr></thead>
+          <tbody id="cr-tbody"></tbody>
+        </table>
+      </div>
+      <div class="rowcount" id="cr-note"></div>
+    </section>
+
+    <section class="panel">
+      <h2>El desafío de cada sucursal</h2>
+      <div class="panel-sub">De acá a fin de año: nuevos que faltan para la meta + clientes a reflotar. Ordenado por lo que más le toca.</div>
+      <div class="table-scroll" style="max-height:none;">
+        <table>
+          <thead><tr><th>Sucursal</th><th style="text-align:right">Nuevos que faltan</th><th style="text-align:right">Reflotar</th><th style="text-align:right">Total a sumar</th></tr></thead>
+          <tbody id="cr-tbody-des"></tbody>
+        </table>
+      </div>
+      <div class="rowcount">Nuevos que faltan = meta de nuevos menos los que ya compraron (si una sucursal ya cumplió, su excedente no se resta a otras). Las listas con nombres para llamar a cada cliente están en el Excel interno, no en el tablero.</div>
     </section>
 
     </div><!-- /cn-sub-cli -->
@@ -3373,7 +3411,7 @@ renderGlobSucCultivoTable();
 
 <script id="clientes-n-script">
 (function(){
-const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,100,48,106,78,58],"N_corte":[null,68,30,64,44,58],"N_anio":[null,100,48,106,78,58],"suc":{"AZUL":{"2024":7,"2025":11,"2026":4},"BOLIVAR":{"2024":19,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":13,"2025":5,"2026":9},"OLAVARRIA":{"2024":9,"2025":5,"2026":8},"TANDIL":{"2024":16,"2025":14,"2026":9}},"cierre25":{"AZUL":21,"BOLIVAR":18,"GENERAL BELGRANO":9,"OLAVARRIA":9,"TANDIL":21},"prom":{"AZUL":16.0,"BOLIVAR":18.75,"GENERAL BELGRANO":12.25,"OLAVARRIA":13.25,"TANDIL":22.75},"N_mejor_anio":2024,"meta":{"AZUL":24,"BOLIVAR":24,"GENERAL BELGRANO":14,"OLAVARRIA":15,"TANDIL":29},"bol":{"AZUL":[4346,4402,1510,2120,4912,2640],"BOLIVAR":[2835,1987,1094,2755,2441,2487],"GENERAL BELGRANO":[2064,1875,870,2037,2087,2039],"OLAVARRIA":[3579,3836,2699,3254,2688,3496],"TANDIL":[8415,5041,4851,4873,6070,4036]},"bol_tot":[21239,17141,11024,15039,18198,14698],"bol_tot_cut":[18487,14712,9352,10443,12899,14698],"maiz":[18258,11961,9860,12562,14865,12638],"girasol":[2981,5180,1164,2477,3333,2060],"cli":[272,232,153,255,256,205],"cli_cut":[219,190,114,161,158,205],"cli_suc":{"AZUL":{"full":[37,44,18,32,47,24],"cut":[31,38,14,17,30,24]},"BOLIVAR":{"full":[78,48,42,67,55,74],"cut":[63,42,28,54,35,74]},"GENERAL BELGRANO":{"full":[34,30,21,45,37,32],"cut":[27,23,18,29,21,32]},"OLAVARRIA":{"full":[56,43,35,54,49,35],"cut":[43,37,24,29,27,35]},"TANDIL":{"full":[67,67,37,57,68,40],"cut":[55,50,30,32,45,40]}},"est_full":{"2022":{"N":[100,4626],"R":[132,12546],"V":[0,0]},"2023":{"N":[48,3686],"R":[85,6604],"V":[20,1051]},"2024":{"N":[106,4542],"R":[89,7397],"V":[60,3586]},"2025":{"N":[78,3888],"R":[125,10616],"V":[53,3740]},"2026":{"N":[58,3155],"R":[114,10129],"V":[33,1513]}},"est_cut":{"2022":{"N":[68,3623],"R":[122,11089],"V":[0,0]},"2023":{"N":[30,3072],"R":[73,5571],"V":[11,897]},"2024":{"N":[64,3466],"R":[62,4947],"V":[35,2369]},"2025":{"N":[44,1842],"R":[86,8080],"V":[28,2900]},"2026":{"N":[58,3155],"R":[114,10129],"V":[33,1513]}},"bucket_labels":["1 a 10","11 a 30","31 a 100","Más de 100"],"buckets":{"2025cut":[[19,142],[42,847],[60,3495],[37,8338]],"2026cut":[[26,190],[70,1483],[68,4061],[41,9063]],"2025full":[[30,183],[78,1507],[97,5229],[51,11325]]},"prom25":71,"med25":36,"prom_anio":[79,74,74,61,71,72],"prom_cut":[85,77,84,67,81,72],"usd_cut26":2437512,"metaB":{"AZUL":5160,"BOLIVAR":2850,"GENERAL BELGRANO":2410,"OLAVARRIA":3680,"TANDIL":7139}};
+const D = {"corte":"2026-10-10","anios":[2021,2022,2023,2024,2025,2026],"nuevos":[null,100,48,106,78,58],"N_corte":[null,68,30,64,44,58],"N_anio":[null,100,48,106,78,58],"suc":{"AZUL":{"2024":7,"2025":11,"2026":4},"BOLIVAR":{"2024":19,"2025":9,"2026":28},"GENERAL BELGRANO":{"2024":13,"2025":5,"2026":9},"OLAVARRIA":{"2024":9,"2025":5,"2026":8},"TANDIL":{"2024":16,"2025":14,"2026":9}},"cierre25":{"AZUL":21,"BOLIVAR":18,"GENERAL BELGRANO":9,"OLAVARRIA":9,"TANDIL":21},"prom":{"AZUL":16.0,"BOLIVAR":18.75,"GENERAL BELGRANO":12.25,"OLAVARRIA":13.25,"TANDIL":22.75},"N_mejor_anio":2024,"meta":{"AZUL":24,"BOLIVAR":24,"GENERAL BELGRANO":14,"OLAVARRIA":15,"TANDIL":29},"bol":{"AZUL":[4346,4402,1510,2120,4912,2640],"BOLIVAR":[2835,1987,1094,2755,2441,2487],"GENERAL BELGRANO":[2064,1875,870,2037,2087,2039],"OLAVARRIA":[3579,3836,2699,3254,2688,3496],"TANDIL":[8415,5041,4851,4873,6070,4036]},"bol_tot":[21239,17141,11024,15039,18198,14698],"bol_tot_cut":[18487,14712,9352,10443,12899,14698],"maiz":[18258,11961,9860,12562,14865,12638],"girasol":[2981,5180,1164,2477,3333,2060],"cli":[272,232,153,255,256,205],"cli_cut":[219,190,114,161,158,205],"cli_suc":{"AZUL":{"full":[37,44,18,32,47,24],"cut":[31,38,14,17,30,24]},"BOLIVAR":{"full":[78,48,42,67,55,74],"cut":[63,42,28,54,35,74]},"GENERAL BELGRANO":{"full":[34,30,21,45,37,32],"cut":[27,23,18,29,21,32]},"OLAVARRIA":{"full":[56,43,35,54,49,35],"cut":[43,37,24,29,27,35]},"TANDIL":{"full":[67,67,37,57,68,40],"cut":[55,50,30,32,45,40]}},"est_full":{"2022":{"N":[100,4626],"R":[132,12546],"V":[0,0]},"2023":{"N":[48,3686],"R":[85,6604],"V":[20,1051]},"2024":{"N":[106,4542],"R":[89,7397],"V":[60,3586]},"2025":{"N":[78,3888],"R":[125,10616],"V":[53,3740]},"2026":{"N":[58,3155],"R":[114,10129],"V":[33,1513]}},"est_cut":{"2022":{"N":[68,3623],"R":[122,11089],"V":[0,0]},"2023":{"N":[30,3072],"R":[73,5571],"V":[11,897]},"2024":{"N":[64,3466],"R":[62,4947],"V":[35,2369]},"2025":{"N":[44,1842],"R":[86,8080],"V":[28,2900]},"2026":{"N":[58,3155],"R":[114,10129],"V":[33,1513]}},"bucket_labels":["1 a 10","11 a 30","31 a 100","Más de 100"],"buckets":{"2025cut":[[19,142],[42,847],[60,3495],[37,8338]],"2026cut":[[26,190],[70,1483],[68,4061],[41,9063]],"2025full":[[30,183],[78,1507],[97,5229],[51,11325]]},"prom25":71,"med25":36,"prom_anio":[79,74,74,61,71,72],"prom_cut":[85,77,84,67,81,72],"usd_cut26":2437512,"metaB":{"AZUL":5160,"BOLIVAR":2850,"GENERAL BELGRANO":2410,"OLAVARRIA":3680,"TANDIL":7139},"refl":{"AZUL":{"1":[29,2441],"2":[14,581],"3":[38,1596]},"BOLIVAR":{"1":[28,1387],"2":[30,647],"3":[49,1336]},"GENERAL BELGRANO":{"1":[19,603],"2":[20,619],"3":[21,570]},"OLAVARRIA":{"1":[25,743],"2":[24,1297],"3":[33,1788]},"TANDIL":{"1":[41,2011],"2":[27,1353],"3":[59,7440]}},"refl_nat":[0.25,0.12,0.1],"refl_des":[0.4,0.2,0.15],"hist":{"AZUL":[21,6,16,21,4],"BOLIVAR":[16,16,25,18,28],"GENERAL BELGRANO":[12,6,22,9,9],"OLAVARRIA":[17,10,17,9,8],"TANDIL":[34,10,26,21,9]}};
 const fmt = n => (n===null||n===undefined) ? '—' : Number(n).toLocaleString('es-AR');
 const el = id => document.getElementById(id);
 const iy = y => D.anios.indexOf(y);
@@ -3470,6 +3508,30 @@ const top25 = b25[3], top26 = b26[3];
 el('ct-buck-sub').innerHTML = `Los clientes que compran más de 100 bolsas son ${top26[0]} en 2026 (${Math.round(top26[1]/s26*100)}% de las bolsas) contra ${top25[0]} a esta fecha de 2025 (${Math.round(top25[1]/s25*100)}%).`;
 el('ct-tbody-buck').innerHTML = D.bucket_labels.map((l,i) => `<tr><td>${l}</td><td class="num">${fmt(b25[i][0])}</td><td class="num">${Math.round(b25[i][1]/s25*100)}%</td><td class="num"><b>${fmt(b26[i][0])}</b></td><td class="num"><b>${Math.round(b26[i][1]/s26*100)}%</b></td></tr>`).join('')
   + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(b25.reduce((a,x)=>a+x[0],0))}</td><td class="num">100%</td><td class="num">${fmt(b26.reduce((a,x)=>a+x[0],0))}</td><td class="num">100%</td></tr>`;
+// ================= desafío: historia, reflotar =================
+const sk = Object.keys(D.meta);
+const hrows = sk.map(k => ({k, h: D.hist[k], meta: D.meta[k]})).sort((a,b)=>b.meta-a.meta);
+el('cr-tbody-hist').innerHTML = hrows.map(r => `<tr><td>${SUC_NAMES[r.k]||r.k}</td>${r.h.slice(0,4).map(v=>`<td class="num">${fmt(v)}</td>`).join('')}<td class="num"><b>${fmt(r.h[4])}</b></td><td class="num"><b>${fmt(r.meta)}</b></td></tr>`).join('')
+  + `<tr class="rycdas-row"><td>Total</td>${[0,1,2,3,4].map(i=>`<td class="num">${fmt(hrows.reduce((a,r)=>a+r.h[i],0))}</td>`).join('')}<td class="num">${fmt(hrows.reduce((a,r)=>a+r.meta,0))}</td></tr>`;
+const rrows = sk.map(k => { const g = D.refl[k];
+  const meta = Math.round(g['1'][0]*D.refl_des[0] + g['2'][0]*D.refl_des[1] + g['3'][0]*D.refl_des[2]);
+  const nat = Math.round(g['1'][0]*D.refl_nat[0] + g['2'][0]*D.refl_nat[1] + g['3'][0]*D.refl_nat[2]);
+  const nf = Math.max(0, D.meta[k] - D.suc[k]['2026']);
+  return {k, g, meta, nat, nf, bol: g['1'][1]+g['2'][1]+g['3'][1], tot: meta+nf}; }).sort((a,b)=>b.tot-a.tot);
+const sum = f => rrows.reduce((a,r)=>a+f(r),0);
+const pool = sum(r=>r.g['1'][0]+r.g['2'][0]+r.g['3'][0]);
+const pm = sum(r=>r.meta), pn = sum(r=>r.nat), pb = sum(r=>r.bol), pnf = sum(r=>r.nf);
+const pct0 = a => Math.round(a*100)+'%';
+el('cr-sub').innerHTML = `Clientes que ya compraron BRV y hoy no compran. <b>Aún sin 2026</b>: compraron en 2025 y todavía no esta campaña. <b>Dormidos 1 año</b>: compraron en 2024 y no en 2025. <b>Dormidos 2+ años</b>: su última compra fue 2021-2023.`;
+el('cr-kpis').innerHTML = `
+  <div class="kpi"><div class="label">Para reflotar hoy</div><div class="value">${fmt(pool)}</div><div class="foot">Compraban ${fmt(pb)} bolsas en su última campaña</div></div>
+  <div class="kpi good"><div class="label">Meta de reflote 2026</div><div class="value">${fmt(pm)}</div><div class="foot">Se esperan solos unos ${fmt(pn)}: el desafío es sumar ${fmt(pm-pn)} más</div></div>
+  <div class="kpi"><div class="label">Desafío hasta fin de año</div><div class="value">${fmt(pnf+pm)}</div><div class="foot">${fmt(pnf)} nuevos + ${fmt(pm)} reflotados</div></div>`;
+el('cr-tbody').innerHTML = rrows.map(r => `<tr><td>${SUC_NAMES[r.k]||r.k}</td><td class="num">${fmt(r.g['1'][0])}</td><td class="num">${fmt(r.g['2'][0])}</td><td class="num">${fmt(r.g['3'][0])}</td><td class="num"><b>${fmt(r.meta)}</b></td><td class="num">${fmt(r.bol)}</td></tr>`).join('')
+  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(sum(r=>r.g['1'][0]))}</td><td class="num">${fmt(sum(r=>r.g['2'][0]))}</td><td class="num">${fmt(sum(r=>r.g['3'][0]))}</td><td class="num">${fmt(pm)}</td><td class="num">${fmt(pb)}</td></tr>`;
+el('cr-note').innerHTML = `Meta = ${pct0(D.refl_des[0])} de los primeros, ${pct0(D.refl_des[1])} de los dormidos 1 año y ${pct0(D.refl_des[2])} de los de 2+ años. Hoy, sin hacer nada, vuelven solos más o menos ${pct0(D.refl_nat[0])}, ${pct0(D.refl_nat[1])} y ${pct0(D.refl_nat[2])} (promedio 2024-25). Bolsas = las de su última campaña con compra. Solo totales, sin nombres.`;
+el('cr-tbody-des').innerHTML = rrows.map(r => `<tr><td>${SUC_NAMES[r.k]||r.k}</td><td class="num">${fmt(r.nf)}</td><td class="num">${fmt(r.meta)}</td><td class="num"><b>${fmt(r.tot)}</b></td></tr>`).join('')
+  + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(pnf)}</td><td class="num">${fmt(pm)}</td><td class="num">${fmt(pnf+pm)}</td></tr>`;
 })();
 </script>
 </body>
