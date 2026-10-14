@@ -1156,6 +1156,19 @@
     #crop-clientes .cn-sub{display:flex;gap:8px;margin:0 0 14px;}
     #crop-clientes .cn-sub button{flex:1;font:inherit;font-size:13px;padding:10px 12px;background:var(--bg-panel);color:var(--text-muted);border:1px solid var(--line);border-radius:var(--radius);cursor:pointer;}
     #crop-clientes .cn-sub button.on{background:var(--gold);color:#1B2B21;border-color:var(--gold);font-weight:600;}
+    #crop-clientes .cp-legend{display:flex;flex-wrap:wrap;gap:6px 16px;margin:2px 0 12px;font-size:12px;color:var(--text-muted);}
+    #crop-clientes .cp-legend i{display:inline-block;width:12px;height:12px;border-radius:2px;margin-right:6px;vertical-align:-2px;}
+    #crop-clientes .cp-row{display:grid;grid-template-columns:var(--cp-l,54px) 1fr 52px;gap:8px;align-items:center;margin:7px 0;font-size:13px;}
+    #crop-clientes .cp-row .cp-name{color:var(--text-muted);line-height:1.2;}
+    #crop-clientes .cp-track{display:flex;gap:2px;height:24px;}
+    #crop-clientes .cp-seg{height:100%;min-width:2px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;color:#10190F;overflow:hidden;white-space:nowrap;}
+    #crop-clientes .cp-seg.s-sig{background:#3987e5;} #crop-clientes .cp-seg.s-vol{background:#199e70;} #crop-clientes .cp-seg.s-nue{background:#d95926;}
+    #crop-clientes .cp-seg.s-hoy{background:#5d7567;}
+    #crop-clientes .cp-seg.s-des{background:repeating-linear-gradient(135deg,rgba(233,197,122,.45) 0 3px,rgba(233,197,122,.10) 3px 7px);outline:1px dashed var(--gold-soft);outline-offset:-1px;color:var(--text);}
+    #crop-clientes .cp-val{text-align:right;color:var(--text);font-weight:600;}
+    #crop-clientes .cp-legend .s-sig{background:#3987e5;} #crop-clientes .cp-legend .s-vol{background:#199e70;} #crop-clientes .cp-legend .s-nue{background:#d95926;} #crop-clientes .cp-legend .s-hoy{background:#5d7567;}
+    #crop-clientes .cp-sw-des{background:repeating-linear-gradient(135deg,rgba(233,197,122,.45) 0 3px,rgba(233,197,122,.10) 3px 7px);outline:1px dashed var(--gold-soft);outline-offset:-1px;}
+    @media (max-width:520px){ #crop-clientes .cp-row{--cp-l:46px;grid-template-columns:var(--cp-l) 1fr 40px;gap:6px;} #crop-clientes .cp-row.suc{--cp-l:74px;} #crop-clientes .cp-seg{font-size:10px;} }
     @media (max-width:520px){
       #crop-clientes table th, #crop-clientes table td{padding-left:4px;padding-right:4px;font-size:12px;}
       #crop-clientes table th:first-child, #crop-clientes table td:first-child{white-space:normal;min-width:0;width:64px;}
@@ -1176,6 +1189,22 @@
 
     <!-- ============ PARTE 1: CLIENTES (solo si compró) ============ -->
     <div id="cn-sub-cli">
+
+    <section class="panel">
+      <h2>El PLAN N en un vistazo</h2>
+      <div class="panel-sub">Hay dos formas de sumar clientes: los <b>nuevos</b> (nunca habían comprado BRV) y los <b>reflotados</b> (compraron antes y dejaron de comprar). Las listas para llamar son la parte de reflotar.</div>
+      <div class="kpis" id="cp-kpis" style="grid-template-columns:repeat(auto-fit,minmax(200px,1fr));"></div>
+
+      <h2 style="font-size:14px;margin-bottom:2px;">Cuántos clientes compran y de dónde vienen</h2>
+      <div class="panel-sub" style="margin-bottom:10px;">2026 = lo que va hasta hoy, más el desafío de acá a fin de año (rayado)</div>
+      <div class="cp-legend" id="cp-leg1"></div>
+      <div id="cp-chart1"></div>
+
+      <h2 style="font-size:14px;margin:22px 0 2px;">Cuánto le toca a cada sucursal</h2>
+      <div class="panel-sub" style="margin-bottom:10px;">Clientes que ya compraron en 2026 y lo que falta sumar. Ordenado por lo que más le toca.</div>
+      <div class="cp-legend" id="cp-leg2"></div>
+      <div id="cp-chart2"></div>
+    </section>
 
     <section class="panel">
       <h2>Clientes que compraron Brevant</h2>
@@ -3532,6 +3561,30 @@ el('cr-tbody').innerHTML = rrows.map(r => `<tr><td>${SUC_NAMES[r.k]||r.k}</td><t
 el('cr-note').innerHTML = `Meta = ${pct0(D.refl_des[0])} de los primeros, ${pct0(D.refl_des[1])} de los dormidos 1 año y ${pct0(D.refl_des[2])} de los de 2+ años. Hoy, sin hacer nada, vuelven solos más o menos ${pct0(D.refl_nat[0])}, ${pct0(D.refl_nat[1])} y ${pct0(D.refl_nat[2])} (promedio 2024-25). Bolsas = las de su última campaña con compra. Solo totales, sin nombres.`;
 el('cr-tbody-des').innerHTML = rrows.map(r => `<tr><td>${SUC_NAMES[r.k]||r.k}</td><td class="num">${fmt(r.nf)}</td><td class="num">${fmt(r.meta)}</td><td class="num"><b>${fmt(r.tot)}</b></td></tr>`).join('')
   + `<tr class="rycdas-row"><td>Total</td><td class="num">${fmt(pnf)}</td><td class="num">${fmt(pm)}</td><td class="num">${fmt(pnf+pm)}</td></tr>`;
+
+// ================= gráficos: PLAN N en un vistazo =================
+const segHtml = (cls, v, max, name, showMin) => v>0 ? `<div class="cp-seg ${cls}" style="width:${(v/max*100).toFixed(2)}%" title="${name}: ${fmt(v)}" aria-label="${name}: ${fmt(v)}">${(v/max*100)>=showMin?fmt(v):''}</div>` : '';
+const sw = (cls, t) => `<span><i class="${cls}"></i>${t}</span>`;
+const H26 = D.est_cut['2026'];
+const des = pnf + pm;
+const maxC = [2022,2023,2024,2025].map(y => D.est_full[y].N[0]+D.est_full[y].V[0]+D.est_full[y].R[0]);
+const maxAll = Math.max(...maxC, C26 + des) * 1.03;
+const rows1 = [2022,2023,2024,2025].map(y => { const e = D.est_full[y];
+  return `<div class="cp-row"><div class="cp-name">${y}</div><div class="cp-track">${segHtml('s-sig', e.R[0], maxAll, 'Siguen', 9)}${segHtml('s-vol', e.V[0], maxAll, 'Volvieron', 9)}${segHtml('s-nue', e.N[0], maxAll, 'Nuevos', 9)}</div><div class="cp-val">${fmt(e.R[0]+e.V[0]+e.N[0])}</div></div>`; });
+rows1.push(`<div class="cp-row"><div class="cp-name"><b>2026</b></div><div class="cp-track">${segHtml('s-sig', H26.R[0], maxAll, 'Siguen (hoy)', 9)}${segHtml('s-vol', H26.V[0], maxAll, 'Volvieron (hoy)', 9)}${segHtml('s-nue', H26.N[0], maxAll, 'Nuevos (hoy)', 9)}${segHtml('s-des', des, maxAll, 'Desafío hasta fin de año', 8).replace('>'+fmt(des)+'<','>+'+fmt(des)+'<')}</div><div class="cp-val">${fmt(C26+des)}</div></div>`);
+el('cp-chart1').innerHTML = rows1.join('');
+el('cp-leg1').innerHTML = sw('s-sig','Siguen (compraron el año anterior)') + sw('s-vol','Volvieron') + sw('s-nue','Nuevos') + `<span><i class="cp-sw-des"></i>Desafío a fin de año</span>`;
+const rows2 = rrows.map(r => { const hoy = D.cli_suc[r.k].cut[iy(2026)];
+  return `<div class="cp-row suc"><div class="cp-name">${SUC_NAMES[r.k]||r.k}</div><div class="cp-track">${segHtml('s-hoy', hoy, Math.max(...rrows.map(x=>D.cli_suc[x.k].cut[iy(2026)]+x.tot))*1.03, 'Ya compraron 2026', 6)}${segHtml('s-nue', r.nf, Math.max(...rrows.map(x=>D.cli_suc[x.k].cut[iy(2026)]+x.tot))*1.03, 'Nuevos que faltan', 9)}${segHtml('s-vol', r.meta, Math.max(...rrows.map(x=>D.cli_suc[x.k].cut[iy(2026)]+x.tot))*1.03, 'A reflotar', 9)}</div><div class="cp-val">+${fmt(r.tot)}</div></div>`; });
+el('cp-chart2').innerHTML = rows2.join('');
+el('cp-leg2').innerHTML = sw('s-hoy','Ya compraron en 2026') + sw('s-nue','Nuevos que faltan') + sw('s-vol','A reflotar');
+// bolsas del desafío: lo que compran hoy los que vuelven y los nuevos
+const pV = H26.V[1]/H26.V[0], pN = H26.N[1]/H26.N[0];
+const bDes = Math.round((pm*pV + pnf*pN)/100)*100, bFalta = Math.max(0, bMetaT - B26);
+el('cp-kpis').innerHTML = `
+  <div class="kpi good"><div class="label">Clientes que compraron 2026</div><div class="value">${fmt(C26)}</div><div class="foot">${fmt(H26.R[0])} siguen · ${fmt(H26.V[0])} volvieron · ${fmt(H26.N[0])} nuevos</div></div>
+  <div class="kpi"><div class="label">Desafío hasta fin de año</div><div class="value">+${fmt(des)}</div><div class="foot">${fmt(pnf)} nuevos + ${fmt(pm)} reflotados</div></div>
+  <div class="kpi"><div class="label">Bolsas del desafío</div><div class="value">≈ ${fmt(bDes)}</div><div class="foot">A ${fmt(Math.round(pV))} bolsas por cliente que vuelve y ${fmt(Math.round(pN))} por nuevo (lo de este año). Para la meta de bolsas faltan ${fmt(bFalta)}</div></div>`;
 })();
 </script>
 </body>
