@@ -142,6 +142,8 @@
   #fc-kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
   #vt-kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
   #soja-kpis{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));}
+  #vm-kpis-2025{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:14px;}
+  #vmgir-kpis-2025{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));margin-bottom:14px;}
   #ob-kpis{grid-template-columns:repeat(auto-fit,minmax(200px,1fr));}
   .kpi{
     background:var(--bg-panel);
@@ -312,6 +314,18 @@
   .monthchart .mlabel{font-size:10.5px;color:var(--text-dim);margin-top:6px;}
   .monthchart .zeroline{width:100%;height:1px;background:var(--line);}
 
+  /* monthly compare chart (2026 vs 2025) */
+  .monthchart.compare .mcluster{display:flex;align-items:flex-end;justify-content:center;gap:3px;width:100%;}
+  .monthchart.compare .mcluster.topzone{align-items:flex-end;}
+  .monthchart.compare .mcluster.botzone{align-items:flex-start;}
+  .monthchart.compare .mbar{width:14px;}
+  .monthchart.compare .mbar2025{width:14px;border-radius:2px 2px 0 0;background:var(--text-dim);opacity:.6;min-height:2px;}
+  .monthchart.compare .mbar2025.neg{border-radius:0 0 2px 2px;}
+  .chart-legend{display:flex;gap:18px;font-size:11px;color:var(--text-muted);margin-bottom:10px;}
+  .chart-legend .dot{display:inline-block;width:9px;height:9px;border-radius:2px;margin-right:5px;vertical-align:middle;}
+  .chart-legend .dot.c2026{background:linear-gradient(180deg,var(--gold-soft),var(--green-accent));}
+  .chart-legend .dot.c2025{background:var(--text-dim);opacity:.6;}
+
   .empty-state{padding:40px 0;text-align:center;color:var(--text-dim);font-size:13px;}
 
   .badge{display:inline-block;padding:2px 7px;border-radius:2px;font-size:11px;font-weight:600;}
@@ -413,6 +427,12 @@
       <h2>Avance de ventas mensual</h2>
       <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
       <div id="vm-chart"></div>
+    </section>
+    <section class="panel">
+      <h2>Comparativo vs 2025</h2>
+      <div class="panel-sub">Bolsas facturadas netas por mes, 2026 vs mismo mes de 2025</div>
+      <div class="kpis" id="vm-kpis-2025"></div>
+      <div id="vm-chart-2025"></div>
     </section>
     <div class="grid-2">
       <section class="panel">
@@ -758,6 +778,12 @@
       <h2>Avance de ventas mensual</h2>
       <div class="panel-sub">Bolsas facturadas netas por mes, campaña 2026/27</div>
       <div id="vmgir-chart"></div>
+    </section>
+    <section class="panel">
+      <h2>Comparativo vs 2025</h2>
+      <div class="panel-sub">Bolsas facturadas netas por mes, 2026 vs mismo mes de 2025</div>
+      <div class="kpis" id="vmgir-kpis-2025"></div>
+      <div id="vmgir-chart-2025"></div>
     </section>
     <div class="grid-2">
       <section class="panel">
@@ -1437,6 +1463,14 @@ const EXIST_MAIZ = [{"hibrido": "8181", "Tandil": 359, "Azul": 115, "Olavarría"
 const EXIST_GIRASOL = [{"hibrido": "4225 CL", "Tandil": 1400, "Azul": 120, "Olavarría": 1917, "Bolívar": 155, "Belgrano": 0, "central": 0, "total": 3592}, {"hibrido": "H280 CL AO", "Tandil": -23, "Azul": 87, "Olavarría": 0, "Bolívar": 0, "Belgrano": 25, "central": 0, "total": 89}, {"hibrido": "L210 CP", "Tandil": 396, "Azul": 250, "Olavarría": 0, "Bolívar": 0, "Belgrano": 0, "central": 0, "total": 646}, {"hibrido": "MG 360", "Tandil": 14, "Azul": 1, "Olavarría": 241, "Bolívar": 0, "Belgrano": 0, "central": 0, "total": 256}, {"hibrido": "NTO 2.5 CP", "Tandil": 52, "Azul": 2, "Olavarría": 7, "Bolívar": 0, "Belgrano": 0, "central": 0, "total": 61}];
 const VENTAS_MENSUAL_MAIZ = [{"mes": "2026-01", "cantidad": -85}, {"mes": "2026-02", "cantidad": -10}, {"mes": "2026-03", "cantidad": 0}, {"mes": "2026-04", "cantidad": 127}, {"mes": "2026-05", "cantidad": 142}, {"mes": "2026-06", "cantidad": 1303}, {"mes": "2026-07", "cantidad": 2056}, {"mes": "2026-08", "cantidad": 1922}, {"mes": "2026-09", "cantidad": 5355}, {"mes": "2026-10", "cantidad": 1988}];
 const VENTAS_MENSUAL_GIRASOL = [{"mes": "2026-01", "cantidad": -1}, {"mes": "2026-02", "cantidad": 0}, {"mes": "2026-03", "cantidad": -55}, {"mes": "2026-04", "cantidad": 30}, {"mes": "2026-05", "cantidad": 160}, {"mes": "2026-06", "cantidad": 429}, {"mes": "2026-07", "cantidad": 136}, {"mes": "2026-08", "cantidad": 253}, {"mes": "2026-09", "cantidad": 899}, {"mes": "2026-10", "cantidad": 255}];
+// Histórico 2025, cargado una vez desde BRV_2025.xlsx (control por facturado, ventas de semillas) para comparar contra la campaña 2026 "a esta altura del año".
+// Nota: esta carga es puntual. La actualización automática semanal de Franco (ventas/pendiente de facturar/disponibilidad) sólo toca las series 2026; si se necesita refrescar 2025 habría que repetir la carga manual.
+const VENTAS_MENSUAL_MAIZ_2025 = [{"mes": "2025-01", "cantidad": 6}, {"mes": "2025-02", "cantidad": 119}, {"mes": "2025-03", "cantidad": 130}, {"mes": "2025-04", "cantidad": 232}, {"mes": "2025-05", "cantidad": 377}, {"mes": "2025-06", "cantidad": 3248}, {"mes": "2025-07", "cantidad": 839}, {"mes": "2025-08", "cantidad": 1129}, {"mes": "2025-09", "cantidad": 2920}, {"mes": "2025-10", "cantidad": 2716}, {"mes": "2025-11", "cantidad": 1864}, {"mes": "2025-12", "cantidad": 1285}];
+const VENTAS_MENSUAL_GIRASOL_2025 = [{"mes": "2025-01", "cantidad": -2}, {"mes": "2025-02", "cantidad": -1}, {"mes": "2025-03", "cantidad": 0}, {"mes": "2025-04", "cantidad": 45}, {"mes": "2025-05", "cantidad": 206}, {"mes": "2025-06", "cantidad": 805}, {"mes": "2025-07", "cantidad": 1052}, {"mes": "2025-08", "cantidad": 583}, {"mes": "2025-09", "cantidad": 770}, {"mes": "2025-10", "cantidad": 227}, {"mes": "2025-11", "cantidad": -58}, {"mes": "2025-12", "cantidad": -294}];
+const VENTAS_MENSUAL_SOJA_2025 = [{"mes": "2025-01", "cantidad": -46}, {"mes": "2025-02", "cantidad": -2400}, {"mes": "2025-03", "cantidad": -6}, {"mes": "2025-04", "cantidad": 0}, {"mes": "2025-05", "cantidad": 4000}, {"mes": "2025-06", "cantidad": -3404}, {"mes": "2025-07", "cantidad": 0}, {"mes": "2025-08", "cantidad": 0}, {"mes": "2025-09", "cantidad": 0}, {"mes": "2025-10", "cantidad": 7200}, {"mes": "2025-11", "cantidad": 141959}, {"mes": "2025-12", "cantidad": 202846}];
+const TOTAL_MAIZ_2025 = VENTAS_MENSUAL_MAIZ_2025.reduce((s,r)=>s+r.cantidad,0);
+const TOTAL_GIRASOL_2025 = VENTAS_MENSUAL_GIRASOL_2025.reduce((s,r)=>s+r.cantidad,0);
+const TOTAL_SOJA_2025_KG = VENTAS_MENSUAL_SOJA_2025.reduce((s,r)=>s+r.cantidad,0);
 const AGRINTEL = [{"partido": "Tandil", "maiz": 81000, "girasol": 49000, "soja": 44000, "trigoSoja2": 29000, "cebadaSoja2": 56000, "total": 259000}, {"partido": "Azul", "maiz": 53000, "girasol": 18000, "soja": 36000, "trigoSoja2": 22000, "cebadaSoja2": 29000, "total": 158000}, {"partido": "Olavarría", "maiz": 30000, "girasol": 10000, "soja": 17000, "trigoSoja2": 9000, "cebadaSoja2": 25000, "total": 91000}, {"partido": "Bolívar", "maiz": 51000, "girasol": 16000, "soja": 46000, "trigoSoja2": 6000, "cebadaSoja2": 17000, "total": 136000}, {"partido": "General La Madrid", "maiz": 32000, "girasol": 17000, "soja": 21000, "trigoSoja2": 18000, "cebadaSoja2": 49000, "total": 137000}, {"partido": "Laprida", "maiz": 11000, "girasol": 3000, "soja": 5000, "trigoSoja2": 5000, "cebadaSoja2": 17000, "total": 41000}, {"partido": "Rauch", "maiz": 7000, "girasol": 3000, "soja": 3000, "trigoSoja2": 1000, "cebadaSoja2": 2000, "total": 16000}, {"partido": "Ayacucho", "maiz": 32000, "girasol": 18000, "soja": 9000, "trigoSoja2": 3000, "cebadaSoja2": 6000, "total": 68000}, {"partido": "General Belgrano", "maiz": 14000, "girasol": 5000, "soja": 11000, "trigoSoja2": 4000, "cebadaSoja2": 5000, "total": 39000}, {"partido": "Benito Juárez", "maiz": 42000, "girasol": 14000, "soja": 23000, "trigoSoja2": 17000, "cebadaSoja2": 40000, "total": 136000}, {"partido": "Total", "maiz": 353000, "girasol": 153000, "soja": 215000, "trigoSoja2": 114000, "cebadaSoja2": 246000, "total": 1081000}];
 const RYCDAS_PARTIDOS = new Set(['Tandil','Azul','Olavarría','Bolívar','General Belgrano']);
 const SUCS_ALL = ['Azul','Belgrano','Bolívar','Olavarría','Tandil'];
@@ -2260,6 +2294,73 @@ function renderMonthlyChart(data, elId){
   el.appendChild(wrap);
 }
 
+// Compara, mes a mes, la serie 2026 (actual) contra la misma serie 2025 (histórico).
+// data2025 puede traer más meses (año completo) que data2026 (lo que va del año); se grafican sólo los meses presentes en data2026.
+function renderMonthlyCompareChart(data2026, data2025, elId){
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  if(!data2026.length){ el.innerHTML = '<div class="empty-state">Sin datos</div>'; return; }
+  const map2025 = {}; data2025.forEach(d=>{ map2025[d.mes.slice(5,7)] = d.cantidad; });
+  const H = 90;
+  const allVals = data2026.map(d=>Math.abs(d.cantidad)).concat(data2026.map(d=>Math.abs(map2025[d.mes.slice(5,7)]||0)));
+  const maxAbs = Math.max(1, ...allVals);
+  const legend = document.createElement('div');
+  legend.className = 'chart-legend';
+  legend.innerHTML = `<span><span class="dot c2026"></span>2026</span><span><span class="dot c2025"></span>2025</span>`;
+  el.appendChild(legend);
+  const wrap = document.createElement('div');
+  wrap.className = 'monthchart compare';
+  data2026.forEach(d=>{
+    const mm = d.mes.split('-')[1];
+    const label = MESES_ES[mm] || mm;
+    const v26 = d.cantidad;
+    const v25 = map2025[mm] || 0;
+    const isNeg26 = v26 < 0, isNeg25 = v25 < 0;
+    const h26 = Math.max(2, Math.round(Math.abs(v26)/maxAbs * H));
+    const h25 = Math.max(2, Math.round(Math.abs(v25)/maxAbs * H));
+    const col = document.createElement('div');
+    col.className = 'mbar-wrap';
+    col.innerHTML = `
+      <div class="mval">${(!isNeg26?v26.toLocaleString('es-AR'):'')}</div>
+      <div class="mcluster topzone" style="height:${H}px;width:100%;">
+        ${!isNeg26 ? `<div class="mbar" style="height:${h26}px;border-radius:2px 2px 0 0;background:linear-gradient(180deg,var(--gold-soft),var(--green-accent));" title="2026 ${label}: ${v26.toLocaleString('es-AR')}"></div>` : ''}
+        ${!isNeg25 ? `<div class="mbar2025" style="height:${h25}px;" title="2025 ${label}: ${v25.toLocaleString('es-AR')}"></div>` : ''}
+      </div>
+      <div class="zeroline"></div>
+      <div class="mcluster botzone" style="height:${H}px;width:100%;">
+        ${isNeg26 ? `<div class="mbar" style="height:${h26}px;border-radius:0 0 2px 2px;background:var(--rust);" title="2026 ${label}: ${v26.toLocaleString('es-AR')}"></div>` : ''}
+        ${isNeg25 ? `<div class="mbar2025 neg" style="height:${h25}px;" title="2025 ${label}: ${v25.toLocaleString('es-AR')}"></div>` : ''}
+      </div>
+      <div class="mval">${(isNeg26?v26.toLocaleString('es-AR'):'')}</div>
+      <div class="mlabel">${label}</div>
+    `;
+    wrap.appendChild(col);
+  });
+  el.appendChild(wrap);
+}
+
+// KPIs de comparación 2026 vs 2025 "a esta altura del año" (mismos meses que trae data2026) + total 2025 cerrado.
+function renderYoyKPIs(elId, data2026, data2025, total2025, unidad){
+  const mesesIncluidos = data2026.map(d=>d.mes.slice(5,7));
+  const map2025 = {}; data2025.forEach(d=>{ map2025[d.mes.slice(5,7)] = d.cantidad; });
+  const acum2026 = data2026.reduce((s,r)=>s+r.cantidad,0);
+  const acum2025 = mesesIncluidos.reduce((s,mm)=>s+(map2025[mm]||0),0);
+  const delta = acum2025 !== 0 ? ((acum2026-acum2025)/Math.abs(acum2025)*100) : (acum2026>0?100:0);
+  const ultimoMes = MESES_ES[mesesIncluidos[mesesIncluidos.length-1]] || '';
+  const kpis = document.getElementById(elId);
+  kpis.innerHTML = '';
+  const cards = [
+    { label:'Vendido a esta altura (2026)', value: acum2026.toLocaleString('es-AR'), unit:unidad, foot: `Ene-${ultimoMes} 2025: ${acum2025.toLocaleString('es-AR')} (${delta>=0?'+':''}${delta.toFixed(1)}%)`, alert: delta<0 },
+    { label:'Total 2025 (año completo)', value: total2025.toLocaleString('es-AR'), unit:unidad, foot:'cierre de la campaña anterior, para referencia', alert:false },
+  ];
+  cards.forEach(c=>{
+    const div = document.createElement('div');
+    div.className = 'kpi' + (c.alert?' alert':'');
+    div.innerHTML = `<div class="label">${c.label}</div><div class="value">${c.value}<small>${c.unit}</small></div><div class="foot">${c.foot}</div>`;
+    kpis.appendChild(div);
+  });
+}
+
 function renderVentasHibridoChart(salesArr, elId){
   const totals = {};
   salesArr.forEach(r=>{ totals[r.hibrido] = (totals[r.hibrido]||0) + r.vendido; });
@@ -2418,6 +2519,8 @@ function renderVentasTab(){
   renderExistTable();
   renderExistRankingSucursal(EXIST_MAIZ, 'exist-rk-sucursal');
   renderMonthlyChart(VENTAS_MENSUAL_MAIZ, 'vm-chart');
+  renderMonthlyCompareChart(VENTAS_MENSUAL_MAIZ, VENTAS_MENSUAL_MAIZ_2025, 'vm-chart-2025');
+  renderYoyKPIs('vm-kpis-2025', VENTAS_MENSUAL_MAIZ, VENTAS_MENSUAL_MAIZ_2025, TOTAL_MAIZ_2025, 'bolsas');
   renderRankingSucursal();
   renderRankingVendedor();
   renderVtCompareChart(matrix);
@@ -2912,6 +3015,8 @@ renderCyoGirTable();
 renderExistGirTable();
 renderExistRankingSucursal(EXIST_GIRASOL, 'existgir-rk-sucursal');
 renderMonthlyChart(VENTAS_MENSUAL_GIRASOL, 'vmgir-chart');
+renderMonthlyCompareChart(VENTAS_MENSUAL_GIRASOL, VENTAS_MENSUAL_GIRASOL_2025, 'vmgir-chart-2025');
+renderYoyKPIs('vmgir-kpis-2025', VENTAS_MENSUAL_GIRASOL, VENTAS_MENSUAL_GIRASOL_2025, TOTAL_GIRASOL_2025, 'bolsas');
 renderGirRankingSucursal();
 renderGirRankingVendedor();
 
@@ -3078,6 +3183,10 @@ function renderSojaKPIs(){
   const totalPendiente = SALES_SOJA.reduce((s,r)=>s+r.pendiente,0);
   const vendidoBolsasEq = totalVendido / 40;
   const pctObjetivo = (vendidoBolsasEq / OBJETIVO_SOJA_BOLSAS) * 100;
+  // Comparación vs 2025: SALES_SOJA no trae fecha (es un acumulado de lo vendido en lo que va de 2026, sin corte mensual),
+  // así que se compara contra el acumulado Ene-Oct 2025 (los meses más recientes con datos comparables). Menos preciso que maíz/girasol.
+  const acumSoja2025EneOct = VENTAS_MENSUAL_SOJA_2025.filter(d=>d.mes<='2025-10').reduce((s,r)=>s+r.cantidad,0);
+  const deltaSoja = acumSoja2025EneOct !== 0 ? ((totalVendido-acumSoja2025EneOct)/Math.abs(acumSoja2025EneOct)*100) : (totalVendido>0?100:0);
 
   const kpis = document.getElementById('soja-kpis');
   kpis.innerHTML = '';
@@ -3085,6 +3194,8 @@ function renderSojaKPIs(){
     { label:'Vendido (neto)', value: Math.round(totalVendido).toLocaleString('es-AR'), unit:'Kg', foot: Math.round(totalFacturado).toLocaleString('es-AR')+' facturado + '+Math.round(totalPendiente).toLocaleString('es-AR')+' pend. de facturar', alert:false },
     { label:'Objetivo 2026', value: OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR'), unit:'bolsas (40kg)', foot: OBJETIVO_SOJA_KG.toLocaleString('es-AR')+' Kg equivalentes', alert:false },
     { label:'% objetivo vendido', value: pctObjetivo.toFixed(1)+'%', unit:'', foot: vendidoBolsasEq.toFixed(1)+' de '+OBJETIVO_SOJA_BOLSAS.toLocaleString('es-AR')+' bolsas equivalentes', alert: pctObjetivo<10 },
+    { label:'Vendido 2026 vs Ene-Oct 2025', value: Math.round(totalVendido).toLocaleString('es-AR'), unit:'Kg', foot: `Ene-Oct 2025: ${Math.round(acumSoja2025EneOct).toLocaleString('es-AR')} Kg (${deltaSoja>=0?'+':''}${deltaSoja.toFixed(0)}%) · comparación aproximada, sin corte mensual en 2026`, alert:false },
+    { label:'Total vendido 2025 (año completo)', value: Math.round(TOTAL_SOJA_2025_KG).toLocaleString('es-AR'), unit:'Kg', foot:'cierre de la campaña anterior, para referencia', alert:false },
   ];
   cards.forEach(c=>{
     const div = document.createElement('div');
